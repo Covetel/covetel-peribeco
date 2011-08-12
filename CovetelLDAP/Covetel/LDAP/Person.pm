@@ -143,6 +143,19 @@ sub del {
 	}
 }
 
+sub change_pass {
+    my ($self, $new_pass) = @_;
+    my $base = $self->ldap->config->{'Covetel::LDAP'}->{'base_personas'};
+	my $dn = 'uid='.$self->uid.','.$base;
+    my $p = md5_base64($new_pass);
+  	$p = "{MD5}".$p."==";
+	my $mesg = $self->ldap->server->modify( $dn,
+        replace => {
+            userPassword => $p, 
+        }
+    );
+}
+
 sub notify {
     my $self = shift;
     my $email = Covetel::Email->new();
