@@ -14,8 +14,8 @@ my $person = Covetel::LDAP::Person->new(
 	}
 );
 
-if ($person->change_pass('321321...')){
-	print "The person ".$person->dn."has change pass \n";
+if ($person->change_pass('aphu')){
+	print "The person ".$person->dn." has change pass \n";
 #    $person->notify();
 } else {
 	$person->ldap->print_error();
