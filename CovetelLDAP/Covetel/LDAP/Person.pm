@@ -144,7 +144,7 @@ sub del {
 }
 
 sub change_pass {
-    my ($self, $new_pass) = @_;
+    my ($self, $new_pass, $dn) = @_;
     my $base = $self->ldap->config->{'Covetel::LDAP'}->{'base_personas'};
 	my $dn = 'cn='.$self->uid.','.$base;
     print "$dn\n";
