@@ -6,20 +6,18 @@ use Covetel::LDAP::Person;
 use Data::Dumper;
 use utf8;
 
+my $uid = 'cparedes';
 my $ldap = Covetel::LDAP->new;
 my $person = Covetel::LDAP::Person->new(
     { 
-		uid => 'cparedes',		
+		uid => $uid,		
         ldap => $ldap        
 	}
 );
-
-my $persona = $ldap->person({uid => 'cparedes'});
+my $persona = $ldap->person({uid => $uid});
 my $dn = $persona->dn;
 
-my $new_pass = 'aphu'; 
-
-if ($person->change_pass($new_pass, $dn)){
+if ($person->timecreate($dn)){
 	print "The person ".$person->dn." has change pass \n";
 #    $person->notify();
 } else {

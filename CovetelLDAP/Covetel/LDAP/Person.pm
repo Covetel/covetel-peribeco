@@ -146,8 +146,8 @@ sub del {
 sub change_pass {
     my ($self, $new_pass, $dn) = @_;
     my $base = $self->ldap->config->{'Covetel::LDAP'}->{'base_personas'};
-	my $dn = 'cn='.$self->uid.','.$base;
-    print "$dn\n";
+    #my $dn = 'cn='.$self->uid.','.$base;
+    #print "$dn\n";
     my $p = md5_base64($new_pass);
   	$p = "{MD5}".$p."==";
 	my $mesg = $self->ldap->server->modify( $dn,
@@ -155,6 +155,15 @@ sub change_pass {
             userPassword => $p, 
         }
     );
+}
+
+sub timecreate {
+    my ($self, $dn) = @_;
+    my $ldap = Covetel::LDAP->new;
+    my $mesg = $ldap->search(  
+        attrs => ['*', 'createTimestamp']
+        );
+    print $mesg;
 }
 
 sub notify {
