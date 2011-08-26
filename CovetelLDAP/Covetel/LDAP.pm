@@ -36,14 +36,13 @@ has config => (is => "ro", isa => "HashRef", lazy => 1, builder => "_build_confi
 sub _build_config {
     my $self = shift; 
 	my $default_file = 'config.yml';
-	if (!$self->config_file){
+    if ($ENV{COVETEL_LDAP_CONFIG}){
+        $self->config_file($ENV{COVETEL_LDAP_CONFIG});
+    }else (!$self->config_file){
 		$self->config_file($default_file);
 	} 
 	my $c = Config::Any::YAML->load($self->config_file);
 	return $c;	
-    if ($ENV{COVETEL_LDAP_CONFIG}){
-        $self->config_file($ENV{COVETEL_LDAP_CONFIG});
-    }
 }
 
 sub _build_base {
