@@ -1,0 +1,4 @@
+[% INCLUDE "personas/menu.tt" %]
+<div id="contenido">
+
+</div>

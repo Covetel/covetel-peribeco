@@ -1,0 +1,32 @@
+<p> 
+ <a class="enlace" href="/grupos/crear" title="Crear Grupos"> Crear un nuevo Grupo </a>
+</p>
+
+[% INCLUDE "mensajes.tt" %]
+
+<div id="contenido">
+    <table id="lista_grupos" class="dataTable" width="100%">
+        <thead> 
+            <tr>
+                <th> &nbsp; </th>
+                <th> GID </th> 
+                <th> Nombre del Grupo </th> 
+                <th> Descripción </th> 
+                <th> Detalle </th> 
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <td class="left" colspan="8"> 
+                    <button id="select_all"> Marcar Todos </button>  
+                    <button id="remove_group"> Eliminar </button>  
+                </td>
+            </tr>
+        </tfoot>
+        <tbody>
+            <tr>
+            <td> &nbsp;</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

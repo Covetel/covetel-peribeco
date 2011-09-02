@@ -1,0 +1,34 @@
+<p> 
+ <a class="enlace" href="/personas/crear" title="Crear Persona"> Crear una nueva
+ Persona </a>
+</p>
+
+
+<div id="contenido">
+    <table id="lista_personas" class="dataTable" width="100%">
+        <thead> 
+           <tr>
+            <th> &nbsp; </th> 
+            <th> Nombre </th> 
+            <th> Apellido </th> 
+            <th> Cedula </th> 
+            <th> Correo </th>
+            <th> NumberID </th> 
+            <th> UID </th> 
+            <th> Detalle </th>
+           </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <td class="left" colspan="8"> 
+                    <button id="remove_person"> Eliminar </button>  
+                    <button id="select_all"> Marcar Todos </button>  
+                </td>
+            </tr>
+        </tfoot>
+        <tbody>
+            <tr> <td> &nbsp; </td> </tr>
+
+        </tbody>
+    </table>
+</div>

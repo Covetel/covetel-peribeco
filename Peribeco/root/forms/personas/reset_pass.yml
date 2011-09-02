@@ -1,0 +1,79 @@
+action: /personas/reset_pass
+# indicator is the field that is used to test for form submission
+indicator: Botones.submit
+
+# Start listing the form elements
+#auto_fieldset: 1
+
+languages:
+    - es
+
+attributes:
+      id: form
+      class: fancy_form
+      method: POST
+
+
+elements:
+    - type: Fieldset
+      name: datos_fieldset
+      legend: Cambio de Password.
+      elements:
+        - type: Block
+          tag: div
+          content: 'Por favor ingrese los datos'
+          attributes:
+              class: informacion
+
+        - type: Password
+          name: new_pass
+          label: Password Nuevo
+          attributes:
+              title: 'Por favor ingrese la nueva contraseña'
+              class: input_text
+              id: new_pass
+          constraints:
+            - Required
+            - type: Length
+              min: 2
+              max: 250
+        
+
+        - type: Password
+          name: con_new
+          label: Confirmar Password
+          attributes:
+              title: 'Por favor ingrese nuevamente la nueva contraseña'
+              class: input_text
+              id: con_new
+          constraints:
+            - Required
+            - type: Length
+              min: 4
+              max: 250 
+              
+    # The Submit button
+    - type: Multi
+      name: Botones
+      elements:
+        - type: Submit
+          name: submit
+          # The text to be displayed
+          value: Cambiar Password
+          attributes:
+              title: Presione este botón para cambiar el password.
+              class: input_submit
+              id: cambiar_password_submit
+        
+        - type: Reset
+          name: reset
+          # The text to be displayed
+          value: Reiniciar
+          attributes:
+              title: Presione este botón para inicializar en blanco los campos del formulario.
+              class: input_reset
+
+filter:
+    # Filtrado de espacios en blanco y caracteres HTML
+    - TrimEdges
+    - HTMLEscape    
