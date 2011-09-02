@@ -1,0 +1,16 @@
+<div class="menu" id="menu"> 
+     [% IF c.check_user_roles('Administradores') %]
+    <span>
+        <a href="/personas/lista">Personas</a>
+    </span>
+    <span>
+        <a href="/grupos/lista">Grupos</a>
+    </span>
+     [% END %]
+    <span>
+        <a href="/logout">Salir</a>
+    </span>
+    <span class ="pass">
+        <a href="/personas/detalle/[% c.user.uid %]">Usuario Conectado: [% c.user.uid %]</a>
+    </span>
+</div>

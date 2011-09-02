@@ -1,0 +1,56 @@
+<p> 
+ <a class="enlace" href="/grupos/crear" title="Crear Grupos"> Crear un nuevo Grupo </a>
+ <a class="enlace" href="/grupos/lista" title="Lista Grupos">
+ Listar Grupos </a>
+</p>
+
+<div id="contenido">
+    <form id="form_add_member" action="#">
+    <fieldset>
+        <legend>[% grupo.nombre %] (<span class="gidNumber">[% grupo.gidNumber %]</span>)</legend>
+        <div class="informacion">[% grupo.description %]</div><br />
+        <br />
+        <div class="informacionsmall">En el siguiente campo introduzca los UID de
+        las personas que desea agregar a este grupo,  separados por coma.</div>
+        <div class="text label constraint_required constraint_length">
+            <label for="personas">Personas a Agregar</label>
+            <textarea cols="20" rows="10" id="personas" title="Ingrese la personas a agregar" name="personas">
+            </textarea>
+        </div>
+        <div class="multi">
+            <div class="elements">
+                <button id="add_member"> Agregar Personas al grupo </button> 
+            </div>
+        </div>
+    </fieldset>
+    </form>
+
+    <table id="lista_miembros_grupo" width="100%">
+        <thead> 
+            <tr>
+                <th>&nbsp;  </th> 
+                <th> Nombre </th> 
+                <th> Apellido </th>
+                <th> Cedula </th>
+                <th> Correo </th>
+                <th> UidNumber </th>
+                <th> Uid </th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <td class="left" colspan="7"> 
+                    <button id="remove_from_group"> Remover del Grupo </button>  
+                    <button id="select_all"> Marcar Todos </button>  
+                </td>
+            </tr>
+        </tfoot>
+        <tbody>
+            <tr> <td> &nbsp; </td> </tr>
+        </tbody>
+    </table>
+
+    <div class="oculto" title="Operacion Exitosa" id="mensaje">
+        Las personas fueron agregadas exitosamente al grupo
+    </div>
+</div>

@@ -1,0 +1,13 @@
+<p> 
+ [% IF c.check_user_roles('Administradores') %]
+ <a class="enlace" href="/personas/crear" alt="Crear Persona"> Crear una nueva
+ Persona </a>
+ <a class="enlace" href="/personas/lista" alt="Lista Personas">
+ Listar Personas </a>
+ [% END %]
+ [% IF c.user.uid == persona.uid %]
+ <a class="enlace" href="/personas/change_pass/[% c.user.uid %]" alt="Cambiar Password">Cambiar Password </a>  
+ [% ELSE %]
+ <a class="enlace" href="/personas/reset_pass/[% persona.uid %]" alt="Cambiar Password">Cambiar Password </a>
+ [% END %]
+</p>
