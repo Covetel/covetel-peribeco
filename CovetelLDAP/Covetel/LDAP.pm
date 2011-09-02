@@ -37,8 +37,8 @@ sub _build_config {
     my $self = shift; 
 	my $default_file = 'config.yml';
     if ($ENV{COVETEL_LDAP_CONFIG}){
-        $self->config_file($ENV{COVETEL_LDAP_CONFIG});
-    }else (!$self->config_file){
+       $self->config_file($ENV{COVETEL_LDAP_CONFIG});
+    }else{
 		$self->config_file($default_file);
 	} 
 	my $c = Config::Any::YAML->load($self->config_file);
