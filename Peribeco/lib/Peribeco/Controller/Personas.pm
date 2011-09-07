@@ -153,8 +153,19 @@ sub reset_pass : Local : FormConfig {
     #Obtengo elemento fieldset
     my $fieldset = $form->get_element({type => 'Fieldset'});
     #Creo elemento oculto con el uid en el formulario
-    $fieldset->element({type => 'Text', name => 'uid',  value=>$uid})->add_attrs(class => 'input_text oculto', id => 'uid_field');
+    my $element = $fieldset->element(
+        {
+            type  => 'Text',
+            name  => 'uid',
+            value => $uid
+        }
+    );
+
+    $element->add_attrs({ class => 'input_text oculto'});
+    $element->add_attrs({ id => 'uid_field'});
+
     $form->auto_constraint_class( 'constraint_%t' );
+
     if ( $form->submitted_and_valid ) {
         #capturo campos
         $uid = $c->req->param("uid");
