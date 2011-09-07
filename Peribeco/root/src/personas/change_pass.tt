@@ -1,6 +1,6 @@
 <p> 
- <a class="enlace" href="/personas/lista" title="Listar Personas"> Volver a la lista
- de Personas </a>
+ <a class="enlace" href="/personas/detalle/[% c.user.uid %]" title="Mis Datos">
+ Ver Mis Datos </a>
 </p>
 [% INCLUDE "mensajes.tt" %]
 [% IF ! sucess %]
