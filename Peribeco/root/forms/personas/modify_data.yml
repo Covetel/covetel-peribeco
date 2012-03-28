@@ -1,0 +1,109 @@
+action: /personas/modify_data
+# indicator is the field that is used to test for form submission
+indicator: Botones.submit
+
+# Start listing the form elements
+#auto_fieldset: 1
+
+languages:
+    - es
+
+elements:
+    - type: Fieldset
+      name: datos_fieldset
+      legend: Datos Generales de la Persona.
+      elements:
+        - type: Block
+          tag: div
+          content: 'Por favor ingrese los datos de la Persona'
+          attributes:
+              class: informacion
+
+        - type: Text
+          name: nombre
+          label: Nombre
+          attributes:
+              title: 'Por favor ingrese el primer nombre de la persona'
+              class: input_text
+              id: nombre
+          constraints:
+            - Required
+            - type: Length
+              min: 2
+              max: 250
+
+        - type: Text
+          name: apellido
+          label: Apellido
+          attributes:
+              title: 'Por favor ingrese el primer apellido de la persona'
+              class: input_text
+              id: apellido
+          constraints:
+            - Required
+            - type: Length
+              min: 2
+              max: 250
+
+        - type: Text
+          name: uid
+          label: Identificador
+          attributes:
+              title: 'Por favor ingrese el identificador de la persona'
+              class: input_text
+              id: uid
+          constraints:
+            - Required
+            - type: Length
+              min: 4
+              max: 250
+
+        - type: Text
+          name: ced
+          label: Cédula de Identidad
+          attributes:
+              title: 'Por favor ingrese la cedula de la persona'
+              class: input_text
+              id: ced
+          constraints:
+            - Required
+          validator: 'Cedula'
+
+        - type: Text
+          name: mail
+          label: Correo Electrónico
+          attributes:
+              title: 'Por favor ingrese el Correo Electrónico de la persona'
+              class: input_text
+              id: mail
+          constraints:
+            - Required
+            - type: Length
+              min: 5
+              max: 250
+
+    # The Submit button
+    - type: Multi
+      name: Botones
+      elements:
+        - type: Submit
+          name: submit
+          # The text to be displayed
+          value: Modificar
+          attributes:
+              title: Presione este botón para modificar los datos
+              class: input_submit
+              id: modificar_datos_submit
+
+        - type: Reset
+          name: reset
+          # The text to be displayed
+          value: Reiniciar
+          attributes:
+              title: Presione este botón para inicializar en blanco los campos del formulario.
+              class: input_reset
+
+filter:
+    # Filtrado de espacios en blanco y caracteres HTML
+    - TrimEdges
+    - HTMLEscape    
