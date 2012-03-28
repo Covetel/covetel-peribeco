@@ -6,7 +6,9 @@
  Listar Personas </a>
  [% END %]
  [% IF c.user.uid == persona.uid %]
- <a class="enlace" href="/personas/change_pass/[% c.user.uid %]" alt="Cambiar Password">Cambiar Password </a>  
+ <span><a class="enlace" href="/personas/change_pass/[% c.user.uid %]" alt="Cambiar Password">Cambiar Password </a>  
+ <a class="enlace" href="/personas/modify_data/[% c.user.uid %]" alt="Modificar datos">Modificar Datos</a>
+ </span>
  [% ELSE %]
  <a class="enlace" href="/personas/reset_pass/[% persona.uid %]" alt="Cambiar Password">Cambiar Password </a>
  [% END %]
