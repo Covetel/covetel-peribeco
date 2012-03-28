@@ -1,6 +1,7 @@
 package Peribeco::Controller::Personas;
 use Moose;
 use namespace::autoclean;
+use Net::LDAP;
 use Covetel::LDAP;
 use Covetel::LDAP::Person;
 use Data::Dumper;
@@ -139,7 +140,25 @@ sub modify_data : Local : FormConfig {
                 scope => 'one', 
                 attrs => ['givenName','sn','mail','pager'],
         });
-        my $entry = Covetel::LDAP::Entry->new;
+        my $entry = $resp->pop_entry;
+        my $entry_dn = $entry->dn;
+
+        my $host = $self->config->{'Covetel::LDAP'}->{'host'};
+        my $dn = $self->config->{'Covetel::LDAP'}->{'dn'};
+        my $pw = $self->config->{'Covetel::LDAP'}->{'password'};
+        my $nldap = Net::LDAP->new($host);
+        if( $nldap->bind( $dn, password => $pw )) {
+            $entry->replace(
+                    dn => $entry_dn,
+                    uid => $uid,
+                    givenName => $nombre,
+                    sn => $apellido,
+                    mail => $email,
+                    ced => $ced,
+            );
+            $entry->update($nldap);
+            $nldap->unbind();
+        }
     }
 }
 
