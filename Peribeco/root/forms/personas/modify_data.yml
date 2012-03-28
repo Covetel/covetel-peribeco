@@ -67,7 +67,6 @@ elements:
               id: ced
           constraints:
             - Required
-          validator: 'Cedula'
 
         - type: Text
           name: mail
