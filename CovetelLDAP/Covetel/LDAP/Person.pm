@@ -98,10 +98,7 @@ sub _build_entry {
 	$entry->add(mail => $self->email);
 	$entry->add(homeDirectory => '/home/'.$self->uid);
 	return $entry;
-}
-
-sub _build_ldap {
-	my $self = shift;
+} sub _build_ldap { my $self = shift;
 	my $ldap = Covetel::LDAP->new;
 	return $ldap;
 }

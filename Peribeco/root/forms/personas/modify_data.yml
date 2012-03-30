@@ -46,19 +46,6 @@ elements:
               max: 250
 
         - type: Text
-          name: uid
-          label: Identificador
-          attributes:
-              title: 'Por favor ingrese el identificador de la persona'
-              class: input_text
-              id: uid
-          constraints:
-            - Required
-            - type: Length
-              min: 4
-              max: 250
-
-        - type: Text
           name: ced
           label: Cédula de Identidad
           attributes:
