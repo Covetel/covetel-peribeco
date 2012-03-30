@@ -128,36 +128,43 @@ sub modify_data : Local : FormConfig {
         #capturando campos
         my $nombre   = $c->req->param("nombre");
         my $apellido = $c->req->param("apellido");
-        my $ced   = $c->req->param("ced");
+        my $ced      = $c->req->param("ced");
         my $email    = $c->req->param("mail");
 
         my $ldap = Covetel::LDAP->new;
         my $base = $ldap->config->{'Covetel::LDAP'}->{'base_personas'};
         $uid = $c->user->uid;
-        my $resp = $ldap->search({
-                base => $base,
-                filter => "(uid=$uid)", 
-                scope => 'one', 
-                attrs => ['givenName','sn','mail','pager'],
-        });
-        my $entry = $resp->pop_entry;
-        my $entry_dn = $entry->dn;
 
-        my $host = $self->config->{'Covetel::LDAP'}->{'host'};
-        my $dn = $self->config->{'Covetel::LDAP'}->{'dn'};
-        my $pw = $self->config->{'Covetel::LDAP'}->{'password'};
-        my $nldap = Net::LDAP->new($host);
-        if( $nldap->bind( $dn, password => $pw )) {
-            $entry->replace(
-                    dn => $entry_dn,
-                    uid => $uid,
-                    givenName => $nombre,
-                    sn => $apellido,
-                    mail => $email,
-                    ced => $ced,
-            );
-            $entry->update($nldap);
-            $nldap->unbind();
+        my $persona = $ldap->person( { uid => $uid } );
+        my $dn      = $persona->dn;
+        my $entry   = $persona->entry;
+
+        #$entry->replace(
+        #    givenName => $nombre,
+        #    sn        => $apellido,
+        #    mail      => $email,
+        #    ced       => $ced,
+        #);
+        #print Dumper( $nombre, $apellido, $ced, $email );
+        print Dumper($entry);
+
+        my $mesg = $ldap->server->modify(
+            $entry->dn,
+            replace => {
+                givenName => $nombre,
+                sn        => $apellido,
+                mail      => $email,
+                ced       => $ced,
+            }
+          );
+
+        #if ( $entry->update($ldap->server) ) {
+        if ( $mesg ) {
+            $c->stash->{mensaje} = "Datos Actualizados";
+        }
+        else {
+            $c->stash->{error}   = 1;
+            $c->stash->{mensaje} = "Error al actualizar ";
         }
     }
 }
