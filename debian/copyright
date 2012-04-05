@@ -1,5 +1,6 @@
 This work was packaged for Debian by:
 
+<<<<<<< HEAD
     Luis Alfredo da Silva <luisdasilva@covetel.com.ve> on Thu, 05 Apr 2012 07:07:39 +0000
 
 It was downloaded from:
@@ -33,11 +34,33 @@ License:
 
 On Debian systems, the complete text of the GNU General
 Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
+=======
+    Luis Alfredo da Silva <luisdasilva@covetel.com.ve> on Thu, 05 Apr 2012 20:50:30 +0000
+
+It was downloaded from:
+
+    http://www.covetel.com.ve
+
+Upstream Author(s):
+
+	Walter Vargas <wvargas@covetel.com.ve>
+	Carlos Paredes <cparedes@covetel.com.ve>
+	Luis Alfredo Silva <luisdasilva@covetel.com.ve>
+
+Copyright:
+
+    Copyright (C) 2012 Covetel RS
+
+License:
+
+    <Put the license of the package here indented by 4 spaces>
+>>>>>>> master
 
 The Debian packaging is:
 
     Copyright (C) 2012 Luis Alfredo da Silva <luisdasilva@covetel.com.ve>
 
+<<<<<<< HEAD
 # Please chose a license for your packaging work. If the program you package
 # uses a mainstream license, using the same license is the safest choice.
 # Please avoid to pick license terms that are more restrictive than the
@@ -48,3 +71,5 @@ and is licensed under the GPL version 3, see above.
 
 # Please also look if there are files or directories which have a
 # different copyright/license attached and list them here.
+=======
+>>>>>>> master
