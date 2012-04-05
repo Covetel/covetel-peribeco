@@ -71,13 +71,15 @@ sub crear : Local : FormConfig {
             my $lastname  = $c->req->param("apellido");
             my $password  = $c->req->param("passwd");
             my $ced       = $c->req->param("ced");
+            my $email     = $c->req->param("mail");
 
             my $person = Covetel::LDAP::Person->new(
                 {
                     uid       => $uid,
                     firstname => $firstname,
                     lastname  => $lastname,
-                    ced       => $ced,
+                    pager     => $ced,
+                    email     => $email,
                 }
             );
 
@@ -127,7 +129,6 @@ sub modify_data : Local : FormConfig {
         my $nombre   = $c->req->param("nombre");
         my $apellido = $c->req->param("apellido");
         my $ced      = $c->req->param("ced");
-        my $email    = $c->req->param("mail");
 
         my $ldap = Covetel::LDAP->new;
         my $base = $ldap->config->{'Covetel::LDAP'}->{'base_personas'};
@@ -151,7 +152,6 @@ sub modify_data : Local : FormConfig {
             replace => {
                 givenName => $nombre,
                 sn        => $apellido,
-                mail      => $email,
                 pager	  => $ced,
             }
           );
