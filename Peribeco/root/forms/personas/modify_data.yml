@@ -55,19 +55,6 @@ elements:
           constraints:
             - Required
 
-        - type: Text
-          name: mail
-          label: Correo Electrónico
-          attributes:
-              title: 'Por favor ingrese el Correo Electrónico de la persona'
-              class: input_text
-              id: mail
-          constraints:
-            - Required
-            - type: Length
-              min: 5
-              max: 250
-
     # The Submit button
     - type: Multi
       name: Botones

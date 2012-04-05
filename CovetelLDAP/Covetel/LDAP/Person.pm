@@ -88,7 +88,7 @@ sub _build_entry {
 	my $entry = Net::LDAP::Entry->new;
 	$self->dn($dn);
 	$entry->dn($dn);
-	$entry->add(objectClass => ['top', 'inetOrgPerson', 'posixAccount']);
+	$entry->add(objectClass => ['top', 'inetOrgPerson', 'posixAccount', 'qmailUser']);
 	$entry->add(cn => $self->firstname.' '.$self->lastname);
 	$entry->add(uidNumber => $self->uidNumber);
 	$entry->add(gidNumber => $self->uidNumber);
@@ -97,6 +97,11 @@ sub _build_entry {
 	$entry->add(pager => $self->ced);
 	$entry->add(mail => $self->email);
 	$entry->add(homeDirectory => '/home/'.$self->uid);
+# Esto se debe poner en un metodo, acondiciona los atributos para el correo. 
+		  $entry->add(
+				  mailHost => '192.168.22.4',
+				  mailQuotaSize =>  '2048',
+				  );
 	return $entry;
 } sub _build_ldap { my $self = shift;
 	my $ldap = Covetel::LDAP->new;
