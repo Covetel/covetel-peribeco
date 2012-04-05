@@ -69,7 +69,6 @@ sub crear : Local : FormConfig {
             my $uid       = $c->req->param("uid");
             my $firstname = $c->req->param("nombre");
             my $lastname  = $c->req->param("apellido");
-            my $email     = $c->req->param("mail");
             my $password  = $c->req->param("passwd");
             my $ced       = $c->req->param("ced");
 
@@ -79,7 +78,6 @@ sub crear : Local : FormConfig {
                     firstname => $firstname,
                     lastname  => $lastname,
                     ced       => $ced,
-                    email     => $email,
                 }
             );
 
@@ -154,17 +152,17 @@ sub modify_data : Local : FormConfig {
                 givenName => $nombre,
                 sn        => $apellido,
                 mail      => $email,
-                ced       => $ced,
+                pager	  => $ced,
             }
           );
 
         #if ( $entry->update($ldap->server) ) {
-        if ( $mesg ) {
+        if (! $mesg->is_error ) {
             $c->stash->{mensaje} = "Datos Actualizados";
         }
         else {
             $c->stash->{error}   = 1;
-            $c->stash->{mensaje} = "Error al actualizar ";
+            $c->stash->{mensaje} = "Error al actualizar ". $mesg->error_text . " " . $mesg->error_desc . " " . $mesg->error;
         }
     }
 }
