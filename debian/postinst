@@ -1,0 +1,20 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use Debconf::Client::ConfModule ':all';
+use Digest::MD5 qw(md5 md5_hex md5_base64);
+version('2.1');
+use 5.010;
+
+
+given($ARGV[0]){
+    when('configure'){
+		system("cd /opt/covetel-peribeco/Peribeco/");
+
+        exit 0;
+    }
+
+    default {
+        exit 1;
+    }
+}
