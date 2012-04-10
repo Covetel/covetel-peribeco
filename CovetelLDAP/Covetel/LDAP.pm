@@ -111,7 +111,7 @@ sub group {
 		foreach my $e ($resp->entries()){
             my $group = Covetel::LDAP::Group->new({
                     nombre       => $e->get_value('cn'),
-                    description => $e->get_value('description'),
+                    description => $e->get_value('description') ? $e->get_value('description') : '',
                     gidNumber => $e->get_value('gidNumber'),
                     members => [$e->get_value('memberUid')],
                     entry   => $e, 
