@@ -65,9 +65,11 @@ sub grupos_GET {
         map {
             [
 
-                ($_->nombre eq 'Administradores') ? '' : '<input type="checkbox"
-                name="del" value="'.$_->gidNumber.'">', 
-                $_->gidNumber, &utf8_decode($_->nombre), &utf8_decode($_->description), 
+                ($_->nombre eq 'Administradores') ? '' 
+                : '<input type="checkbox" name="del" value="'.$_->gidNumber.'">', 
+                $_->gidNumber, 
+                &utf8_decode($_->nombre), 
+                $_->description ? &utf8_decode($_->description) : 'No definido', 
                 '<a href="/grupos/detalle/' . $_->gidNumber . '"> Ver detalle </a>', 
             ]
           } @lista,
