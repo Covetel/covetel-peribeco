@@ -2,7 +2,7 @@
 Covetel::LDAP: 
    host: localhost
    base: dc=iutai,dc=tec,dc=ve
-   base_personas: ou=Personas,dc=iutai,dc=tec,dc=ve
+   base_personas: ou=personas,dc=iutai,dc=tec,dc=ve
    base_grupos: ou=Grupos,dc=iutai,dc=tec,dc=ve
    base_mantenimiento: ou=Mantenimiento,dc=iutai,dc=tec,dc=ve
    usuario_mantenimiento: cn=Usuario Mantenimiento
