@@ -1,3 +1,11 @@
+covetel-peribeco (0.1-2.1) unstable; urgency=low
+
+  * Cambios en la ruta de instalación del paquete.
+  * Conversión a todas las arquitecturas.
+  * Eliminación de postinst.
+
+ -- Carlos Paredes <cparedes@covetel.com.ve>  Tue, 10 Apr 2012 00:53:44 -0430
+
 covetel-peribeco (0.1-2) unstable; urgency=low
 
   * archivo README
