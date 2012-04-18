@@ -1,3 +1,9 @@
+covetel-peribeco (0.1-2.2) unstable; urgency=low
+
+  * Agregando la dependencia libcatalyst-authentication-store-ldap-perl
+
+ --  <elsanto@igraine.covetel.com.ve>  Tue, 17 Apr 2012 23:22:08 -0430
+
 covetel-peribeco (0.1-2.1) unstable; urgency=low
 
   * Cambios en la ruta de instalación del paquete.
