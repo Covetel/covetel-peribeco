@@ -1,3 +1,9 @@
+covetel-peribeco (0.2) unstable; urgency=low
+
+  * Non-maintainer upload.
+
+ --  <elsanto@igraine.covetel.com.ve>  Tue, 17 Apr 2012 23:36:48 -0430
+
 covetel-peribeco (0.1-2.2) unstable; urgency=low
 
   * Agregando la dependencia libcatalyst-authentication-store-ldap-perl
