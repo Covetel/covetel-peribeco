@@ -71,7 +71,7 @@ sub person {
             my $person = Covetel::LDAP::Person->new(
                 {
                     uid       => $e->get_value('uid'),
-                    firstname => $e->get_value('givenName'),
+                    firstname => $e->get_value('givenName') ? $e->get_value('givenName') : $e->get_value('cn'),
 					lastname  => $e->get_value('sn'),
 					uidNumber => $e->get_value('uidNumber'),
 					email => $e->get_value('mail') // '--' ,
