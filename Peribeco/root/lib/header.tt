@@ -28,8 +28,10 @@
 </head>
 <body>
     <div id="cintillo_institucional">
+			<!--
             <div id="gbv"> &nbsp; </div>
             <div id="bicentenario"> &nbsp; </div>
+			-->
     </div>
     [% IF c.user_exists %] 
             [% INCLUDE "menu.tt" %]
