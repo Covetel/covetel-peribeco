@@ -1,6 +1,6 @@
 <p> 
  [% IF c.check_user_roles('Administradores') %]
- <a class="enlace" href="/personas/crear" alt="Crear Persona"> Crear una nueva
+ <a class="enlace" href="/personas/crear" alt="Crear Persona"> Registrar una nueva
  Persona </a>
  <a class="enlace" href="/personas/lista" alt="Lista Personas">
  Listar Personas </a>
