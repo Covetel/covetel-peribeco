@@ -6,8 +6,33 @@ var sel = true;
 
 
 $(document).ready(function(){
+
+	$("#uid_mail").blur(function(){
+		var uid = $("#uid_mail").val();
+		if (uid != ''){
+			$("#uid_mail").parent().removeClass("error error_constraint_required");
+			$(".element_msj_error").remove();	
+			$.ajax({
+				url: "/ajax/mail/exists/"+uid, 
+				type: "GET",
+				dataType: "json",
+				complete: function (data) {
+					var datos = $.parseJSON(data.responseText);
+					if (datos.exists) {
+						$(".element_msj_error").remove();	
+						element_error($("#uid_mail"),'Ya existe una cuenta/lista utilizando <strong>'+uid+'</strong>, por favor ingrese un identifador diferente');
+					} else {
+						$("#uid_mail").parent().removeClass("error error_constraint_required");
+					}
+				},
+			}); // Fin de ajax
+		} else {
+			$(".element_msj_error").remove();	
+			element_error($("#uid_mail"),'Debe ingresar un Identificador válido');
+		}
+	});
     
-    $.ajaxSetup({ scriptCharset: "utf-8" , contentType: "application/json; charset=utf-8"});
+   $.ajaxSetup({ scriptCharset: "utf-8" , contentType: "application/json; charset=utf-8"});
     
    tabla = $("#lista_grupos").dataTable({
 		"sAjaxSource": '/ajax/grupos',
@@ -54,6 +79,17 @@ $(document).ready(function(){
             my_hover();
         }
     });
+    
+    tabla5 = $("#lista_listas").dataTable({
+		"sAjaxSource": '/ajax/listas/',
+ 		"oLanguage": {
+            "sUrl": "/static/js/dataTables.spanish.txt"
+        },
+		"bJQueryUI": true,
+	    "fnDrawCallback": function () {
+            my_hover();
+        }
+    });
 
 
     // Add member to group
@@ -75,9 +111,9 @@ $(document).ready(function(){
 				contentType: 'application/json',
 			    processData: false,
 				complete: function (data) {
-                    $("div#mensaje").html("Las personas fueron agregadas al grupo exitosamente");
+                   // $("div#mensaje").html("Las personas fueron agregadas al grupo exitosamente");
                     $("#personas").val('');
-                    $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
+                   // $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
                     tabla4.fnReloadAjax();
                 }
 	        }); // Fin de ajax
@@ -96,8 +132,8 @@ $(document).ready(function(){
 				contentType: 'application/json',
 			    processData: false,
 				complete: function (data) {
-                    $("div#mensaje").html("Las personas fueron removidas del grupo exitosamente");
-                    $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
+                  //  $("div#mensaje").html("Las personas fueron removidas del grupo exitosamente");
+                  //  $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
                     tabla4.fnReloadAjax();
                 }
 	        }); // Fin de ajax

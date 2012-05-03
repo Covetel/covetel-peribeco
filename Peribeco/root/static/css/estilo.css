@@ -207,3 +207,9 @@ div.dataTables_paginate {
 	text-align: right;
 	width: 40%;
 }
+div.center {
+    position: absolute;
+    left: 35%;
+    display: block;
+    top 50%;
+}

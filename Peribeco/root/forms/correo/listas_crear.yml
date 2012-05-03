@@ -1,0 +1,83 @@
+action: /correo/listas/crear
+# indicator is the field that is used to test for form submission
+indicator: Botones.submit
+
+# Start listing the form elements
+#auto_fieldset: 1
+
+languages:
+    - es
+
+elements:
+    - type: Fieldset
+      name: datos_fieldset
+      legend: Datos Generales de la lista de correo
+      elements:
+        - type: Block
+          tag: div
+          content: 'Por favor ingrese los datos de la lista de correo'
+          attributes:
+              class: informacion
+
+        - type: Text
+          name: uid
+          label: Identificador
+          attributes:
+              title: 'Por favor ingrese el identificador de la lista'
+              class: input_text
+              id: uid_mail
+          constraints:
+            - Required
+            - type: Regex
+              regex: '^[a-z]+[0-9]*$'
+
+        - type: Text
+          name: desc
+          label: Descripción
+          attributes:
+              title: 'Por favor ingrese la descripción de la lista'
+              class: input_text
+              id: desc
+          constraints:
+            - Required
+            - type: Length
+              min: 4
+              max: 250
+        
+        - type: Text
+          name: moderator
+          label: Moderador
+          attributes:
+              title: 'Por favor ingrese el identificador del moderador de la lista'
+              class: input_text
+              id: moderator
+          constraints:
+            - Required
+            - type: Regex
+              regex: '^[a-z]+[0-9]*$'
+
+    # The Submit button
+    - type: Multi
+      name: Botones
+      elements:
+        - type: Submit
+          name: submit
+          # The text to be displayed
+          value: Crear
+          attributes:
+              title: Presione este botón para crear la lista de correo
+              class: input_submit
+              id: crear_lista_submit
+        
+        - type: Reset
+          name: reset
+          # The text to be displayed
+          value: Reiniciar
+          attributes:
+              title: Presione este botón para inicializar en blanco los campos del formulario.
+              class: input_reset
+
+filter:
+    # Filtrado de espacios en blanco y caracteres HTML
+    - TrimEdges
+    - HTMLEscape    
