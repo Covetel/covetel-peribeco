@@ -1,0 +1,25 @@
+<div id="contenido">
+    <table id="quota_lists" class="dataTable" width="100%">
+        <thead> 
+           <tr>
+            <th> &nbsp; </th> 
+            <th> Nombre </th> 
+            <th> UID </th> 
+            <th> Quota </th>
+            <th> % </th>
+           </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <td class="left" colspan="8"> 
+                    <button id="set_quota"> Asignar Quota </button>  
+                    <button id="global_quota"> Asignar Quota Global </button>  
+                </td>
+            </tr>
+        </tfoot>
+        <tbody>
+            <tr> <td> &nbsp; </td> </tr>
+
+        </tbody>
+    </table>
+</div>

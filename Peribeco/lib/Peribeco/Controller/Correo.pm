@@ -52,6 +52,13 @@ sub listas : Path('listas') {
     }
 }
 
+sub quota : Path('quota') {
+    my ( $self, $c ) = @_;
+    if ( $c->assert_user_roles(qw/Administradores/) ) {
+        $c->stash->{template} = 'correo/quota/lista.tt';
+    }
+}
+
 sub eliminar : Local {
     my ( $self, $c, $uid ) = @_;
     if ( $c->assert_user_roles(qw/Administradores/) ) {
