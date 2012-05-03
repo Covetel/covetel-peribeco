@@ -38,6 +38,8 @@ sub personas : Local : ActionClass('REST') {}
 
 sub listas : Local : ActionClass('REST') {}
 
+sub quota : Local : ActionClass('REST') {}
+
 sub groupmembers : Local : ActionClass('REST') {}
 
 sub usuario_exists : Path('usuario/exists') Args(1) ActionClass('REST') {}
@@ -150,6 +152,42 @@ sub listas_GET {
     }
 
     
+	$self->status_ok($c, entity => \%datos);
+}
+
+sub quota_GET {
+    my ( $self, $c ) = @_;
+    
+    my $ldap = Covetel::LDAP->new;
+    
+    my $mesg = $ldap->search({ 
+            filter => $c->config->{'Correo::Quota'}->{'filter'},
+            base => $c->config->{'Correo::Quota'}->{'basedn'},
+            attrs => '*'
+        });
+
+    my %datos;
+
+    my $account = $c->config->{'Correo::Quota'}->{'attrs'}->{'account'};
+    my $cname = $c->config->{'Correo::Quota'}->{'attrs'}->{'nombre'};
+    my $quota_size = $c->config->{'Correo::Quota'}->{'attrs'}->{'quota'};
+    my $size = $c->config->{'Correo::Quota'}->{'attrs'}->{'size'};
+    
+    if ($mesg->count){
+        $datos{aaData} = [
+            map {
+                [ 
+                '<input type="checkbox" name="del" value="'.$_->get_value($account).'">', 
+                &utf8_decode($_->get_value($cname)), 
+                $_->get_value($account), 
+                $_->get_value($quota_size)." ".$size,
+                '<div id="graph_quota">Grafico</div>', 
+                ]
+            } $mesg->entries,
+            #} grep { !($_->uid eq 'root') } @lista, 
+        ];
+    }
+
 	$self->status_ok($c, entity => \%datos);
 }
 
