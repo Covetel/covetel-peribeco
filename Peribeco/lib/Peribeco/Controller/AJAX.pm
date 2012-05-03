@@ -36,9 +36,13 @@ sub grupos : Local : ActionClass('REST') {}
 
 sub personas : Local : ActionClass('REST') {}
 
+sub listas : Local : ActionClass('REST') {}
+
 sub groupmembers : Local : ActionClass('REST') {}
 
 sub usuario_exists : Path('usuario/exists') Args(1) ActionClass('REST') {}
+
+sub mail_exists : Path('mail/exists') Args(1) ActionClass('REST') {}
 
 sub addMember : Path('grupos/add') Args ActionClass('REST') {}
 
@@ -104,6 +108,51 @@ sub personas_GET {
 	$self->status_ok($c, entity => \%datos);
 }
 
+sub remove_domain {
+    my ($self, @list) = @_;
+    map {s/@.*$//} @list;
+    my $str = join(",",@list);
+    return $str;
+    
+}
+
+sub listas_GET {
+    my ( $self, $c ) = @_;
+    
+    my $ldap = Covetel::LDAP->new;
+    
+    my $mesg = $ldap->search({ 
+            filter => $c->config->{'Correo::Listas'}->{'filter'},
+            base => $c->config->{'Correo::Listas'}->{'basedn'},
+            attrs => '*'
+        });
+
+    my %datos;
+
+    my $id = $c->config->{'Correo::Listas'}->{'attrs'}->{'nombre'};
+    my $desc = $c->config->{'Correo::Listas'}->{'attrs'}->{'descripcion'};
+    my $mail = $c->config->{'Correo::Listas'}->{'attrs'}->{'correo'};
+    my $member_mail = $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro_correo'};
+
+    if ($mesg->count){
+        $datos{aaData} = [
+            map {
+                [ 
+                    '<input type="checkbox" name="del" value="'.$_->get_value($id).'">', 
+                    $_->get_value($mail), 
+                    &utf8_decode($_->get_value($desc)), 
+                    $self->remove_domain($_->get_value($member_mail)),
+                    '<a href="/personas/detalle/' . $_->get_value($id) . '"> Ver detalle </a>', 
+                ]
+                } $mesg->entries,
+        ];
+        
+    }
+
+    
+	$self->status_ok($c, entity => \%datos);
+}
+
 sub usuario_exists_GET {
     my ( $self, $c, $uid ) = @_;
     $c->log->debug($uid);
@@ -112,6 +161,28 @@ sub usuario_exists_GET {
 
     my $ldap = Covetel::LDAP->new;
     if ($ldap->person({uid => $uid})){
+        $resp->{exists} = 1;
+    } else {
+        $resp->{exists} = 0;
+    }
+	
+    $self->status_ok($c, entity => $resp);
+
+}
+
+sub mail_exists_GET {
+    my ( $self, $c, $uid ) = @_;
+    $c->log->debug($uid);
+    my $resp = {};
+
+
+    my $ldap = Covetel::LDAP->new;
+
+    my $mail = $uid =~ m/@/ ? $uid : $uid . '@' . $c->config->{domain};
+
+    my $mesg = $ldap->search({filter => "mail=$mail"});
+
+    if ($mesg->count){
         $resp->{exists} = 1;
     } else {
         $resp->{exists} = 0;
@@ -168,18 +239,27 @@ sub addMember_PUT {
     my $personas = $c->req->data->{personas};
     my $gid = $c->req->data->{gid};
     my $g = $ldap->group({gidNumber => $gid});
+	my %datos;
+    my @usuarios;
     foreach (@{$personas}){
         s/\s+//g;
         if ($ldap->person({uid => $_})){
             if ($g) {
                 $g->add_member($_);
-                $g->update;
+                if ($g->update){
+                    push @usuarios, $_;
+                }
             }
+        } else {
+            $self->status_not_found(
+               $c,
+               message => "No se pudo encontrar el usuario $_",
+             );
         }
     }
-	my %datos;
+    $datos{usuarios} = \@usuarios;
+	$self->status_ok($c, entity => \%datos);
 
-    $self->status_ok($c, entity => \%datos);
 }
 
 sub delMember_DELETE {

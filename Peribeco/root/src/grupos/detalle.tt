@@ -14,8 +14,7 @@
         las personas que desea agregar a este grupo,  separados por coma.</div>
         <div class="text label constraint_required constraint_length">
             <label for="personas">Personas a Agregar</label>
-            <textarea cols="20" rows="10" id="personas" title="Ingrese la personas a agregar" name="personas">
-            </textarea>
+            <textarea cols="20" rows="10" id="personas" title="Ingrese la personas a agregar" name="personas"></textarea>
         </div>
         <div class="multi">
             <div class="elements">

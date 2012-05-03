@@ -1,0 +1,11 @@
+<p> 
+ <a class="enlace" href="/correo/listas" title="Listas de Correo"> Volver a las
+ listas de correo </a>
+</p>
+[% INCLUDE "mensajes.tt" %]
+[% IF ! sucess %]
+    [% form %]
+[% ELSE %]
+ <a class="enlace" href="/correo/listas/crear" alt="Crear una lista de correo">Para crear
+ otra lista de correo haga click aquí</a>
+[% END %]
