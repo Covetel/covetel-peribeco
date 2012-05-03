@@ -2,6 +2,7 @@ var tabla;
 var tabla2;
 var tabla3;
 var tabla4;
+var tabla6;
 var sel = true;
 
 
@@ -82,6 +83,17 @@ $(document).ready(function(){
     
     tabla5 = $("#lista_listas").dataTable({
 		"sAjaxSource": '/ajax/listas/',
+ 		"oLanguage": {
+            "sUrl": "/static/js/dataTables.spanish.txt"
+        },
+		"bJQueryUI": true,
+	    "fnDrawCallback": function () {
+            my_hover();
+        }
+    });
+
+    tabla6 = $("#quota_lists").dataTable({
+		"sAjaxSource": '/ajax/quota/',
  		"oLanguage": {
             "sUrl": "/static/js/dataTables.spanish.txt"
         },
