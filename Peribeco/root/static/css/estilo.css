@@ -213,3 +213,40 @@ div.center {
     display: block;
     top 50%;
 }
+div #quota {
+    margin-left:20%;
+}
+div .quota_graph {
+    width:100px;
+    height:10px;
+    font-size:10px;
+    background-color:green;
+}
+
+div.progressbar {
+    border: 1px solid #aaa;
+    width: 80%;
+    height: 15px; 
+    padding: 0px;
+    margin:0;
+}
+
+div.progressbar > div {
+    padding: 0;
+    margin: 0;
+}
+
+div.progressbarQuota-low {
+    background: #66FF66;
+    border: 0px solid #66FF66;
+}
+
+div.progressbarQuota-med {
+    background: #FFFF00;
+    border: 0px solid #FFFF00;
+}
+
+div.progressbarQuota-high {
+    background: #FF0000;
+    border: 0px solid #FF0000;
+}
