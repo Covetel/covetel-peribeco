@@ -180,11 +180,12 @@ sub quota_GET {
                 '<input type="checkbox" name="del" value="'.$_->get_value($account).'">', 
                 &utf8_decode($_->get_value($cname)), 
                 $_->get_value($account), 
-                $_->get_value($quota_size)." ".$size,
-                '<div id="graph_quota">Grafico</div>', 
+                $_->get_value($quota_size) ? $_->get_value($quota_size)."
+                ".$size : "0 $size",
+                '<div class="progressbar"
+                id="progressbar-'.$_->get_value($account).'-'.$_->get_value($quota_size).'-'. int(rand(2048)) .'"></div>', 
                 ]
-            } $mesg->entries,
-            #} grep { !($_->uid eq 'root') } @lista, 
+            } grep { !($_->get_value($account) eq 'root') } $mesg->entries,
         ];
     }
 
