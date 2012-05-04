@@ -100,9 +100,24 @@ $(document).ready(function(){
 		"bJQueryUI": true,
 	    "fnDrawCallback": function () {
             my_hover();
+            //$(".progressbar").progressbar({value: 30});
+            $(".progressbar > div").addClass("progressbarQuota");
+            $(".progressbar").each(function(){
+                var id = $(this).attr("id");
+                var datos = id.split("-");
+                // Calculo el porcentaje de uso
+                var uso = ( datos[3] / datos[2] ) * 100;
+                $(this).progressbar({value: uso});
+                if (uso < 70) {
+                    $(this).children().addClass("progressbarQuota-low");
+                }
+                if ((uso >=70) && (uso <90))  {
+                $(this).children().addClass("progressbarQuota-med");
+                }
+                console.log(uso);
+            });
         }
     });
-
 
     // Add member to group
     $("form#form_add_member").submit(function(){ return false; });
