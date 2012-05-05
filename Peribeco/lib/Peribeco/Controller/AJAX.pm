@@ -416,7 +416,7 @@ sub delete_lista_DELETE {
         }
     }
 
-    # sleep 6; sleep utilizado para simular que se rompe el LDAP
+     sleep 6; # sleep utilizado para simular que se rompe el LDAP
 
     foreach my $e (@entries){
         my $resp = $ldap->server->delete($e);
@@ -424,7 +424,7 @@ sub delete_lista_DELETE {
         if ($resp->is_error){
             $self->status_bad_request(
                $c,
-               message => "No se pudo eliminar la lista " . $e->dn . ", errores ldap: "
+               message => "No se pudo eliminar la lista " . $e->get_value($nombre) . ", errores ldap: "
                . $resp->error . ' ' . $resp->code . ' ' .
                $resp->error_text . ' ' . $resp->error_desc,
             );

@@ -1,3 +1,52 @@
+[% BLOCK header %]
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+
+        $("#remove_list").click(function(){
+            var ids = $("input:checked").getCheckboxValues();
+            var datos = ({'ids': ids});
+            var jsoon = $.JSON.encode(datos);
+			$.ajax({
+				url: "/ajax/delete/lista", 
+				type: "DELETE",
+                data: jsoon, 
+				dataType: "json",
+				contentType: 'application/json; charset=utf-8',
+			    processData: false,
+				complete: function (data) {
+                    if (data.status == 200){
+                        tabla_listas.fnReloadAjax();
+                    } else {
+                        $("div#all").append('<div id="mensaje"> </div>');
+                        var response = $.JSON.decode(data.responseText);
+                        $("div#mensaje").html(response.error).hide();
+                        $( "#mensaje" ).dialog({ 
+                            title: 'Error', 
+                            buttons: { "Ok": function() { $(this).dialog("close"); } }, 
+                            modal: true,
+                        });
+                    }
+                }
+	        }); // Fin de ajax
+
+        });
+
+
+        tabla_listas = $("#lista_listas").dataTable({
+            "sAjaxSource": '/ajax/listas/',
+            "oLanguage": {
+                "sUrl": "/static/js/dataTables.spanish.txt"
+            },
+            "bJQueryUI": true,
+            "fnDrawCallback": function () {
+                my_hover();
+            }
+        });
+
+    }); // end of document.ready  
+</script>
+[% END %]
+
 <p> 
  <a class="enlace" href="/correo/listas/crear" title="Crear una lista de
      correo"> Crear una lista de correo </a>
@@ -18,7 +67,7 @@
         <tfoot>
             <tr>
                 <td class="left" colspan="8"> 
-                    <button id="remove_person"> Eliminar </button>  
+                    <button id="remove_list"> Eliminar </button>  
                     <button id="select_all"> Marcar Todos </button>  
                 </td>
             </tr>
