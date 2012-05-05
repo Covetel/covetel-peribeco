@@ -1,3 +1,7 @@
+[% BLOCK header %]
+
+[% END %]
+
 <p> 
  <a class="enlace" href="/correo/listas" title="Listas de Correo"> Volver a las
  listas de correo </a>
