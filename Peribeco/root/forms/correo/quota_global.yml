@@ -11,7 +11,7 @@ languages:
 elements:
     - type: Fieldset
       name: datos_fieldset
-      legend: Quota 
+      legend: Quota Global 
       elements:
         - type: Block
           tag: div
@@ -25,7 +25,7 @@ elements:
           attributes:
               title: 'Por favor ingrese el tamaño de la quota'
               class: input_text
-              id: quota_size
+              id: quota_size_global
           constraints:
             - Required
             - type: Regex
@@ -42,7 +42,7 @@ elements:
           attributes:
               title: Presione este botón para asignar la quota a las cuentas seleccionadas
               class: input_submit
-              id: set_quota_submit
+              id: set_quota_global_submit
         
         - type: Reset
           name: reset

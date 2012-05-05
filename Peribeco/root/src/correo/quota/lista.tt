@@ -22,4 +22,8 @@
 
         </tbody>
     </table>
+    <div id="quota">
+        [% INCLUDE "mensajes.tt" %]
+        [% form %]
+    </div>
 </div>

@@ -52,7 +52,7 @@ sub listas : Path('listas') {
     }
 }
 
-sub quota : Path('quota') {
+sub quota : Path('quota') :FormConfig('correo/quota.yml') {
     my ( $self, $c ) = @_;
     if ( $c->assert_user_roles(qw/Administradores/) ) {
         $c->stash->{template} = 'correo/quota/lista.tt';
