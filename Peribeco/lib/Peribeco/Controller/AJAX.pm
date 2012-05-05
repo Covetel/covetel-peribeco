@@ -54,6 +54,8 @@ sub delete_groups : Path('delete/groups') Args ActionClass('REST') {}
 
 sub delete_persons : Path('delete/persons') Args ActionClass('REST') {}
 
+sub quotaset : Path('quota/set') Args ActionClass('REST') {}
+
 sub delete_lista : Path('delete/lista') Args ActionClass('REST') {}
 
 sub utf8_decode {
@@ -182,15 +184,41 @@ sub quota_GET {
                 '<input type="checkbox" name="del" value="'.$_->get_value($account).'">', 
                 &utf8_decode($_->get_value($cname)), 
                 $_->get_value($account), 
-                $_->get_value($quota_size)." ".$size,
-                '<div id="graph_quota">Grafico</div>', 
+                $_->get_value($quota_size) ? $_->get_value($quota_size)."
+                ".$size : "0 $size",
+                '<div class="progressbar"
+                id="progressbar-'.$_->get_value($account).'-'.$_->get_value($quota_size).'-'. int(rand(2048)) .'"></div>', 
                 ]
-            } $mesg->entries,
-            #} grep { !($_->uid eq 'root') } @lista, 
+            } grep { !($_->get_value($account) eq 'root') } $mesg->entries,
         ];
     }
 
 	$self->status_ok($c, entity => \%datos);
+}
+
+sub quotaset_PUT {
+    my ($self, $c) = @_;
+
+    my $personas = $c->req->data->{personas};
+    my $size = $c->req->data->{size};
+
+    my $ldap = Covetel::LDAP->new;
+    my $base = $ldap->config->{'Covetel::LDAP'}->{'base_personas'};
+   
+    foreach (@{$personas}) {
+        my $persona = $ldap->person( { uid => $_ } );
+        my $dn = $persona->dn;
+        my $entry = $persona->entry;
+
+        print Dumper($entry);
+   
+        my $mesg = $ldap->server->modify(
+           $entry->dn, 
+           replace => {
+                   mailQuotaSize => $size, 
+               }
+         );
+    }
 }
 
 sub usuario_exists_GET {
