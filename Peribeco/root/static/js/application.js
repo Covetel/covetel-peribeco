@@ -122,6 +122,33 @@ $(document).ready(function(){
     // Add member to group
     $("form#form_add_member").submit(function(){ return false; });
 
+    //Eventos de ocultar y mostrar formularios de quota 
+    $("button#set_quota").click(function(){
+        $("#quota").css("display", "block");
+    });
+
+    //Asignar quota a cuentas
+    $("input#set_quota_submit").click(function(){
+        var uids = $("input:checked").getCheckboxValues();
+        var size = $("textdd#quota_size").val();
+        var datos = ({'personas': uids,  'size':size});
+        var jsoon = $.JSON.encode(datos);
+			$.ajax({
+				url: "/ajax/quota/set", 
+				type: "PUT",
+                data: jsoon, 
+				dataType: "json",
+				contentType: 'application/json',
+			    processData: false,
+				complete: function (data) {
+                  //  $("div#mensaje").html("La quota fue asignada satisfactoriamente a las cuentas seleccionadas");
+                  //  $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
+                    tabla6.fnReloadAjax();
+                }
+	        }); // Fin de ajax
+        $("#quota").css("display", "none");
+        $("#quota_global").css("display", "none");
+    });
 
     // Boton agregar personas a un grupo. 
     $("button#add_member").click(function(){

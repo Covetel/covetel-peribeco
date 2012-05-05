@@ -214,15 +214,8 @@ div.center {
     top 50%;
 }
 div #quota {
-    margin-left:20%;
+    display: none;
 }
-div .quota_graph {
-    width:100px;
-    height:10px;
-    font-size:10px;
-    background-color:green;
-}
-
 div.progressbar {
     border: 1px solid #aaa;
     width: 80%;
