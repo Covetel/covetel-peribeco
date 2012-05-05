@@ -56,6 +56,8 @@ sub delete_persons : Path('delete/persons') Args ActionClass('REST') {}
 
 sub quotaset : Path('quota/set') Args ActionClass('REST') {}
 
+sub delete_lista : Path('delete/lista') Args ActionClass('REST') {}
+
 sub utf8_decode {
     my ($str) = @_;
     utf8::decode($str);
@@ -367,7 +369,72 @@ sub delete_groups_DELETE {
 
     $resp{estatus} = $status;
     $self->status_ok($c, entity => \%resp);
+}
+
+=head2 delete_lista_DELETE
+
+This method delete an entry of distribution list.
+
+=cut 
+
+sub delete_lista_DELETE {
+    my ( $self, $c ) = @_;
+    my $ldap = Covetel::LDAP->new;
+    my %resp;
+
+    my $ids = $c->req->data->{ids};
+
+    # Busco cada una de las listas en LDAP
+    # TODO: Esto debería estar en una modelo. Catalyst::Model::LDAP
+
+    # Busco el filtro de búsqueda utilizado para las listas en la
+    # configuración. 
     
+    my $filter = $c->config->{'Correo::Listas'}->{'filter'};
+    my $nombre = $c->config->{'Correo::Listas'}->{'attrs'}->{'nombre'};
+
+    #$filter = '(&' . $filter . '('. $nombre .'='.  .'))';
+
+    my @entries; # entradas que van a ser eliminadas.
+    
+    foreach my $id (@{$ids}){
+        
+        $c->log->debug(Dumper $id);
+
+        my $cf = "(&$filter($nombre=$id))";
+        my $mesg = $ldap->search({ filter => $cf });
+
+        if ($mesg->count){
+
+            push @entries, $mesg->shift_entry;
+            
+        } else {
+            # No se encontraron elementos, se responde con 404
+            $self->status_not_found(
+               $c,
+               message => "No se encontro la lista: $id",
+            );
+            return;
+        }
+    }
+
+    # sleep 6; sleep utilizado para simular que se rompe el LDAP
+
+    foreach my $e (@entries){
+        my $resp = $ldap->server->delete($e);
+
+        if ($resp->is_error){
+            $self->status_bad_request(
+               $c,
+               message => "No se pudo eliminar la lista " . $e->dn . ", errores ldap: "
+               . $resp->error . ' ' . $resp->code . ' ' .
+               $resp->error_text . ' ' . $resp->error_desc,
+            );
+            return;
+        }         
+    }
+
+    $self->status_ok($c, entity => { status => 1 });
 }
 
 sub delete_persons_DELETE {
