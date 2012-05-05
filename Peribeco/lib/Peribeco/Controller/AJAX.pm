@@ -371,8 +371,6 @@ sub delete_lista_DELETE {
     
     foreach my $id (@{$ids}){
         
-        $c->log->debug(Dumper $id);
-
         my $cf = "(&$filter($nombre=$id))";
         my $mesg = $ldap->search({ filter => $cf });
 
