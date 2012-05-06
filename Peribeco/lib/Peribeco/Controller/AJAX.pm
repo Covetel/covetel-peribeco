@@ -147,7 +147,7 @@ sub listas_GET {
                     '<input type="checkbox" name="del" value="'.$_->get_value($id).'">', 
                     $_->get_value($mail), 
                     &utf8_decode($_->get_value($desc)), 
-                    $self->remove_domain($_->get_value($member_mail)),
+                    $self->remove_domain($_->get_value($member_mail)), 
                     '<a href="/personas/detalle/' . $_->get_value($id) . '"> Ver detalle </a>', 
                 ]
                 } $mesg->entries,
