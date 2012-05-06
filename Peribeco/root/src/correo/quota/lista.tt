@@ -1,3 +1,7 @@
+[% BLOCK header %]
+
+[% END %]
+
 <div id="contenido">
     <table id="quota_lists" class="dataTable" width="100%">
         <thead> 

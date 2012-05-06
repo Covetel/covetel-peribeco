@@ -1,3 +1,7 @@
+[% BLOCK header %]
+
+[% END %]
+
 [% INCLUDE "menu_usuario.tt" %]
 <div id="contenido">
     <form method="POST" action="/personas/detalle/[% persona.uid %]">
