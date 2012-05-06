@@ -1,3 +1,7 @@
+[% BLOCK header %]
+
+[% END %]
+
 [% titulo = 'Crear Grupo' %]
 <p> 
  <a class="enlace" href="/grupos/lista" title="Listar de Grupos"> Volver a la lista
