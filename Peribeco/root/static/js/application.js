@@ -104,7 +104,7 @@ $(document).ready(function(){
                 if ((uso >=70) && (uso <90))  {
                 $(this).children().addClass("progressbarQuota-med");
                 }
-                console.log(uso);
+                console.log(datos[1]);
             });
         }
     });
