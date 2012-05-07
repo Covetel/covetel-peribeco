@@ -146,10 +146,32 @@ sub crear :Path('listas/crear') :FormConfig('correo/listas_crear.yml') {
     }
 }
 
-sub detalle : Local {
-    my ( $self, $c, $uid ) = @_;
-    my $ldap = Covetel::LDAP->new;
+sub detalle : Path('listas/detalle'){
+    my ( $self, $c, $lid ) = @_;
     $c->stash->{template} = 'correo/listas/detalle.tt';
+    if ($c->assert_user_roles(qw/Administradores/)) {
+        my $ldap = Covetel::LDAP->new;
+
+        my $filter = '(&' .
+                     '(objectClass=groupOfNames)' .
+                     $c->config->{'Correo::Listas'}->{'filter'} .
+                     "(cn=$lid)" .
+                     ')';
+
+        my $mesg = $ldap->search({ 
+            filter => $filter,
+            base => $c->config->{'Correo::Listas'}->{'basedn'},
+            attrs => ['cn', 'description']
+        });
+
+        my $resp = $mesg->shift_entry;
+        if($resp) {
+            my $lista = { nombre => $resp->get_value('cn'),
+                          description => $resp->get_value('description') };
+            print Dumper $lista;
+            $c->stash->{lista} = $lista;
+        }
+    }
 }
 
             

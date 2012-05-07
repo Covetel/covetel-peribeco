@@ -4,6 +4,9 @@
  Persona </a>
  <a class="enlace" href="/personas/lista" alt="Lista Personas">
  Listar Personas </a>
+ <span><a class="enlace" href="/personas/change_pass/[% persona.uid %]" alt="Cambiar Password">Cambiar Password </a> 
+ <a class="enlace" href="/personas/modify_data/[% persona.uid %]" alt="Modificar datos">Modificar Datos</a>
+ </span>
  [% END %]
  [% IF c.user.uid == persona.uid %]
  <span><a class="enlace" href="/personas/change_pass/[% c.user.uid %]" alt="Cambiar Password">Cambiar Password </a>  

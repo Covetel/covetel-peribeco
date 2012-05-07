@@ -1,18 +1,34 @@
 [% BLOCK header %]
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
 
+
+        var listacn = 'todas';
+        tabla_listas = $("#lista_miembros_lista").dataTable({
+            "sAjaxSource": '/ajax/listamembers/' + listacn,
+            "oLanguage": {
+                "sUrl": "/static/js/dataTables.spanish.txt"
+            },
+            "bJQueryUI": true,
+            "bRetrieve": true,
+            "fnDrawCallback": function () {
+                my_hover();
+            }
+        });
+    }); // end of document.ready
+</script>
 [% END %]
 <p> 
- <a class="enlace" href="/correo/listas/crear" title="Crear lista de correo"> Crear una nueva
- lista de correo </a>
- <a class="enlace" href="/correo/listas" title="Listas de correo"> Listas de
- correo </a>
+ <a class="enlace" href="/correo/listas/crear" title="Crear Lista de Correo"> Crear lista de correo</a>
+ <a class="enlace" href="/correo/listas" title="Lista Listas de Correo"> Listar listas de correo</a>
 </p>
 
 <div id="contenido">
     <form id="form_add_member" action="#">
     <fieldset>
-        <legend>[% grupo.nombre %] (<span class="gidNumber">[% grupo.gidNumber %]</span>)</legend>
-        <div class="informacion">[% grupo.description %]</div><br />
+        <legend>[% lista.nombre %] 
+        </legend>
+        <div class="informacion">[% lista.description %]</div><br />
         <br />
         <div class="informacionsmall">En el siguiente campo introduzca los UID de
         las personas que desea agregar a este grupo,  separados por coma.</div>
@@ -28,16 +44,15 @@
     </fieldset>
     </form>
 
-    <table id="lista_miembros_grupo" width="100%">
+    <table id="lista_miembros_lista" width="100%">
         <thead> 
             <tr>
-                <th>&nbsp;  </th> 
+                <th> Tipo  </th> 
+                <th> Identificador </th> 
                 <th> Nombre </th> 
                 <th> Apellido </th>
                 <th> Cedula </th>
-                <th> Correo </th>
                 <th> UidNumber </th>
-                <th> Uid </th>
             </tr>
         </thead>
         <tfoot>
