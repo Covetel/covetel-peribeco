@@ -42,6 +42,8 @@ sub quota : Local : ActionClass('REST') {}
 
 sub groupmembers : Local : ActionClass('REST') {}
 
+sub listamembers : Local : ActionClass('REST') {}
+
 sub usuario_exists : Path('usuario/exists') Args(1) ActionClass('REST') {}
 
 sub mail_exists : Path('mail/exists') Args(1) ActionClass('REST') {}
@@ -65,7 +67,7 @@ sub utf8_decode {
 }
 
 sub grupos_GET {
-	my ($self, $c) = @_;
+    my ($self, $c) = @_;
     my %datos; 
     
     my $ldap = Covetel::LDAP->new;
@@ -85,7 +87,7 @@ sub grupos_GET {
           } @lista,
     ];
 
-	$self->status_ok($c, entity => \%datos);
+    $self->status_ok($c, entity => \%datos);
 }
 
 sub personas_GET {
@@ -111,7 +113,7 @@ sub personas_GET {
         } grep { !($_->uid eq 'root') } @lista, 
     ];
 
-	$self->status_ok($c, entity => \%datos);
+    $self->status_ok($c, entity => \%datos);
 }
 
 sub remove_domain {
@@ -148,7 +150,7 @@ sub listas_GET {
                     $_->get_value($mail), 
                     &utf8_decode($_->get_value($desc)), 
                     $self->remove_domain($_->get_value($member_mail)), 
-                    '<a href="/personas/detalle/' . $_->get_value($id) . '"> Ver detalle </a>', 
+                    '<a href="/correo/listas/detalle/' . $_->get_value($id) . '"> Ver detalle </a>', 
                 ]
                 } $mesg->entries,
         ];
@@ -156,7 +158,7 @@ sub listas_GET {
     }
 
     
-	$self->status_ok($c, entity => \%datos);
+    $self->status_ok($c, entity => \%datos);
 }
 
 sub quota_GET {
@@ -193,7 +195,7 @@ sub quota_GET {
         ];
     }
 
-	$self->status_ok($c, entity => \%datos);
+    $self->status_ok($c, entity => \%datos);
 }
 
 sub quotaset_PUT {
@@ -233,7 +235,7 @@ sub usuario_exists_GET {
     } else {
         $resp->{exists} = 0;
     }
-	
+    
     $self->status_ok($c, entity => $resp);
 
 }
@@ -255,7 +257,7 @@ sub mail_exists_GET {
     } else {
         $resp->{exists} = 0;
     }
-	
+    
     $self->status_ok($c, entity => $resp);
 
 }
@@ -280,7 +282,6 @@ sub groupmembers_GET {
             }
         }
     }
-   
 
     $datos{aaData} = [
         map {
@@ -296,9 +297,54 @@ sub groupmembers_GET {
         } grep { !($_->uid eq 'root') } @person, 
     ];
 
-	$self->status_ok($c, entity => \%datos);
+    $self->status_ok($c, entity => \%datos);
 }
 
+sub listamembers_GET { 
+    my ($self, $c, $lid) = @_;
+    my %datos;
+    my $ldap = Covetel::LDAP->new;
+
+    my $filter = '(&' .
+                 '(objectClass=groupOfNames)' .
+                 $c->config->{'Correo::Listas'}->{'filter'} .
+                 "(cn=$lid)" .
+                 ')';
+
+    my $mesg = $ldap->search({ 
+        filter => $filter,
+        base => $c->config->{'Correo::Listas'}->{'basedn'},
+        attrs => ['member', 'dnmoderator', 'rfc822member']
+    });
+
+    my $resp = $mesg->shift_entry;
+
+    if($resp) {
+        my $members = [ $resp->get_value('member') ] ;
+        my $moderators = [ $resp->get_value('dnmoderator') ];
+        my $rfcmembers = [ $resp->get_value('rfc822member') ];
+
+        foreach ($members) { 
+        
+        }
+        print Dumper $members;
+        print Dumper $moderators;
+        print Dumper $rfcmembers;
+    }
+
+    $datos{aaData} = [
+        [ 
+            "test1",
+            "test2",
+            "test3",
+            "test1",
+            "test2",
+            "test2"
+        ]
+    ];
+
+    $self->status_ok($c, entity => \%datos);
+}
 
 sub addMember_PUT {
     my ($self, $c) = @_;
@@ -307,7 +353,7 @@ sub addMember_PUT {
     my $personas = $c->req->data->{personas};
     my $gid = $c->req->data->{gid};
     my $g = $ldap->group({gidNumber => $gid});
-	my %datos;
+    my %datos;
     my @usuarios;
     foreach (@{$personas}){
         s/\s+//g;
@@ -326,7 +372,7 @@ sub addMember_PUT {
         }
     }
     $datos{usuarios} = \@usuarios;
-	$self->status_ok($c, entity => \%datos);
+    $self->status_ok($c, entity => \%datos);
 
 }
 
@@ -416,7 +462,7 @@ sub delete_lista_DELETE {
         }
     }
 
-     sleep 6; # sleep utilizado para simular que se rompe el LDAP
+     #sleep 6; # sleep utilizado para simular que se rompe el LDAP
 
     foreach my $e (@entries){
         my $resp = $ldap->server->delete($e);

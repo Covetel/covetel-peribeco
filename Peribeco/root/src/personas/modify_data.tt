@@ -1,3 +1,7 @@
+[% BLOCK header %]
+
+[% END %]
+
 <p> 
  <a class="enlace" href="/personas/detalle/[% c.user.uid %]" title="Mis Datos">
  Regresar a Mis Datos </a>

@@ -6,14 +6,14 @@
             var ids = $("input:checked").getCheckboxValues();
             var datos = ({'ids': ids});
             var jsoon = $.JSON.encode(datos);
-			$.ajax({
-				url: "/ajax/delete/lista", 
-				type: "DELETE",
+            $.ajax({
+                url: "/ajax/delete/lista", 
+                type: "DELETE",
                 data: jsoon, 
-				dataType: "json",
-				contentType: 'application/json; charset=utf-8',
-			    processData: false,
-				complete: function (data) {
+                dataType: "json",
+                contentType: 'application/json; charset=utf-8',
+                processData: false,
+                complete: function (data) {
                     if (data.status == 200){
                         tabla_listas.fnReloadAjax();
                     } else {
@@ -27,7 +27,7 @@
                         });
                     }
                 }
-	        }); // Fin de ajax
+            }); // Fin de ajax
 
         });
 
