@@ -226,8 +226,6 @@ sub quotaset_PUT {
 sub getquota_GET {
     my ( $self, $c, $uids ) = @_;
 
-    #$c->log->debug($uids);
-
     $|=1;
 
     my $socket = IO::Socket::INET->new( 
@@ -237,8 +235,6 @@ sub getquota_GET {
     ) || die "Error open socket";
 
     $socket->autoflush(1);
-
-    #my $uids = "dovecotprueba2 dovecotprueba rleon";
 
     $socket->send( $uids . "\n");
 
