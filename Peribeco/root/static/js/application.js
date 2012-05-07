@@ -127,8 +127,8 @@ $(document).ready(function(){
 	    //Asignar quota a cuentas
 	    $("input#set_quota_submit").click(function(){
 	        var uids = $("input:checked").getCheckboxValues();
-	        var size = $("textdd#quota_size").val();
-	        var datos = ({'personas': uids,  'size':size});
+	        var size = $("#quota_size").val();
+	        var datos = ({'personas': uids, 'size': size});
 	        var jsoon = $.JSON.encode(datos);
 				$.ajax({
 					url: "/ajax/quota/set", 
@@ -138,8 +138,8 @@ $(document).ready(function(){
 					contentType: 'application/json',
 				    processData: false,
 					complete: function (data) {
-	                  //  $("div#mensaje").html("La quota fue asignada satisfactoriamente a las cuentas seleccionadas");
-	                  //  $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
+	                    $("div#mensaje").html("La quota fue asignada satisfactoriamente a las cuentas seleccionadas");
+	                    $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
 	                    tabla6.fnReloadAjax();
 	                }
 		        }); // Fin de ajax

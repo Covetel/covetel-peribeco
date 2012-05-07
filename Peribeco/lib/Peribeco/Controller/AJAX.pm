@@ -212,8 +212,6 @@ sub quotaset_PUT {
         my $dn = $persona->dn;
         my $entry = $persona->entry;
 
-        print Dumper($entry);
-   
         my $mesg = $ldap->server->modify(
            $entry->dn, 
            replace => {
