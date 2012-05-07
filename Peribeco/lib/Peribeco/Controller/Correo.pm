@@ -59,6 +59,13 @@ sub quota : Path('quota') :FormConfig('correo/quota.yml') {
     }
 }
 
+sub quotaglobal : Path('quota/global_quota') :FormConfig('correo/quota_global.yml') {
+    my ( $self, $c ) = @_;
+    if ( $c->assert_user_roles(qw/Administradores/) ) {
+        $c->stash->{template} = 'correo/quota/quota_global.tt';
+    }
+}
+
 sub crear :Path('listas/crear') :FormConfig('correo/listas_crear.yml') {
     my ( $self, $c ) = @_;
     

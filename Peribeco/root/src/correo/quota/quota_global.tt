@@ -1,0 +1,12 @@
+[% BLOCK header %]
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+
+}
+</script>
+[% END %]
+
+<div id="contenido">
+        [% INCLUDE "mensajes.tt" %]
+        [% form %]
+</div>
