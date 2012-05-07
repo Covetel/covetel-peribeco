@@ -103,17 +103,18 @@ $(document).ready(function(){
                         dataType: "json",
                         complete: function (data) {
                             var usage = $.parseJSON(data.responseText).toString().split(",");
-                            uso = ( usage[1] / datos[2]) * 100
-                            console.log(usage[1]);
+                            var limit = datos[2] * 1024;
+                            uso = ( usage[1] / limit) * 100;
+                            $("#progressbar-"+datos[1]+"-"+datos[2]).progressbar({value: uso});
+                            console.log(uso);
+                            if (uso < 70) {
+                                $("#progressbar-"+datos[1]+"-"+datos[2]).children().addClass("progressbarQuota-low");
+                            }
+                            if ((uso >=70) && (uso <90))  {
+                                $("#progressbar-"+datos[1]+"-"+datos[2]).children().addClass("progressbarQuota-med");
+                            }
                         },
-                    });
-	                $(this).progressbar({value: uso});
-	                if (uso < 70) {
-	                    $(this).children().addClass("progressbarQuota-low");
-	                }
-	                if ((uso >=70) && (uso <90))  {
-	                    $(this).children().addClass("progressbarQuota-med");
-	                }
+                   });
 	            });
 	        }
 	    });
