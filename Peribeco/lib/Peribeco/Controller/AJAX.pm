@@ -1,5 +1,6 @@
 package Peribeco::Controller::AJAX;
 use Moose;
+use IO::Socket::INET;
 use namespace::autoclean;
 
 BEGIN {extends 'Catalyst::Controller::REST'; }
@@ -57,6 +58,8 @@ sub delete_groups : Path('delete/groups') Args ActionClass('REST') {}
 sub delete_persons : Path('delete/persons') Args ActionClass('REST') {}
 
 sub quotaset : Path('quota/set') Args ActionClass('REST') {}
+
+sub getquota : Path('quota/use') Args(1) ActionClass('REST') {}
 
 sub delete_lista : Path('delete/lista') Args ActionClass('REST') {}
 
@@ -173,7 +176,7 @@ sub quota_GET {
         });
 
     my %datos;
-
+    
     my $account = $c->config->{'Correo::Quota'}->{'attrs'}->{'account'};
     my $cname = $c->config->{'Correo::Quota'}->{'attrs'}->{'nombre'};
     my $quota_size = $c->config->{'Correo::Quota'}->{'attrs'}->{'quota'};
@@ -186,10 +189,9 @@ sub quota_GET {
                 '<input type="checkbox" name="del" value="'.$_->get_value($account).'">', 
                 &utf8_decode($_->get_value($cname)), 
                 $_->get_value($account), 
-                $_->get_value($quota_size) ? $_->get_value($quota_size)."
-                ".$size : "0 $size",
+                $_->get_value($quota_size) ? $_->get_value($quota_size)." ".$size : "0 $size",
                 '<div class="progressbar"
-                id="progressbar-'.$_->get_value($account).'-'.$_->get_value($quota_size).'-'. int(rand(2048)) .'"></div>', 
+                id="progressbar-'.$_->get_value($account).'-'.$_->get_value($quota_size).'"></div>', 
                 ]
             } grep { !($_->get_value($account) eq 'root') } $mesg->entries,
         ];
@@ -212,8 +214,6 @@ sub quotaset_PUT {
         my $dn = $persona->dn;
         my $entry = $persona->entry;
 
-        print Dumper($entry);
-   
         my $mesg = $ldap->server->modify(
            $entry->dn, 
            replace => {
@@ -221,6 +221,35 @@ sub quotaset_PUT {
                }
          );
     }
+}
+
+sub getquota_GET {
+    my ( $self, $c, $uids ) = @_;
+
+    $|=1;
+
+    my $socket = IO::Socket::INET->new( 
+        PeerAddr => $c->config->{'Correo::Quota'}->{'quota_info'}->{'server'}, 
+        PeerPort => $c->config->{'Correo::Quota'}->{'quota_info'}->{'port'},
+        Proto    => $c->config->{'Correo::Quota'}->{'attrs'}->{'proto'}, 
+    ) || die "Error open socket";
+
+    $socket->autoflush(1);
+
+    $socket->send( $uids . "\n");
+
+    my @resp = <$socket>;
+
+    map {chomp} @resp;
+
+    for (@resp){
+        my ($uid,$quota) = split ",",$_;
+        print "UID: $uid QUOTA: $quota\n";
+    }
+
+    $self->status_ok($c, entity => \@resp);
+
+    $socket->close;
 }
 
 sub usuario_exists_GET {
