@@ -14,7 +14,7 @@
             <th> Nombre </th> 
             <th> UID </th> 
             <th> Quota </th>
-            <th> Porcentaje </th>
+            <th> % </th>
            </tr>
         </thead>
         <tfoot>
