@@ -1,6 +1,6 @@
 action: /correo/quota/lista
 # indicator is the field that is used to test for form submission
-indicator: Botones.submit
+#indicator: Botones.submit
 
 # Start listing the form elements
 #auto_fieldset: 1
@@ -21,7 +21,7 @@ elements:
 
         - type: Text
           name: Tamaño
-          label: Identificador
+          label: Tamaño de Quota 
           attributes:
               title: 'Por favor ingrese el tamaño de la quota'
               class: input_text
@@ -35,7 +35,7 @@ elements:
     - type: Multi
       name: Botones
       elements:
-        - type: Submit
+        - type: Button
           name: submit
           # The text to be displayed
           value: Asignar
