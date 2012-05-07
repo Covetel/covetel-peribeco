@@ -47,11 +47,11 @@
     <table id="lista_miembros_lista" width="100%">
         <thead> 
             <tr>
+                <th>&nbsp; </th> 
                 <th> Tipo  </th> 
-                <th> Identificador </th> 
+                <th> Email </th> 
                 <th> Nombre </th> 
                 <th> Apellido </th>
-                <th> Cedula </th>
                 <th> UidNumber </th>
             </tr>
         </thead>

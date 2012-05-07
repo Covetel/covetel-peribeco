@@ -33,21 +33,21 @@ sub index :Path :Args(0) {
 sub crear : Local  : FormConfig {
     my ( $self, $c ) = @_;
     if ($c->assert_user_roles(qw/Administradores/)) { 
-	# Clases para los campos requeridos. 
+        # Clases para los campos requeridos. 
     my $form = $c->stash->{form};
-	$form->auto_constraint_class( 'constraint_%t' );
+        $form->auto_constraint_class( 'constraint_%t' );
     
     if ( $form->submitted_and_valid ) {
-	    my $grupo       = $c->req->param("nombre");
-	    my $descripcion = $c->req->param("descripcion");
+            my $grupo       = $c->req->param("nombre");
+            my $descripcion = $c->req->param("descripcion");
 
         #Envia el nuevo Usuario a LDAP
         my $ldap = Covetel::LDAP->new;
         my $group = Covetel::LDAP::Group->new({ 
             nombre => $grupo, 
             description => $descripcion, 
-		    ldap => $ldap 
-	    });
+                    ldap => $ldap 
+            });
 
         $c->log->debug($group->dn());
 
@@ -55,13 +55,13 @@ sub crear : Local  : FormConfig {
             $c->stash->{mensaje} = "El grupo $grupo ha sido
             agregado exitosamente";
             $c->stash->{sucess} = 1;
-	    }else{
+            }else{
             $c->stash->{error} = 1;
             $c->stash->{mensaje} = "<strong> Error Crítico en LDAP:</strong>".$group->ldap->error_str();
         }
-	} elsif ($form->has_errors && $form->submitted) {
+        } elsif ($form->has_errors && $form->submitted) {
         my @err_fields = $form->has_errors;
-		my $label = $form->get_field($err_fields[0])->label; 
+                my $label = $form->get_field($err_fields[0])->label; 
 
         $c->stash->{error} = 1;
         $c->stash->{mensaje} = "Ha ocurrido un error en el campo <span class='strong'> $label </span> ";
