@@ -59,6 +59,8 @@ sub delete_persons : Path('delete/persons') Args ActionClass('REST') {}
 
 sub quotaset : Path('quota/set') Args ActionClass('REST') {}
 
+sub global_quota : Path('quota/global_quota') Args ActionClass('REST') {}
+
 sub getquota : Path('quota/use') Args(1) ActionClass('REST') {}
 
 sub delete_lista : Path('delete/lista') Args ActionClass('REST') {}
@@ -220,6 +222,39 @@ sub quotaset_PUT {
                    mailQuotaSize => $size, 
                }
          );
+    }
+}
+
+sub global_quota_PUT {
+    my ($self, $c) = @_;
+
+    my $size = $c->req->data->{size};
+
+    print $size."\n";
+
+    my $ldap = Covetel::LDAP->new;
+    my $base = $ldap->config->{'Covetel::LDAP'}->{'base_personas'};
+    my $account = $c->config->{'Correo::Quota'}->{'attrs'}->{'account'},
+
+    my $mesg = $ldap->search({ 
+            filter => $c->config->{'Correo::Quota'}->{'filter'},
+            base => $c->config->{'Correo::Quota'}->{'basedn'},
+            attrs => ['uid'], 
+        });
+
+    if ($mesg->count){
+        foreach ($mesg->entries) {
+            my $persona = $ldap->person( { uid => $_->get_value($account) } );
+            my $dn = $persona->dn;
+            my $entry = $persona->entry;
+
+            my $mesg = $ldap->server->modify(
+                $entry->dn, 
+                replace => {
+                    mailQuotaSize => $size, 
+                }
+            );
+        }
     }
 }
 
