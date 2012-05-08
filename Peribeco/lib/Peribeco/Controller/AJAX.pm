@@ -1,6 +1,8 @@
 package Peribeco::Controller::AJAX;
 use Moose;
 use IO::Socket::INET;
+use Net::LDAP::Entry;
+use Net::LDAP;
 use namespace::autoclean;
 
 BEGIN {extends 'Catalyst::Controller::REST'; }
@@ -364,7 +366,7 @@ sub groupmembers_GET {
     $self->status_ok($c, entity => \%datos);
 }
 
-sub listamembers_GET { 
+sub listamembers_GET {
     my ($self, $c, $lid) = @_;
     my %datos;
     my $ldap = Covetel::LDAP->new;
@@ -375,36 +377,67 @@ sub listamembers_GET {
                  "(cn=$lid)" .
                  ')';
 
-    my $mesg = $ldap->search({ 
+    my $mesg = $ldap->search({
         filter => $filter,
         base => $c->config->{'Correo::Listas'}->{'basedn'},
         attrs => ['member', 'dnmoderator', 'rfc822member']
     });
 
-    my $resp = $mesg->shift_entry;
+    my @entries;
+    if($mesg->count) {
+        my $resp = $mesg->shift_entry;
+        my @members = $resp->get_value('member') ;
+        my @moderators = $resp->get_value('dnmoderator');
+        my @rfcmembers = $resp->get_value('rfc822member');
 
-    if($resp) {
-        my $members = [ $resp->get_value('member') ] ;
-        my $moderators = [ $resp->get_value('dnmoderator') ];
-        my $rfcmembers = [ $resp->get_value('rfc822member') ];
+        foreach (@rfcmembers) {
+            $mesg = $ldap->search({
+                filter => '(mail=' . $_ . ')',
+                attrs => ['givenName', 'sn', 'mail', 'uid']
+            });
 
-        foreach ($members) { 
-        
+            my $entry = $mesg->shift_entry;
+            if (defined $entry) {
+                $entry->add(
+                    tipo    => $entry->dn ~~ @moderators ? "Moderador" : "Miembro"
+                );
+            } else {
+                $entry = Net::LDAP::Entry->new;
+                $entry->add(
+                    tipo      => 'Externo',
+                    givenName => '-',
+                    sn        => '-',
+                    mail      => $_,
+                    uid       => '-',
+                )
+            }
+            push @entries, $entry;
+
         }
-        print Dumper $members;
-        print Dumper $moderators;
-        print Dumper $rfcmembers;
+
+        foreach my $entry (@entries) {
+        }
+        print Dumper @entries;
+    } else {
+        # No se encontraron elementos, se responde con 404
+        $self->status_not_found(
+           $c,
+           message => "No se encontro la lista: $lid",
+        );
+        return;
     }
 
     $datos{aaData} = [
-        [ 
-            "test1",
-            "test2",
-            "test3",
-            "test1",
-            "test2",
-            "test2"
+        map {
+        [
+            '<input type="checkbox" name="del" value="'.$_->get_value('uid').'">',
+            $_->get_value('tipo'),
+            $_->get_value('mail'),
+            &utf8_decode($_->get_value('givenName')),
+            &utf8_decode($_->get_value('sn')),
+            $_->get_value('uid'),
         ]
+        } grep { !($_->{uid} eq 'root') } @entries,
     ];
 
     $self->status_ok($c, entity => \%datos);

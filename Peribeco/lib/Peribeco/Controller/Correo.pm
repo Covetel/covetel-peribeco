@@ -171,11 +171,10 @@ sub detalle : Path('listas/detalle'){
             attrs => ['cn', 'description']
         });
 
-        my $resp = $mesg->shift_entry;
-        if($resp) {
+        if($mesg->count) {
+            my $resp = $mesg->shift_entry;
             my $lista = { nombre => $resp->get_value('cn'),
                           description => $resp->get_value('description') };
-            print Dumper $lista;
             $c->stash->{lista} = $lista;
         }
     }
