@@ -44,7 +44,7 @@
     
         //Eventos de ocultar y mostrar formularios de quota 
         $("button#set_quota").click(function(){
-            $("#quota").css("display", "block");
+                $("#quota").dialog({minWidth: 490});
         });
     
         //Asignar quota a cuentas
@@ -61,13 +61,27 @@
                     contentType: 'application/json',
                     processData: false,
                     complete: function (data) {
-                        $("div#mensaje").html("La quota fue asignada satisfactoriamente a las cuentas seleccionadas");
-                        $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
                         tabla6.fnReloadAjax();
+                        if (data.status != 200){
+                            $("div#all").append('<div id="mensaje"> </div>');
+                            $("div#mensaje").html("La quota fue asignada satisfactoriamente a las cuentas seleccionadas");
+                            $( "#mensaje" ).dialog({ 
+                                title: 'Error', 
+                                buttons: { "Ok": function() { $(this).dialog("close"); } }, 
+                                modal: true,
+                            });
+                        } else {
+                            var response = $.JSON.decode(data.responseText);
+                            $("div#mensaje").html(response.error).hide();
+                            $( "#mensaje" ).dialog({ 
+                                title: 'Error', 
+                                buttons: { "Ok": function() { $(this).dialog("close"); } }, 
+                                modal: true,
+                            });
+                        }
                     }
                 }); // Fin de ajax
-            $("#quota").css("display", "none");
-            $("#quota_global").css("display", "none");
+            $("#quota").dialog("close");
         });
 
     });
