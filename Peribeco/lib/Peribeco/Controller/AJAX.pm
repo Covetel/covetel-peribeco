@@ -58,6 +58,8 @@ sub addListaMembers : Path('listas/add') Args ActionClass('REST') {}
 
 sub delMember : Path('grupos/del') Args ActionClass('REST') {}
 
+sub delListaMembers : Path('listas/del') Args ActionClass('REST') {}
+
 sub delete_groups : Path('delete/groups') Args ActionClass('REST') {}
 
 sub delete_persons : Path('delete/persons') Args ActionClass('REST') {}
@@ -431,15 +433,14 @@ sub listamembers_GET {
 
     $datos{aaData} = [
         map {
-       my $x = [
-            '<input type="checkbox" name="del" value="'.$_->get_value('uid').'">',
+        [
+            '<input type="checkbox" name="del" value="'.$_->get_value('mail').'">',
             $_->get_value('tipo'),
             $_->get_value('mail'),
             &utf8_decode($_->get_value('givenName')),
             &utf8_decode($_->get_value('sn')),
             $_->get_value('uid'),
-        ];
-        print Dumper $x; $x
+        ]
         } grep { !($_->{uid} eq 'root') } @entries,
     ];
 
@@ -496,6 +497,8 @@ sub addListaMembers_PUT {
         attrs => ['rfc822member', 'member']
     })->shift_entry;
 
+    my %datos;
+    my @usuarios;
     foreach (@{$personas}){
         s/\s+//g;
         my $mesg = $ldap->search({
@@ -509,7 +512,7 @@ sub addListaMembers_PUT {
                    member => $entry->dn
                )->update($ldap->server);
         } else {
-            if($_ =~ /@.*\..*/) {
+            if($_ =~ /@.*\..+/) {
                 $lista->add(
                    rfc822member => $_
                )->update($ldap->server);
@@ -520,9 +523,9 @@ sub addListaMembers_PUT {
                  );
             }
         }
+        push @usuarios, $_;
     }
-    my %datos;
-    my @usuarios;
+    print Dumper @usuarios;
     $datos{usuarios} = \@usuarios;
     $self->status_ok($c, entity => \%datos);
 }
@@ -540,6 +543,54 @@ sub delMember_DELETE {
     $c->log->debug(Dumper($new_members));
     $g->members($new_members);
     $g->update;
+    $self->status_ok($c, entity => \%datos);
+}
+
+sub delListaMembers_DELETE {
+    my($self, $c) = @_;
+    my $ldap = Covetel::LDAP->new;
+
+    my %datos;
+    my $del = $c->req->data->{personas};
+    my $lid = $c->req->data->{lid};
+
+    my $filter = '(&' .
+                 '(objectClass=groupOfNames)' .
+                 $c->config->{'Correo::Listas'}->{'filter'} .
+                 "(cn=$lid)" .
+                 ')';
+
+    my $lista = $ldap->search({
+        filter => $filter,
+        base => $c->config->{'Correo::Listas'}->{'basedn'},
+        attrs => ['rfc822member', 'member', 'dnmoderator']
+    })->shift_entry;
+
+    foreach (@{$del}) {
+       my $mesg = $ldap->search({
+           filter => "(|(uid=$_)(mail=$_))",
+           attrs => ['mail']
+       });
+       if ($mesg->count){
+           my $entry = $mesg->shift_entry;
+           $lista->delete(
+                  rfc822member => $entry->get_value('mail'),
+                  member => $entry->dn
+              )->update($ldap->server);
+       } else {
+           if($_ =~ /@.*\..+/) {
+               $lista->delete(
+                  rfc822member => $_
+              )->update($ldap->server);
+           } else {
+               $self->status_not_found(
+                  $c,
+                  message => "No se pudo encontrar el usuario $_",
+               );
+           }
+       }
+    }
+
     $self->status_ok($c, entity => \%datos);
 }
 
