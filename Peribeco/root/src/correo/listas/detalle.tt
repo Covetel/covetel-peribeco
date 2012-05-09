@@ -2,7 +2,6 @@
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function(){
 
-
         var listacn = 'todas';
         tabla_listas = $("#lista_miembros_lista").dataTable({
             "sAjaxSource": '/ajax/listamembers/' + listacn,
@@ -15,6 +14,33 @@
                 my_hover();
             }
         });
+
+        // Add member to a list
+    $("form#form_add_member_lista_lista").submit(function(){ return false; });
+
+    // Boton agregar personas a una lista.
+    $("button#add_member_lista").click(function(){
+        var uid = $("textarea#personas").val();
+        var personas = uid.split(',');
+        var lid = $("span.listaId").html();
+        var datos = ({'personas': personas, 'lid':lid});
+        var jsoon = $.JSON.encode(datos);
+            $.ajax({
+                url: "/ajax/listas/add",
+                type: "PUT",
+                data: jsoon,
+                dataType: "json",
+                contentType: 'application/json',
+                processData: false,
+                complete: function (data) {
+                   // $("div#mensaje").html("Las personas fueron agregadas a la lista exitosamente");
+                    $("#personas").val('');
+                   // $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
+                    tabla_listas.fnReloadAjax();
+                }
+            }); // Fin de ajax
+    });
+
     }); // end of document.ready
 </script>
 [% END %]
@@ -24,10 +50,9 @@
 </p>
 
 <div id="contenido">
-    <form id="form_add_member" action="#">
+    <form id="form_add_member_lista_lista" action="#">
     <fieldset>
-        <legend>[% lista.nombre %] 
-        </legend>
+        <legend><span class="listaId">[% lista.nombre %]</span></legend>
         <div class="informacion">[% lista.description %]</div><br />
         <br />
         <div class="informacionsmall">En el siguiente campo introduzca los UID de
@@ -38,7 +63,7 @@
         </div>
         <div class="multi">
             <div class="elements">
-                <button id="add_member"> Agregar Personas al grupo </button> 
+                <button id="add_member_lista"> Agregar Personas al grupo </button> 
             </div>
         </div>
     </fieldset>

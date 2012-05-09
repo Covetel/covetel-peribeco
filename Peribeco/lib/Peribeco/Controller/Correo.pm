@@ -165,7 +165,7 @@ sub detalle : Path('listas/detalle'){
                      "(cn=$lid)" .
                      ')';
 
-        my $mesg = $ldap->search({ 
+        my $mesg = $ldap->search({
             filter => $filter,
             base => $c->config->{'Correo::Listas'}->{'basedn'},
             attrs => ['cn', 'description']
