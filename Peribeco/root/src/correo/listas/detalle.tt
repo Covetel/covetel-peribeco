@@ -41,6 +41,27 @@
             }); // Fin de ajax
     });
 
+    $("button#remove_from_lista").click(function(){
+        var uids = $("input:checked").getCheckboxValues();
+        var lid = $("span.listaId").html();
+        var datos = ({'personas': uids, 'lid':lid});
+        var jsoon = $.JSON.encode(datos);
+            $.ajax({
+                url: "/ajax/listas/del", 
+                type: "DELETE",
+                data: jsoon, 
+                dataType: "json",
+                contentType: 'application/json',
+                processData: false,
+                complete: function (data) {
+                  //  $("div#mensaje").html("Las personas fueron removidas del grupo exitosamente");
+                  //  $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
+                    tabla_listas.fnReloadAjax();
+                }
+            }); // Fin de ajax
+
+    });
+
     }); // end of document.ready
 </script>
 [% END %]
@@ -83,7 +104,7 @@
         <tfoot>
             <tr>
                 <td class="left" colspan="7"> 
-                    <button id="remove_from_group"> Remover del Grupo </button>  
+                    <button id="remove_from_lista"> Remover de la Lista </button>  
                     <button id="select_all"> Marcar Todos </button>  
                 </td>
             </tr>
