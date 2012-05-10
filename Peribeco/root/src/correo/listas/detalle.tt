@@ -2,7 +2,7 @@
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function(){
 
-        var listacn = 'todas';
+        var listacn = $("span.listaId").html();
         tabla_listas = $("#lista_miembros_lista").dataTable({
             "sAjaxSource": '/ajax/listamembers/' + listacn,
             "oLanguage": {
@@ -47,7 +47,7 @@
         var datos = ({'personas': uids, 'lid':lid});
         var jsoon = $.JSON.encode(datos);
             $.ajax({
-                url: "/ajax/listas/del", 
+                url: "/ajax/listas/del",
                 type: "DELETE",
                 data: jsoon, 
                 dataType: "json",
