@@ -559,21 +559,37 @@ sub delListaMembers_DELETE {
                  $c->config->{'Correo::Listas'}->{'filter'} .
                  "(cn=$lid)" .
                  ')';
-
+    
+  # TODO: Evaluar el resultado de todos los métodos search
+  # if $resp->is_error .
     my $lista = $ldap->search({
         filter => $filter,
         base => $c->config->{'Correo::Listas'}->{'basedn'},
         attrs => ['rfc822member', 'member', 'dnmoderator']
     })->shift_entry;
 
+  # TODO: no se permiten suicidios. 
+  # Un moderator no puede eliminarse a si mismo si no hay más moderadores.
+  # si esto ocurre devuelva un mensaje de error. 
+
     foreach (@{$del}) {
        my $mesg = $ldap->search({
+  # TODO: EL filtro debe ser: (mail=$_)
            filter => "(|(uid=$_)(mail=$_))",
            attrs => ['mail']
        });
        if ($mesg->count){
            my $entry = $mesg->shift_entry;
+
+  # TODO: Evaluar el valor de retorno $mesg de las operaciones update. 
+  # si es un error, utilizar $self->status_bad_request 
+
            $lista->delete(
+
+  # TODO: Utilice los valores de configuración para obtener los nombres 
+  # de los atributos LDAP, ejemplo: 
+  # my $id = $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro_correo'};
+
                   rfc822member => $entry->get_value('mail'),
                   member => $entry->dn
               )->update($ldap->server);
