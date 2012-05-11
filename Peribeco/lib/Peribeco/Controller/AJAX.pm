@@ -5,6 +5,7 @@ use Net::LDAP::Entry;
 use Net::LDAP;
 use Net::LDAP::Search;
 use namespace::autoclean;
+use Mail::RFC822::Address qw(valid);
 
 BEGIN {extends 'Catalyst::Controller::REST'; }
 use utf8;
@@ -71,6 +72,8 @@ sub global_quota : Path('quota/global_quota') Args ActionClass('REST') {}
 sub getquota : Path('quota/use') Args(1) ActionClass('REST') {}
 
 sub delete_lista : Path('delete/lista') Args ActionClass('REST') {}
+
+sub autocomplete_usuarios : Path('autocomplete/usuarios') Args ActionClass('REST') {}
 
 sub utf8_decode {
     my ($str) = @_;
@@ -382,22 +385,27 @@ sub listamembers_GET {
                  "(cn=$lid)" .
                  ')';
 
+    my $attr_miembro_correo = $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro_correo'};
+    my $attr_moderador = $c->config->{'Correo::Listas'}->{'attrs'}->{'moderador'};
+    my $attr_miembro = $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro'};
+    my $attr_correo = $c->config->{'Correo::Listas'}->{'attrs'}->{'correo'};
+
     my $mesg = $ldap->search({
         filter => $filter,
         base => $c->config->{'Correo::Listas'}->{'basedn'},
-        attrs => ['member', 'dnmoderator', 'rfc822member']
+        attrs => [ $attr_miembro, $attr_moderador, $attr_miembro_correo ]
     });
 
     my @entries;
     if($mesg->count) {
         my $resp = $mesg->shift_entry;
-        my @members = $resp->get_value('member') ;
-        my @moderators = $resp->get_value('dnmoderator');
-        my @rfcmembers = $resp->get_value('rfc822member');
+        my @members = $resp->get_value($attr_miembro);
+        my @moderators = $resp->get_value($attr_moderador);
+        my @rfcmembers = $resp->get_value($attr_miembro_correo);
 
         foreach (@rfcmembers) {
             $mesg = $ldap->search({
-                filter => '(mail=' . $_ . ')',
+                filter => "($attr_correo=" . $_ . ')',
                 attrs => ['givenName', 'sn', 'mail', 'uid']
             });
 
@@ -434,9 +442,9 @@ sub listamembers_GET {
     $datos{aaData} = [
         map {
         [
-            '<input type="checkbox" name="del" value="'.$_->get_value('mail').'">',
+            '<input type="checkbox" name="del" value="'.$_->get_value($attr_correo).'">',
             $_->get_value('tipo'),
-            $_->get_value('mail'),
+            $_->get_value($attr_correo),
             &utf8_decode($_->get_value('givenName')),
             &utf8_decode($_->get_value('sn')),
             $_->get_value('uid'),
@@ -491,30 +499,45 @@ sub addListaMembers_PUT {
                  "(cn=$lid)" .
                  ')';
 
-    my $lista = $ldap->search({
+    my $attr_miembro_correo = $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro_correo'};
+    my $attr_moderador = $c->config->{'Correo::Listas'}->{'attrs'}->{'moderador'};
+    my $attr_miembro = $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro'};
+    my $attr_correo = $c->config->{'Correo::Listas'}->{'attrs'}->{'correo'};
+
+    my $mesg_lista = $ldap->search({
         filter => $filter,
         base => $c->config->{'Correo::Listas'}->{'basedn'},
         attrs => ['rfc822member', 'member']
-    })->shift_entry;
+    });
+
+    if($mesg_lista->is_error){
+         $self->status_not_found(
+             $c,
+             message => "No se encontro la lista: $lid",
+         );
+         return;
+    }
+
+    my $lista = $mesg_lista->shift_entry;
 
     my %datos;
     my @usuarios;
     foreach (@{$personas}){
         s/\s+//g;
         my $mesg = $ldap->search({
-            filter => "(|(uid=$_)(mail=$_))",
-            attrs => ['mail']
+            filter => "(|(uid=$_)($attr_correo=$_))",
+            attrs => [$attr_correo]
         });
         if ($mesg->count){
             my $entry = $mesg->shift_entry;
             $lista->add(
-                   rfc822member => $entry->get_value('mail'),
-                   member => $entry->dn
+                   $attr_miembro_correo => $entry->get_value($attr_correo),
+                   $attr_miembro => $entry->dn
                )->update($ldap->server);
         } else {
-            if($_ =~ /@.*\..+/) {
+            if(valid $_) {
                 $lista->add(
-                   rfc822member => $_
+                   $attr_miembro_correo => $_
                )->update($ldap->server);
             } else {
                 $self->status_not_found(
@@ -559,52 +582,59 @@ sub delListaMembers_DELETE {
                  $c->config->{'Correo::Listas'}->{'filter'} .
                  "(cn=$lid)" .
                  ')';
-    
-  # TODO: Evaluar el resultado de todos los métodos search
-  # if $resp->is_error .
-    my $lista = $ldap->search({
+
+    my $attr_miembro_correo = $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro_correo'};
+    my $attr_moderador = $c->config->{'Correo::Listas'}->{'attrs'}->{'moderador'};
+    my $attr_miembro = $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro'};
+    my $attr_correo = $c->config->{'Correo::Listas'}->{'attrs'}->{'correo'};
+
+    my $mesg_lista = $ldap->search({
         filter => $filter,
         base => $c->config->{'Correo::Listas'}->{'basedn'},
-        attrs => ['rfc822member', 'member', 'dnmoderator']
-    })->shift_entry;
+        attrs => [ $attr_miembro_correo, $attr_moderador, $attr_miembro ]
+    });
 
-  # TODO: no se permiten suicidios. 
-  # Un moderator no puede eliminarse a si mismo si no hay más moderadores.
-  # si esto ocurre devuelva un mensaje de error. 
+    if(!$mesg_lista->is_error) {
+       my $lista = $mesg_lista->shift_entry;
+       # TODO: no se permiten suicidios. 
+       # Un moderator no puede eliminarse a si mismo si no hay más attr_moderadores.
+       # si esto ocurre devuelva un mensaje de error. 
 
-    foreach (@{$del}) {
-       my $mesg = $ldap->search({
-  # TODO: EL filtro debe ser: (mail=$_)
-           filter => "(|(uid=$_)(mail=$_))",
-           attrs => ['mail']
-       });
-       if ($mesg->count){
-           my $entry = $mesg->shift_entry;
+         foreach (@{$del}) {
+             print $_;
+            my $mesg_member = $ldap->search({
+                filter => "($attr_correo=$_)",
+                attrs => [$attr_correo]
+            });
+            if ($mesg_member->count){
+                my $entry = $mesg_member->shift_entry;
 
-  # TODO: Evaluar el valor de retorno $mesg de las operaciones update. 
-  # si es un error, utilizar $self->status_bad_request 
+       # TODO: Evaluar el valor de retorno $mesg de las operaciones update. 
+       # si es un error, utilizar $self->status_bad_request 
 
-           $lista->delete(
-
-  # TODO: Utilice los valores de configuración para obtener los nombres 
-  # de los atributos LDAP, ejemplo: 
-  # my $id = $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro_correo'};
-
-                  rfc822member => $entry->get_value('mail'),
-                  member => $entry->dn
-              )->update($ldap->server);
-       } else {
-           if($_ =~ /@.*\..+/) {
-               $lista->delete(
-                  rfc822member => $_
-              )->update($ldap->server);
-           } else {
-               $self->status_not_found(
-                  $c,
-                  message => "No se pudo encontrar el usuario $_",
-               );
-           }
-       }
+                $lista->delete(
+                       $attr_miembro_correo => $entry->get_value($attr_correo),
+                       $attr_miembro => $entry->dn
+                   )->update($ldap->server);
+            } else {
+                if(valid $_) {
+                    $lista->delete(
+                       $attr_miembro_correo => $_
+                   )->update($ldap->server);
+                } else {
+                    $self->status_not_found(
+                       $c,
+                       message => "No se pudo verificar/validar usuario $_",
+                    );
+                }
+            }
+         }
+    } else {
+        $self->status_not_found(
+           $c,
+           message => "No se encontro la lista: $lid",
+        );
+        return;
     }
 
     $self->status_ok($c, entity => \%datos);
@@ -717,9 +747,36 @@ sub delete_persons_DELETE {
             }
         }
     }
-    
+
     $resp{estatus} = $status;
     $self->status_ok($c, entity => \%resp);
+}
+
+sub autocomplete_usuarios_GET {
+    my($self, $c) = @_;
+    my $ldap = Covetel::LDAP->new;
+    my $autoc = lc($c->req->params->{term});
+
+    my $filter = "(uid=$autoc*)";
+
+    my $mesg = $ldap->search({
+        filter => $filter,
+        attrs => ['uid']
+    });
+
+    if($mesg->is_error) {
+        return;
+    }
+
+    my @entries = $mesg->entries;
+
+    my @datos;
+    foreach my $entry (@entries) {
+        push @datos, $entry->get_value('uid');
+    }
+
+    $c->log->debug(@datos);
+    $self->status_ok($c, entity => \@datos);
 }
 
 =head1 AUTHOR
