@@ -49,6 +49,10 @@ a {
     text-align: left;
 }
 
+.right {
+    text-align: right;
+}
+
 tfoot tr {
     background-color: #ddd;
 }
