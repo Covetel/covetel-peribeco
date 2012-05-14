@@ -4,26 +4,30 @@
 
 [% INCLUDE "menu_usuario.tt" %]
 <div id="contenido">
-    <form method="POST" action="/personas/detalle/[% persona.uid %]">
        <h2>[% persona.firstname %] [% persona.lastname %]</h2>
             <div class="informacion">Los siguientes son datos de la persona:</div>
                 <div id="datos">
-                    <ul>
-                        <li><span class="datos bold">Identificador:</span>
-                        <span class="datos" name="uid">[% persona.uid
-                        %]</span>
-                        <li><span class="datos bold">Nombre: </span>
-                        <span class="datos">[% persona.firstname %] </span></li>
-                        <li><span class="datos bold">Apellido: </span>
-                        <span class="datos">[% persona.lastname %]</span></li>
-                        <li><span class="datos bold">Cédula: </span>
-                        <span class="datos">[% persona.ced %]</span></li>           
-                        <li><span class="datos bold">Correo: </span>
-                        <span class="datos">[% persona.email %]</span></li>
-                    </ul>                    
-                    <div id="foto">
-                    Imagen
-                    </div>
+                    <table class="datos"> 
+                        <tr> 
+                            <td class="left">Identificador: </td>
+                            <td class="left">[% persona.uid %]</td>
+                        </tr>
+                        <tr> 
+                            <td class="left">Nombre: </td>
+                            <td class="left">[% persona.firstname %]</td>
+                        </tr>
+                        <tr> 
+                            <td class="left">Apellido: </td>
+                            <td class="left">[% persona.lastname %]</td>
+                        </tr>
+                        <tr> 
+                            <td class="left">Cédula: </td>
+                            <td class="left">[% persona.ced %]</td>
+                        </tr>
+                        <tr> 
+                            <td class="left">Correo: </td>
+                            <td class="left">[% persona.email %] </td>
+                        </tr>
+                    </table>
                 </div>
-    </form>
 </div>

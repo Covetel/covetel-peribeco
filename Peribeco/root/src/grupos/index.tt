@@ -1,3 +1,6 @@
+[% BLOCK header %]
+
+[% END %]
 [% INCLUDE "grupos/menu.tt" %]
 <div id="contenido">
 </div>

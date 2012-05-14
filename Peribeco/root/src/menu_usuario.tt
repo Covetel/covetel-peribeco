@@ -13,6 +13,7 @@
  <a class="enlace" href="/personas/modify_data/[% c.user.uid %]" alt="Modificar datos">Modificar Datos</a>
  </span>
  [% ELSE %]
- <a class="enlace" href="/personas/reset_pass/[% persona.uid %]" alt="Cambiar Password">Cambiar Password </a>
+ <a class="enlace" href="/personas/reset_pass/[% persona.uid %]" alt="Cambiar
+ Password">Reiniciar Contraseña</a>
  [% END %]
 </p>

@@ -1,3 +1,6 @@
+[% BLOCK header %]
+
+[% END %]
 [% INCLUDE "mensajes.tt" %]
 
 <p>
