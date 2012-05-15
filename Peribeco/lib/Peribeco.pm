@@ -31,7 +31,7 @@ use Catalyst qw/
 
 extends 'Catalyst';
 
-our $VERSION = '0.01';
+our $VERSION = '0.2-3';
 $VERSION = eval $VERSION;
 
 # Configure the application.
@@ -49,9 +49,9 @@ __PACKAGE__->config(
     disable_component_resolution_regex_fallback => 1,
 );
 
-__PACKAGE__->config(
-    'Plugin::ConfigLoader' => { file => 'configuracion.yml' },
-);
+#__PACKAGE__->config(
+#    'Plugin::ConfigLoader' => { file => 'configuracion.yml' },
+#);
 
 # Start the application
 __PACKAGE__->setup();
