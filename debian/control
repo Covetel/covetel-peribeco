@@ -1,29 +1,15 @@
 Source: covetel-peribeco
-<<<<<<< HEAD
-Section: unknown
-=======
 Section: perl
->>>>>>> master
 Priority: extra
 Maintainer: Luis Alfredo da Silva <luisdasilva@covetel.com.ve>
 Build-Depends: debhelper (>= 7.0.50~)
 Standards-Version: 3.8.4
-<<<<<<< HEAD
-Homepage: <insert the upstream URL, if relevant>
-=======
 Homepage: http://www.covetel.com.ve
->>>>>>> master
 #Vcs-Git: git://git.debian.org/collab-maint/covetel-peribeco.git
 #Vcs-Browser: http://git.debian.org/?p=collab-maint/covetel-peribeco.git;a=summary
 
 Package: covetel-peribeco
 Architecture: any
-<<<<<<< HEAD
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
-=======
 Depends: ${shlibs:Depends}, ${misc:Depends}, libcatalyst-perl, libcatalyst-devel-perl, libcatalyst-action-rest-perl, libcatalyst-model-cdbi-perl, libcatalyst-view-tt-perl, libtest-www-mechanize-catalyst-perl, libcatalyst-modules-perl, libnamespace-autoclean-perl, libyaml-libyaml-perl, slapd, ldap-utils
 Description: Control de usuarios y grupos de un ldap
  Peribeco es una aplicacion web que nos facilita la administracion de usuarios y grupos en un ldap
->>>>>>> master

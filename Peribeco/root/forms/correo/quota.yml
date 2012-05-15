@@ -1,0 +1,58 @@
+action: /correo/quota/lista
+# indicator is the field that is used to test for form submission
+#indicator: Botones.submit
+
+# Start listing the form elements
+#auto_fieldset: 1
+
+languages:
+    - es
+
+elements:
+    - type: Fieldset
+      name: datos_fieldset
+      legend: Quota 
+      elements:
+        - type: Block
+          tag: div
+          content: 'Por favor ingrese los datos de la quota para las cuentas de correo'
+          attributes:
+              class: informacion
+
+        - type: Text
+          name: Tamaño
+          label: Tamaño de Quota
+          attributes:
+              title: 'Por favor ingrese el tamaño de la quota'
+              class: input_text
+              id: quota_size
+          constraints:
+            - Required
+            - type: Regex
+              regex: '^[0-9]*$'
+
+    # The Submit button
+    - type: Multi
+      name: Botones
+      elements:
+        - type: Button
+          name: submit
+          # The text to be displayed
+          value: Asignar
+          attributes:
+              title: Presione este botón para asignar la quota a las cuentas seleccionadas
+              class: input_submit
+              id: set_quota_submit
+        
+        - type: Reset
+          name: reset
+          # The text to be displayed
+          value: Reiniciar
+          attributes:
+              title: Presione este botón para inicializar en blanco los campos del formulario.
+              class: input_reset
+
+filter:
+    # Filtrado de espacios en blanco y caracteres HTML
+    - TrimEdges
+    - HTMLEscape    

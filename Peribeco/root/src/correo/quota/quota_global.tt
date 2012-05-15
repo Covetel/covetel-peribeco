@@ -1,0 +1,66 @@
+[% BLOCK header %]
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+
+        jQuery("input#quota_size_global").keydown(function(event) {  
+            // Allow: backspace, delete, tab and escape
+            if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || 
+            // Allow: Ctrl+A
+            (event.keyCode == 65 && event.ctrlKey === true) || 
+             // Allow: home, end, left, right
+            (event.keyCode >= 35 && event.keyCode <= 39)) {
+            // let it happen, don't do anything
+                return;
+            } else {
+                // Ensure that it is a number and stop the keypress
+                if ( event.shiftKey|| (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 ) ) {
+                    event.preventDefault(); 
+                }
+            }
+          });
+
+        //Asignar quota global
+        $("input#set_quota_global_submit").click(function(){
+            var size = $("#quota_size_global").val();
+            var datos = ({'size': size});
+            var jsoon = $.JSON.encode(datos);
+                $.ajax({
+                    url: "/ajax/quota/global_quota", 
+                    type: "PUT",
+                    data: jsoon, 
+                    dataType: "json",
+                    contentType: 'application/json',
+                    processData: false,
+                    complete: function (data) {
+                        if (data.status != 200){
+                            $("div#all").append('<div id="mensaje"> </div>');
+                            $("div#mensaje").html("La quota Global fue asignada satisfactoriamente");
+                            $( "#mensaje" ).dialog({ 
+                                title: 'Error', 
+                                buttons: { "Ok": function() { $(this).dialog("close"); } }, 
+                                modal: true,
+                            });
+                        } else {
+                            var response = $.JSON.decode(data.responseText);
+                            $("div#mensaje").html(response.error).hide();
+                            $( "#mensaje" ).dialog({ 
+                                title: 'Error', 
+                                buttons: { "Ok": function() { $(this).dialog("close"); } }, 
+                                modal: true,
+                            });
+                        }
+                    }
+                }); // Fin de ajax
+            $("#quota_size_global").val("");
+        });
+    });
+</script>
+[% END %]
+<p> 
+ <a class="enlace" href="/correo/quota" title="Lista de Quotas"> Volver a las
+ listas de Quota </a>
+</p>
+<div id="contenido">
+        [% INCLUDE "mensajes.tt" %]
+        [% form %]
+</div>

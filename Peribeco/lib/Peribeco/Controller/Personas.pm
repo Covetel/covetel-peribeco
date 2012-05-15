@@ -78,7 +78,7 @@ sub crear : Local : FormConfig {
                     uid       => $uid,
                     firstname => $firstname,
                     lastname  => $lastname,
-                    pager     => $ced,
+                    ced     => $ced,
                     email     => $email,
                 }
             );

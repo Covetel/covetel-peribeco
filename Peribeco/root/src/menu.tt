@@ -6,6 +6,12 @@
     <span>
         <a href="/grupos/lista">Grupos</a>
     </span>
+    <span>
+        <a href="/correo/listas">Listas</a>
+    </span>
+    <span>
+        <a href="/correo/quota">Quota</a>
+    </span>
      [% END %]
     <span>
         <a href="/logout">Salir</a>

@@ -1,0 +1,135 @@
+[% BLOCK header %]
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+
+        jQuery("input#quota_size").keydown(function(event) {  
+            // Allow: backspace, delete, tab and escape
+            if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || 
+            // Allow: Ctrl+A
+            (event.keyCode == 65 && event.ctrlKey === true) || 
+             // Allow: home, end, left, right
+            (event.keyCode >= 35 && event.keyCode <= 39)) {
+            // let it happen, don't do anything
+                return;
+            } else {
+                // Ensure that it is a number and stop the keypress
+                if ( event.shiftKey|| (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 ) ) {
+                    event.preventDefault(); 
+                }
+            }
+          });
+
+        var tabla6;
+
+        tabla6 = $("#quota_lists").dataTable({
+            "sAjaxSource": '/ajax/quota/',
+             "oLanguage": {
+                "sUrl": "/static/js/dataTables.spanish.txt"
+            },
+            "bJQueryUI": true,
+            "fnDrawCallback": function () {
+                my_hover();
+                //$(".progressbar").progressbar({value: 30});
+                $(".progressbar > div").addClass("progressbarQuota");
+                $(".progressbar").each(function(){
+                    var id = $(this).attr("id");
+                    var datos = id.split("-");
+                    // Calculo el porcentaje de uso
+                    var uids = datos[1];
+                    var uso;
+                    $.ajax({
+                        url: "/ajax/quota/use/"+uids, 
+                        type: "GET",
+                        dataType: "json",
+                        complete: function (data) {
+                            var usage = $.parseJSON(data.responseText).toString().split(",");
+                            var limit = datos[2] * 1024;
+                            uso = ( usage[1] / limit) * 100;
+                            $("#progressbar-"+datos[1]+"-"+datos[2]).progressbar({value: uso});
+                            console.log(uso);
+                            if (uso < 70) {
+                                $("#progressbar-"+datos[1]+"-"+datos[2]).children().addClass("progressbarQuota-low");
+                            }
+                            if ((uso >=70) && (uso <90))  {
+                                $("#progressbar-"+datos[1]+"-"+datos[2]).children().addClass("progressbarQuota-med");
+                            }
+                        },
+                   });
+                });
+            }
+        });
+    
+        //Eventos de ocultar y mostrar formularios de quota 
+        $("button#set_quota").click(function(){
+                $("#quota").dialog({minWidth: 490});
+        });
+    
+        //Asignar quota a cuentas
+        $("input#set_quota_submit").click(function(){
+            var uids = $("input:checked").getCheckboxValues();
+            var size = $("#quota_size").val();
+            var datos = ({'personas': uids, 'size': size});
+            var jsoon = $.JSON.encode(datos);
+                $.ajax({
+                    url: "/ajax/quota/set", 
+                    type: "PUT",
+                    data: jsoon, 
+                    dataType: "json",
+                    contentType: 'application/json',
+                    processData: false,
+                    complete: function (data) {
+                        tabla6.fnReloadAjax();
+                        if (data.status != 200){
+                            $("div#all").append('<div id="mensaje"> </div>');
+                            $("div#mensaje").html("La quota fue asignada satisfactoriamente a las cuentas seleccionadas");
+                            $( "#mensaje" ).dialog({ 
+                                title: 'Error', 
+                                buttons: { "Ok": function() { $(this).dialog("close"); } }, 
+                                modal: true,
+                            });
+                        } else {
+                            var response = $.JSON.decode(data.responseText);
+                            $("div#mensaje").html(response.error).hide();
+                            $( "#mensaje" ).dialog({ 
+                                title: 'Error', 
+                                buttons: { "Ok": function() { $(this).dialog("close"); } }, 
+                                modal: true,
+                            });
+                        }
+                    }
+                }); // Fin de ajax
+            $("#quota").dialog("close");
+        });
+
+    });
+</script>
+[% END %]
+<div id="contenido">
+[% INCLUDE "mensajes.tt" %]
+    <table id="quota_lists" class="dataTable" width="100%">
+        <thead> 
+           <tr>
+            <th> &nbsp; </th> 
+            <th> Nombre </th> 
+            <th> UID </th> 
+            <th> Quota </th>
+            <th> % </th>
+           </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <td class="left" colspan="8"> 
+                    <button id="set_quota"> Asignar Quota </button>  
+                    <button id="global_quota" onClick='document.location.replace("/correo/quota/global_quota")' title="Lista de Quotas"> Asignar Quota Global</button>  
+                </td>
+            </tr>
+        </tfoot>
+        <tbody>
+            <tr> <td> &nbsp; </td> </tr>
+
+        </tbody>
+    </table>
+    <div id="quota">
+        [% form %]
+    </div>
+</div>

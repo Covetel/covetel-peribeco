@@ -6,38 +6,63 @@ var sel = true;
 
 
 $(document).ready(function(){
+
+    $("#uid_mail").blur(function(){
+        var uid = $("#uid_mail").val();
+        if (uid != ''){
+            $("#uid_mail").parent().removeClass("error error_constraint_required");
+            $(".element_msj_error").remove();    
+            $.ajax({
+                url: "/ajax/mail/exists/"+uid, 
+                type: "GET",
+                dataType: "json",
+                complete: function (data) {
+                    var datos = $.parseJSON(data.responseText);
+                    if (datos.exists) {
+                        $(".element_msj_error").remove();    
+                        element_error($("#uid_mail"),'Ya existe una cuenta/lista utilizando <strong>'+uid+'</strong>, por favor ingrese un identifador diferente');
+                    } else {
+                        $("#uid_mail").parent().removeClass("error error_constraint_required");
+                    }
+                },
+            }); // Fin de ajax
+        } else {
+            $(".element_msj_error").remove();    
+            element_error($("#uid_mail"),'Debe ingresar un Identificador válido');
+        }
+    });
     
-    $.ajaxSetup({ scriptCharset: "utf-8" , contentType: "application/json; charset=utf-8"});
+   $.ajaxSetup({ scriptCharset: "utf-8" , contentType: "application/json; charset=utf-8"});
     
    tabla = $("#lista_grupos").dataTable({
-		"sAjaxSource": '/ajax/grupos',
-		"bJQueryUI": true,
- 		"oLanguage": {
+        "sAjaxSource": '/ajax/grupos',
+        "bJQueryUI": true,
+         "oLanguage": {
             "sUrl": "/static/js/dataTables.spanish.txt"
         },
-	    "fnDrawCallback": function () {
+        "fnDrawCallback": function () {
             my_hover();
         }
     });
 
     tabla2 = $("#lista_personas").dataTable({
-		"sAjaxSource": '/ajax/personas',
-		"bJQueryUI": true,
- 		"oLanguage": {
+        "sAjaxSource": '/ajax/personas',
+        "bJQueryUI": true,
+         "oLanguage": {
             "sUrl": "/static/js/dataTables.spanish.txt"
         },
-	    "fnDrawCallback": function () {
+        "fnDrawCallback": function () {
             my_hover();
         }
     });
 
     tabla3 = $("#lista_detalle_persona").dataTable({
-		"sAjaxSource": '/ajax/miembros_grupo',
- 		"oLanguage": {
+        "sAjaxSource": '/ajax/miembros_grupo',
+         "oLanguage": {
             "sUrl": "/static/js/dataTables.spanish.txt"
         },
-		"bJQueryUI": true,
-	    "fnDrawCallback": function () {
+        "bJQueryUI": true,
+        "fnDrawCallback": function () {
             my_hover();
         }
     });
@@ -45,20 +70,18 @@ $(document).ready(function(){
     var gidNumber = $("span.gidNumber").html();
     
     tabla4 = $("#lista_miembros_grupo").dataTable({
-		"sAjaxSource": '/ajax/groupmembers/'+gidNumber,
- 		"oLanguage": {
+        "sAjaxSource": '/ajax/groupmembers/'+gidNumber,
+         "oLanguage": {
             "sUrl": "/static/js/dataTables.spanish.txt"
         },
-		"bJQueryUI": true,
-	    "fnDrawCallback": function () {
+        "bJQueryUI": true,
+        "fnDrawCallback": function () {
             my_hover();
         }
     });
 
-
     // Add member to group
     $("form#form_add_member").submit(function(){ return false; });
-
 
     // Boton agregar personas a un grupo. 
     $("button#add_member").click(function(){
@@ -67,20 +90,20 @@ $(document).ready(function(){
         var gid = $("span.gidNumber").html();
         var datos = ({'personas': personas, 'gid':gid});
         var jsoon = $.JSON.encode(datos);
-			$.ajax({
-				url: "/ajax/grupos/add", 
-				type: "PUT",
+            $.ajax({
+                url: "/ajax/grupos/add", 
+                type: "PUT",
                 data: jsoon, 
-				dataType: "json",
-				contentType: 'application/json',
-			    processData: false,
-				complete: function (data) {
-                    $("div#mensaje").html("Las personas fueron agregadas al grupo exitosamente");
+                dataType: "json",
+                contentType: 'application/json',
+                processData: false,
+                complete: function (data) {
+                   // $("div#mensaje").html("Las personas fueron agregadas al grupo exitosamente");
                     $("#personas").val('');
-                    $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
+                   // $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
                     tabla4.fnReloadAjax();
                 }
-	        }); // Fin de ajax
+            }); // Fin de ajax
     });
 
     $("button#remove_from_group").click(function(){
@@ -88,19 +111,19 @@ $(document).ready(function(){
         var gid = $("span.gidNumber").html();
         var datos = ({'personas': uids, 'gid':gid});
         var jsoon = $.JSON.encode(datos);
-			$.ajax({
-				url: "/ajax/grupos/del", 
-				type: "DELETE",
+            $.ajax({
+                url: "/ajax/grupos/del", 
+                type: "DELETE",
                 data: jsoon, 
-				dataType: "json",
-				contentType: 'application/json',
-			    processData: false,
-				complete: function (data) {
-                    $("div#mensaje").html("Las personas fueron removidas del grupo exitosamente");
-                    $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
+                dataType: "json",
+                contentType: 'application/json',
+                processData: false,
+                complete: function (data) {
+                  //  $("div#mensaje").html("Las personas fueron removidas del grupo exitosamente");
+                  //  $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
                     tabla4.fnReloadAjax();
                 }
-	        }); // Fin de ajax
+            }); // Fin de ajax
 
     });
 
@@ -134,14 +157,14 @@ $(document).ready(function(){
         var gids = $("input:checked").getCheckboxValues();
         var datos = ({'gids': gids});
         var jsoon = $.JSON.encode(datos);
-			$.ajax({
-				url: "/ajax/delete/groups", 
-				type: "DELETE",
+            $.ajax({
+                url: "/ajax/delete/groups", 
+                type: "DELETE",
                 data: jsoon, 
-				dataType: "json",
-				contentType: 'application/json; charset=utf-8',
-			    processData: false,
-				complete: function (data) {
+                dataType: "json",
+                contentType: 'application/json; charset=utf-8',
+                processData: false,
+                complete: function (data) {
                     if (data.status == 200)
                     {
                         $("div#all").append('<div id="mensaje"> </div>');
@@ -150,7 +173,7 @@ $(document).ready(function(){
                         $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
                     }
                 }
-	        }); // Fin de ajax
+            }); // Fin de ajax
 
     });
 
@@ -159,14 +182,14 @@ $(document).ready(function(){
         var uids = $("input:checked").getCheckboxValues();
         var datos = ({'uids': uids});
         var jsoon = $.JSON.encode(datos);
-			$.ajax({
-				url: "/ajax/delete/persons", 
-				type: "DELETE",
+            $.ajax({
+                url: "/ajax/delete/persons", 
+                type: "DELETE",
                 data: jsoon, 
-				dataType: "json",
-				contentType: 'application/json; charset=utf-8',
-			    processData: false,
-				complete: function (data) {
+                dataType: "json",
+                contentType: 'application/json; charset=utf-8',
+                processData: false,
+                complete: function (data) {
                     if (data.status == 200)
                     {
                         $("div#all").append('<div id="mensaje"> </div>');
@@ -175,7 +198,7 @@ $(document).ready(function(){
                         $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
                     }
                 }
-	        }); // Fin de ajax
+            }); // Fin de ajax
 
     });
     

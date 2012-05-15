@@ -1,0 +1,169 @@
+[% BLOCK header %]
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+
+        var listacn = $("span.listaId").html();
+        tabla_listas = $("#lista_miembros_lista").dataTable({
+            "sAjaxSource": '/ajax/listamembers/' + listacn,
+            "oLanguage": {
+                "sUrl": "/static/js/dataTables.spanish.txt"
+            },
+            "bJQueryUI": true,
+            "bRetrieve": true,
+            "fnDrawCallback": function () {
+                my_hover();
+            }
+        });
+
+        // Add member to a list
+    $("form#form_add_member_lista_lista").submit(function(){ return false; });
+
+    // Boton agregar personas a una lista.
+    $("button#add_member_lista").click(function(){
+        var uid = $("textarea#personas").val();
+        var personas = uid.split(',');
+        var lid = $("span.listaId").html();
+        var datos = ({'personas': personas, 'lid':lid});
+        var jsoon = $.JSON.encode(datos);
+            $.ajax({
+                url: "/ajax/listas/add",
+                type: "PUT",
+                data: jsoon,
+                dataType: "json",
+                contentType: 'application/json',
+                processData: false,
+                complete: function (data) {
+                   // $("div#mensaje").html("Las personas fueron agregadas a la lista exitosamente");
+                    $("#personas").val('');
+                   // $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
+                    tabla_listas.fnReloadAjax();
+                }
+            }); // Fin de ajax
+    });
+
+    $("button#remove_from_lista").click(function(){
+        var uids = $("input:checked").getCheckboxValues();
+        var lid = $("span.listaId").html();
+        var datos = ({'personas': uids, 'lid':lid});
+        var jsoon = $.JSON.encode(datos);
+            $.ajax({
+                url: "/ajax/listas/del",
+                type: "DELETE",
+                data: jsoon, 
+                dataType: "json",
+                contentType: 'application/json',
+                processData: false,
+                complete: function (data) {
+                  //  $("div#mensaje").html("Las personas fueron removidas del grupo exitosamente");
+                  //  $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
+                    tabla_listas.fnReloadAjax();
+                }
+            }); // Fin de ajax
+
+    });
+
+    $("#personas").autocomplete({
+        source: '/ajax/autocomplete/usuarios',
+        minLength: 4,
+    });
+
+    function split( val ) {
+            return val.split( /,\s*/ );
+    }
+    function extractLast( term ) {
+            return split( term ).pop();
+    }
+
+    $( "#personas" )
+        // don't navigate away from the field on tab when selecting an item
+        .bind( "keydown", function( event ) {
+            if ( event.keyCode === $.ui.keyCode.TAB &&
+                    $( this ).data( "autocomplete" ).menu.active ) {
+                event.preventDefault();
+            }
+        })
+        .autocomplete({
+            source: function( request, response ) {
+                $.getJSON( "/ajax/autocomplete/usuarios", {
+                    term: extractLast( request.term )
+                }, response );
+            },
+            search: function() {
+                // custom minLength
+                var term = extractLast( this.value );
+                if ( term.length < 2 ) {
+                    return false;
+                }
+            },
+            focus: function() {
+                // prevent value inserted on focus
+                return false;
+            },
+            select: function( event, ui ) {
+                var terms = split( this.value );
+                // remove the current input
+                terms.pop();
+                // add the selected item
+                terms.push( ui.item.value );
+                // add placeholder to get the comma-and-space at the end
+                terms.push( "" );
+                this.value = terms.join( ", " );
+                return false;
+            }
+        });
+    }); // end of document.ready
+</script>
+[% END %]
+<p> 
+ <a class="enlace" href="/correo/listas/crear" title="Crear Lista de Correo"> Crear lista de correo</a>
+ <a class="enlace" href="/correo/listas" title="Lista Listas de Correo"> Listar listas de correo</a>
+</p>
+
+<div id="contenido">
+    <form id="form_add_member_lista_lista" action="#">
+    <fieldset>
+        <legend><span class="listaId">[% lista.nombre %]</span></legend>
+        <div class="informacion">[% lista.description %]</div><br />
+        <br />
+        <div class="informacionsmall">En el siguiente campo introduzca los UID de
+        las personas que desea agregar a este grupo,  separados por coma.</div>
+        <div class="text label constraint_required constraint_length">
+            <label for="personas">Personas a Agregar</label>
+            <textarea cols="20" rows="10" id="personas" title="Ingrese la personas a agregar" name="personas"></textarea>
+        </div>
+        <div class="multi">
+            <div class="elements">
+                <button id="add_member_lista"> Agregar Personas al grupo </button> 
+            </div>
+        </div>
+    </fieldset>
+    </form>
+
+    <table id="lista_miembros_lista" width="100%">
+        <thead> 
+            <tr>
+                <th>&nbsp; </th> 
+                <th> Tipo  </th> 
+                <th> Email </th> 
+                <th> Nombre </th> 
+                <th> Apellido </th>
+                <th> UidNumber </th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <td class="left" colspan="7"> 
+                    <button id="remove_from_lista"> Remover de la Lista </button>  
+                    <button id="select_all"> Marcar Todos </button>  
+                </td>
+            </tr>
+        </tfoot>
+        <tbody>
+            <tr> <td> &nbsp; </td> </tr>
+        </tbody>
+    </table>
+
+    <div class="oculto" title="Operacion Exitosa" id="mensaje">
+        Las personas fueron agregadas exitosamente al grupo
+    </div>
+</div>

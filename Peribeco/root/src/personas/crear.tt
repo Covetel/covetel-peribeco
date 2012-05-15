@@ -1,3 +1,23 @@
+[% BLOCK header %]
+<script type="text/javascript" charset="utf-8">
+$(document).ready(function(){
+
+    $("input#mail").focusout(function(event){
+        var email = $("input#mail").val();
+        var er_email = /^(.+\@.+\..+)$/
+            if (!er_email.test(email)) {	
+                $("div#all").append('<div id="mensaje"> </div>');
+                $("div#mensaje").html("El campo de mail no es valido");
+                $( "#mensaje" ).dialog({ 
+                    title: 'Error', 
+                    buttons: { "Ok": function() { $(this).dialog("close"); $("input#mail").val("") } }, 
+                    modal: true,
+                });
+            }
+    });
+});
+</script>
+[% END %]
 <p> 
  <a class="enlace" href="/personas/lista" title="Listar Personas"> Volver a la lista
  de Personas </a>

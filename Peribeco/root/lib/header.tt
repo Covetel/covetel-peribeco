@@ -25,11 +25,16 @@
     <script src="/static/js/Covetel/Covetel.Formularios.js" type="text/javascript" charset="utf-8"></script>
     <script src="/static/js/Covetel/Covetel.Usuario.js" type="text/javascript" charset="utf-8"></script>
     <script src="/static/js/Covetel/Covetel.Funciones.js" type="text/javascript" charset="utf-8"></script>
+
+    [% PROCESS header %] 
+
 </head>
 <body>
     <div id="cintillo_institucional">
+			<!--
             <div id="gbv"> &nbsp; </div>
             <div id="bicentenario"> &nbsp; </div>
+			-->
     </div>
     [% IF c.user_exists %] 
             [% INCLUDE "menu.tt" %]

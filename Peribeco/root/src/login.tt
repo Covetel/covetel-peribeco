@@ -1,2 +1,5 @@
+[% BLOCK header %]
+
+[% END %]
 [% INCLUDE "mensajes.tt" %]
 [% form %]
