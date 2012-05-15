@@ -1,16 +1,14 @@
 #!/usr/bin/env perl
 use strict;
-use warnings;
 
-use lib qw{/home/Peribeco/Peribeco/lib};
 use Plack::Builder;
-use Peribeco;
+use PERIBECO;
 
-Peribeco->setup_engine('PSGI');
-my $app = sub { Peribeco->run(@_) };
+PERIBECO->setup_engine('PSGI');
+my $app = sub { PERIBECO->run(@_) };
 
 builder {
- enable_if { $_[0]->{REMOTE_ADDR} eq '127.0.0.1' }
+    enable_if { $_[0]->{REMOTE_ADDR} eq '127.0.0.1' }
         "Plack::Middleware::ReverseProxy";
- $app;
+    $app;
 };
