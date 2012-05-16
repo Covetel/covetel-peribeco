@@ -234,7 +234,8 @@ sub quotaget {
     map {chomp} @resp;
 
     for (@resp){
-           my ($uid, $quota) = split ", ", $_;
+           my ($uid, $quota) = split ",", $_;
+           print "$uid = $quota\n"
            %quo = ( $uid => $quota );
        }
 
