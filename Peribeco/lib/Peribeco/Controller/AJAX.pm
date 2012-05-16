@@ -235,7 +235,7 @@ sub quotaget {
 
     for (@resp){
            my ($uid, $quota) = split ",", $_;
-           print "$uid = $quota\n"
+           print "$uid = $quota\n";
            %quo = ( $uid => $quota );
        }
 
