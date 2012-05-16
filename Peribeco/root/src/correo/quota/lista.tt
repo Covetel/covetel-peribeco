@@ -20,6 +20,7 @@
           });
 
         var tabla6;
+        var uso;
 
         tabla6 = $("#quota_lists").dataTable({
             "sAjaxSource": '/ajax/quota/',
@@ -36,25 +37,17 @@
                     var datos = id.split("-");
                     // Calculo el porcentaje de uso
                     var uids = datos[1];
-                    var uso;
-                    $.ajax({
-                        url: "/ajax/quota/use/"+uids, 
-                        type: "GET",
-                        dataType: "json",
-                        complete: function (data) {
-                            var usage = $.parseJSON(data.responseText).toString().split(",");
-                            var limit = datos[2] * 1024;
-                            uso = ( usage[1] / limit) * 100;
-                            $("#progressbar-"+datos[1]+"-"+datos[2]).progressbar({value: uso});
-                            console.log(uso);
-                            if (uso < 70) {
-                                $("#progressbar-"+datos[1]+"-"+datos[2]).children().addClass("progressbarQuota-low");
-                            }
-                            if ((uso >=70) && (uso <90))  {
-                                $("#progressbar-"+datos[1]+"-"+datos[2]).children().addClass("progressbarQuota-med");
-                            }
-                        },
-                   });
+                    var usage = datos[3];
+                    var limit = datos[2] * 1024;
+                    uso = ( usage / limit) * 100;
+                    console.log(uso);
+                    $("#progressbar-"+datos[1]+"-"+datos[2]+"-"+datos[3]).progressbar({value:uso});
+                    if (uso < 70) {
+                        $("#progressbar-"+datos[1]+"-"+datos[2]+"-"+datos[3]).children().addClass("progressbarQuota-low");
+                    }
+                    if ((uso >=70) && (uso <90))  {
+                        $("#progressbar-"+datos[1]+"-"+datos[2]+"-"+datos[3]).children().addClass("progressbarQuota-med");
+                    }
                 });
             }
         });
@@ -114,6 +107,7 @@
             <th> UID </th> 
             <th> Quota </th>
             <th> % </th>
+            <th> Usado </th>
            </tr>
         </thead>
         <tfoot>
