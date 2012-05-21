@@ -28,35 +28,51 @@
             },
             "bJQueryUI": true,
             "fnDrawCallback": function () {
+            var uidss;
+            var i = 1;
                 my_hover();
-                //$(".progressbar").progressbar({value: 30});
                 $(".progressbar > div").addClass("progressbarQuota");
+                // Armo variable con los uids 
                 $(".progressbar").each(function(){
                     var id = $(this).attr("id");
                     var datos = id.split("-");
-                    var uids = datos[1];
-                    var uso;
-                    $.ajax({
-                        url: "/ajax/quota/use/"+uids, 
-                        type: "GET",
-                        dataType: "json",
-                        complete: function (data) {
-                            var usage = $.parseJSON(data.responseText).toString().split(",");
-                            var limit = datos[2] * 1024;
-                            // Calculo el porcentaje de uso
-                            uso = ( usage[1] / limit) * 100;
-                            $("#progressbar-"+datos[1]+"-"+datos[2]).progressbar({value: uso});
-                            $("#usage-"+datos[1]).html('<span>'+parseInt(usage[1]/1000)+'</span>');
-                            console.log(uso);
-                            if (uso < 70) {
-                                $("#progressbar-"+datos[1]+"-"+datos[2]).children().addClass("progressbarQuota-low");
-                            }
-                            if ((uso >=70) && (uso <90))  {
-                                $("#progressbar-"+datos[1]+"-"+datos[2]).children().addClass("progressbarQuota-med");
-                            }
-                        },
-                   });
+                    if (uidss != undefined) {
+                        uidss = uidss+" "+datos[1];
+                    }else{
+                        uidss = datos[1];
+                    }
                 });
+                    var uso;
+                    if (uidss) {
+                        $.ajax({
+                            url: "/ajax/quota/use/"+uidss, 
+                            type: "GET",
+                            dataType: "json",
+                            complete: function (data) {
+                                    var usage = $.parseJSON(data.responseText).toString().split(",");
+                                $(".progressbar").each(function(){
+                                    var id = $(this).attr("id");
+                                    var datos = id.split("-");
+                                    var uids = datos[1];
+                                    var limit = datos[2] * 1024;
+                                    // Calculo el porcentaje de uso
+                                    uso = ( usage[i] / limit) * 100;
+                                    $("#progressbar-"+datos[1]+"-"+datos[2]).progressbar({value: uso});
+                                    // Valida si el uid de la tabla es el mismo de la consulta de quota
+                                    if (datos[1] == usage[i-1]) {
+                                        $("#usage-"+datos[1]).html('<span>'+parseInt(usage[i]/1000)+'</span>');
+                                    }
+                                    if (uso < 70) {
+                                        $("#progressbar-"+datos[1]+"-"+datos[2]).children().addClass("progressbarQuota-low");
+                                    }
+                                    if ((uso >=70) && (uso <90))  {
+                                        $("#progressbar-"+datos[1]+"-"+datos[2]).children().addClass("progressbarQuota-med");
+                                    }
+                                    i=i+2;
+                                });
+                            },
+                        });
+                   }
             }
         });
     
