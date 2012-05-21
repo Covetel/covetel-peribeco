@@ -34,7 +34,6 @@
                 $(".progressbar").each(function(){
                     var id = $(this).attr("id");
                     var datos = id.split("-");
-                    // Calculo el porcentaje de uso
                     var uids = datos[1];
                     var uso;
                     $.ajax({
@@ -44,8 +43,10 @@
                         complete: function (data) {
                             var usage = $.parseJSON(data.responseText).toString().split(",");
                             var limit = datos[2] * 1024;
+                            // Calculo el porcentaje de uso
                             uso = ( usage[1] / limit) * 100;
                             $("#progressbar-"+datos[1]+"-"+datos[2]).progressbar({value: uso});
+                            $("#usage-"+datos[1]).html('<span>'+parseInt(usage[1]/1000)+'</span>');
                             console.log(uso);
                             if (uso < 70) {
                                 $("#progressbar-"+datos[1]+"-"+datos[2]).children().addClass("progressbarQuota-low");
