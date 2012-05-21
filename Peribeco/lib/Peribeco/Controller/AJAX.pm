@@ -202,8 +202,8 @@ sub quota_GET {
                 &utf8_decode($_->get_value($cname)), 
                 $_->get_value($account), 
                 $_->get_value($quota_size) ? $_->get_value($quota_size)." ".$size : "0 $size",
-                '<div class="progressbar"
-                id="progressbar-'.$_->get_value($account).'-'.$_->get_value($quota_size).'"></div>', 
+                '<div class="progressbar" id="progressbar-'.$_->get_value($account).'-'.$_->get_value($quota_size).'"></div>', 
+                '<div class="usage" id="usage-'.$_->get_value($account).'"></div>'
                 ]
             } grep { !($_->get_value($account) eq 'root') } $mesg->entries,
         ];

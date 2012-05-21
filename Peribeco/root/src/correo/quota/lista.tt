@@ -114,6 +114,7 @@
             <th> UID </th> 
             <th> Quota </th>
             <th> % </th>
+            <th> Usado </th>
            </tr>
         </thead>
         <tfoot>
