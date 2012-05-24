@@ -57,6 +57,8 @@ sub addMember : Path('grupos/add') Args ActionClass('REST') {}
 
 sub addListaMembers : Path('listas/add') Args ActionClass('REST') {}
 
+sub modify_rol : Path('listas/modify_rol') Args ActionClass('REST') {}
+
 sub delMember : Path('grupos/del') Args ActionClass('REST') {}
 
 sub delListaMembers : Path('listas/del') Args ActionClass('REST') {}
@@ -372,6 +374,70 @@ sub groupmembers_GET {
     ];
 
     $self->status_ok($c, entity => \%datos);
+}
+
+sub modify_rol_GET {
+    my($self, $c) = @_;
+    my $ldap = Covetel::LDAP->new;
+
+    my $personas = $c->req->data->{personas};
+    my $lid = $c->req->data->{lid};
+    my $tipo = $c->req->data->{tipo};
+
+    my $filter = '(&' .
+                 '(objectClass=groupOfNames)' .
+                 $c->config->{'Correo::Listas'}->{'filter'} .
+                 "(cn=$lid)" .
+                 ')';
+
+    my $attr_moderador = $c->config->{'Correo::Listas'}->{'attrs'}->{'moderador'};
+    #my $attr_miembro = $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro'};
+    my $attr_correo = $c->config->{'Correo::Listas'}->{'attrs'}->{'correo'};
+    #my $attr_tipo = $c->config->{'Correo::Listas'}->{'attrs'}->{$tipo};
+
+    my $mesg_lista = $ldap->search({
+        filter => $filter,
+        base => $c->config->{'Correo::Listas'}->{'basedn'},
+        attrs => [ $attr_moderador ]
+    });
+
+    if(!$mesg_lista->is_error) {
+       my $lista = $mesg_lista->shift_entry;
+
+       foreach my $persona (@{$personas}) {
+           my $mesg_member = $ldap->search({
+                filter => "($attr_correo=$persona)",
+                attrs => [$attr_correo]
+            });
+            if ($mesg_member->count){
+                my $entry = $mesg_member->shift_entry;
+
+                if($tipo =~ /miembro/) {
+                    $lista->delete(
+                        $attr_moderador => $persona
+                    )->update($ldap);
+                }
+                if($tipo =~ /moderador/) {
+                    $lista->add(
+                        $attr_moderador => $persona
+                    )->update($ldap);
+                }
+            } else {
+                $self->status_not_found(
+                   $c,
+                   message => "no se encontro al miembro: $persona",
+                );
+                return;
+            }
+       }
+
+    } else {
+        $self->status_not_found(
+           $c,
+           message => "No se encontro la lista: $lid",
+        );
+        return;
+    }
 }
 
 sub listamembers_GET {

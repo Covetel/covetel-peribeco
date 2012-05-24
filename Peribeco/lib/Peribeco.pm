@@ -49,9 +49,9 @@ __PACKAGE__->config(
     disable_component_resolution_regex_fallback => 1,
 );
 
-#__PACKAGE__->config(
-#    'Plugin::ConfigLoader' => { file => 'configuracion.yml' },
-#);
+__PACKAGE__->config(
+    'Plugin::ConfigLoader' => { file => 'configuracion.yml' },
+);
 
 # Start the application
 __PACKAGE__->setup();
