@@ -119,10 +119,9 @@
             var tipo = $("#combo_roles").val();
             var datos = ({'personas': uids, 'lid':lid, 'tipo':tipo});
             var jsoon = $.JSON.encode(datos);
-            alert(jsoon);
             $.ajax({
                 url: "/ajax/listas/modify_rol",
-                type: "GET",
+                type: "PUT",
                 data: jsoon,
                 dataType: "json",
                 contentType: "application/json",
@@ -169,7 +168,7 @@
             <div class="elements">
                 <button id="add_member_lista"> Agregar Personas al grupo </button> 
             </div>
-        </div>
+        </div>)
     </fieldset>
     </form>
 
