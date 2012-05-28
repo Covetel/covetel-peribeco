@@ -160,7 +160,7 @@
         <br />
         <div class="informacionsmall">En el siguiente campo introduzca los UID de
         las personas que desea agregar a este grupo,  separados por coma.</div>
-        <div class="")xt label constraint_required constraint_length">
+        <div class="txt label constraint_required constraint_length">
             <label for="personas">Personas a Agregar</label>
             <textarea cols="20" rows="10" id="personas" title="Ingrese la personas a agregar" name="personas"></textarea>
         </div>
@@ -168,7 +168,7 @@
             <div class="elements">
                 <button id="add_member_lista"> Agregar Personas al grupo </button> 
             </div>
-        </div>)
+        </div>
     </fieldset>
     </form>
 

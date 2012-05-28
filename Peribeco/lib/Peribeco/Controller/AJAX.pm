@@ -4,6 +4,7 @@ use IO::Socket::INET;
 use Net::LDAP::Entry;
 use Net::LDAP;
 use Net::LDAP::Search;
+use Net::LDAP::Message;
 use namespace::autoclean;
 use Mail::RFC822::Address qw(valid);
 
@@ -363,12 +364,12 @@ sub groupmembers_GET {
         map {
             [ 
             '<input type="checkbox" name="del" value="'.$_->uid.'">', 
-            &utf8_decode($_->firstname), 
-            &utf8_decode($_->lastname), 
-            $_->ced, 
-            $_->email,  
-            $_->uidNumber, 
-            $_->uid, 
+            &utf8_decode($_->firstname),
+            &utf8_decode($_->lastname),
+            $_->ced,
+            $_->email,
+            $_->uidNumber,
+            $_->uid,
             ]
         } grep { !($_->uid eq 'root') } @person, 
     ];
@@ -416,25 +417,27 @@ sub modify_rol_PUT{
             if ($mesg_member->count){
                 my $entry = $mesg_member->shift_entry;
 
-                if($tipo =~ /miembro/i && $lista->get_value($attr_moderador) =~ /$persona/i) {
-                    if($lista->get_value($attr_moderador) > 1) {
+                my @array = $lista->get_value($attr_moderador);
+                if($tipo =~ /miembro/ && $entry->dn ~~ @array) {
+                    if($#array > 1) {
                         $lista->delete(
-                            $attr_moderador => $persona
+                            $attr_moderador => $entry->dn
                         );
                     }
-                    $c->log->debug("----if-Miembro-----");
                 }
-                if($tipo =~ /moderador/i && $lista->get_value($attr_miembro) =~ /$persona/i) {
+
+                @array = $lista->get_value($attr_miembro);
+                if($tipo =~ /moderador/ && $entry->dn ~~ @array) {
                     $lista->add(
-                        $attr_moderador => $persona
+                        $attr_moderador => $entry->dn
                     );
-                    $c->log->debug("----if-Moderador-----");
                 }
 
                 $c->log->debug(Dumper($lista));
+
                 my $mesg_action = $lista->update($ldap);
 
-                #unless ($mesg_action->error()) {
+                #unless ($mesg_action->is_error) {
                     #$self->status_not_found(
                        #$c,
                        #message => "No se pudo actualizar la entrada, el servidor LDAP no responde",
