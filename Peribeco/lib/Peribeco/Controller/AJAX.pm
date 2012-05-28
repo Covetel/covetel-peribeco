@@ -376,13 +376,16 @@ sub groupmembers_GET {
     $self->status_ok($c, entity => \%datos);
 }
 
-sub modify_rol_GET {
+sub modify_rol_PUT{
     my($self, $c) = @_;
     my $ldap = Covetel::LDAP->new;
 
     my $personas = $c->req->data->{personas};
     my $lid = $c->req->data->{lid};
     my $tipo = $c->req->data->{tipo};
+
+    my %datos;
+    $datos{'respuesta'} = 0;
 
     my $filter = '(&' .
                  '(objectClass=groupOfNames)' .
@@ -391,14 +394,14 @@ sub modify_rol_GET {
                  ')';
 
     my $attr_moderador = $c->config->{'Correo::Listas'}->{'attrs'}->{'moderador'};
-    #my $attr_miembro = $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro'};
+    my $attr_miembro = $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro'};
     my $attr_correo = $c->config->{'Correo::Listas'}->{'attrs'}->{'correo'};
     #my $attr_tipo = $c->config->{'Correo::Listas'}->{'attrs'}->{$tipo};
 
     my $mesg_lista = $ldap->search({
         filter => $filter,
         base => $c->config->{'Correo::Listas'}->{'basedn'},
-        attrs => [ $attr_moderador ]
+        attrs => [ $attr_moderador, $attr_miembro ]
     });
 
     if(!$mesg_lista->is_error) {
@@ -409,19 +412,37 @@ sub modify_rol_GET {
                 filter => "($attr_correo=$persona)",
                 attrs => [$attr_correo]
             });
+
             if ($mesg_member->count){
                 my $entry = $mesg_member->shift_entry;
 
-                if($tipo =~ /miembro/) {
-                    $lista->delete(
-                        $attr_moderador => $persona
-                    )->update($ldap);
+                if($tipo =~ /miembro/i && $lista->get_value($attr_moderador) =~ /$persona/i) {
+                    if($lista->get_value($attr_moderador) > 1) {
+                        $lista->delete(
+                            $attr_moderador => $persona
+                        );
+                    }
+                    $c->log->debug("----if-Miembro-----");
                 }
-                if($tipo =~ /moderador/) {
+                if($tipo =~ /moderador/i && $lista->get_value($attr_miembro) =~ /$persona/i) {
                     $lista->add(
                         $attr_moderador => $persona
-                    )->update($ldap);
+                    );
+                    $c->log->debug("----if-Moderador-----");
                 }
+
+                $c->log->debug(Dumper($lista));
+                my $mesg_action = $lista->update($ldap);
+
+                #unless ($mesg_action->error()) {
+                    #$self->status_not_found(
+                       #$c,
+                       #message => "No se pudo actualizar la entrada, el servidor LDAP no responde",
+                    #);
+                    #return;
+                #}
+
+                $datos{'respuesta'} = 1;
             } else {
                 $self->status_not_found(
                    $c,
@@ -430,7 +451,6 @@ sub modify_rol_GET {
                 return;
             }
        }
-
     } else {
         $self->status_not_found(
            $c,
@@ -438,6 +458,8 @@ sub modify_rol_GET {
         );
         return;
     }
+
+    $self->status_ok($c, entity => \%datos);
 }
 
 sub listamembers_GET {
