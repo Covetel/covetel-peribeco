@@ -411,7 +411,7 @@ sub modify_rol_PUT{
        foreach my $persona (@{$personas}) {
            my $mesg_member = $ldap->search({
                 filter => "($attr_correo=$persona)",
-                attrs => [$attr_correo]
+                #attrs => [$attr_correo]
             });
 
             if ($mesg_member->count){
@@ -419,10 +419,12 @@ sub modify_rol_PUT{
 
                 my @array = $lista->get_value($attr_moderador);
                 if($tipo =~ /miembro/ && $entry->dn ~~ @array) {
-                    if($#array > 1) {
+                    if($#array + 1 > 1) {
                         $lista->delete(
                             $attr_moderador => $entry->dn
                         );
+                    } else {
+                        $self->status_ok($c, entity => \%datos);
                     }
                 }
 
@@ -433,17 +435,15 @@ sub modify_rol_PUT{
                     );
                 }
 
-                $c->log->debug(Dumper($lista));
+                my $mesg_action = $lista->update($ldap->server);
 
-                my $mesg_action = $lista->update($ldap);
-
-                #unless ($mesg_action->is_error) {
-                    #$self->status_not_found(
-                       #$c,
-                       #message => "No se pudo actualizar la entrada, el servidor LDAP no responde",
-                    #);
-                    #return;
-                #}
+                unless ($mesg_action->is_error) {
+                    $self->status_not_found(
+                       $c,
+                       message => "No se pudo actualizar la entrada, el servidor LDAP no responde",
+                    );
+                    return;
+                }
 
                 $datos{'respuesta'} = 1;
             } else {
