@@ -129,7 +129,7 @@
                 complete: function(data) {
                     tabla_listas.fnReloadAjax();
                     $("input:checked").removeAttr('checked');
-                    $("#combo_roles").attr("disabled", "disabled");
+                    $("#info_rol").attr("selected", "selected");
                 }
             });
         });
@@ -142,6 +142,7 @@
                 $("#combo_roles").attr("disabled", "disabled");
             }
         });
+
 
 
     }); // end of document.ready
@@ -188,10 +189,10 @@
                 <td class="left" colspan="7"> 
                     <button id="remove_from_lista"> Remover de la Lista </button>  
                     <button id="select_all"> Marcar Todos </button>  
-                    <select disabled="disabled" name="roles" id="combo_roles">
+                    <select name="roles" id="combo_roles">
                         <option value="miembro">Miembro</option>
                         <option value="moderador">Moderador</option>
-                        <option disabled="disabled" value="seleccionado" selected="selected">Elija un rol</option>
+                        <option disabled="disabled" value="seleccionado" id="info_rol" selected="selected">Elija un rol</option>
                     </select>
                 </td>
             </tr>
