@@ -167,8 +167,8 @@ sub listas_GET {
                     '<input type="checkbox" name="del" value="'.$_->get_value($id).'">', 
                     $_->get_value($mail), 
                     &utf8_decode($_->get_value($desc)), 
-                    $self->remove_domain($_->get_value($member_mail)), 
-                    '<a href="/correo/listas/detalle/' . $_->get_value($id) . '"> Ver detalle </a>', 
+                    '<div id="members_div">' . $self->remove_domain($_->get_value($member_mail)) . '</div>',
+                    '<a href="/correo/listas/detalle/' . $_->get_value($id) . '"> Ver detalle </a>',
                 ]
                 } $mesg->entries,
         ];
@@ -437,7 +437,7 @@ sub modify_rol_PUT{
 
                 my $mesg_action = $lista->update($ldap->server);
 
-                unless ($mesg_action->is_error) {
+                if ($mesg_action->is_error) {
                     $self->status_not_found(
                        $c,
                        message => "No se pudo actualizar la entrada, el servidor LDAP no responde",
