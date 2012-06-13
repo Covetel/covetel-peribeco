@@ -254,3 +254,9 @@ div.sorting_1 {
     padding: 0px;
     margin: 0px;
 }
+
+div.members_div {
+    width: 200px;
+    overflow: auto;
+    text-align: center;
+}
