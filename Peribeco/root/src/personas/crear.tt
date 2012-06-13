@@ -2,6 +2,7 @@
 <script type="text/javascript" charset="utf-8">
 $(document).ready(function(){
 
+    // this function validate email field 
     $("input#mail").focusout(function(event){
         var email = $("input#mail").val();
         var er_email = /^(.+\@.+\..+)$/
@@ -15,6 +16,17 @@ $(document).ready(function(){
                 });
             }
     });
+
+    // this function validate uid field
+    $("input#uid").focusout(function(event){
+        var uid = $("input#uid").val();
+        var regx = /(\@.*|\.|\@)/;
+            if (regx.test(uid)) {	
+                $("input#uid").val(uid.replace(regx,''));
+            }
+    });
+
+
 });
 </script>
 [% END %]
