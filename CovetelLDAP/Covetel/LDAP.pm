@@ -1,6 +1,7 @@
 package Covetel::LDAP;
 use Moose; 
 use Net::LDAP;
+use Net::LDAP::Extension::SetPassword;
 use Net::LDAPS;
 use Config::Any::YAML;
 use utf8;

@@ -2,6 +2,7 @@ package Peribeco::Controller::Personas;
 use Moose;
 use namespace::autoclean;
 use Net::LDAP;
+use Net::LDAP::Extension::SetPassword;
 use Covetel::LDAP;
 use Covetel::LDAP::Person;
 use Data::Dumper;
@@ -72,22 +73,29 @@ sub crear : Local : FormConfig {
             my $password  = $c->req->param("passwd");
             my $ced       = $c->req->param("ced");
             my $email     = $c->req->param("mail");
+            my $pass_tmp  = "RyimOov5";
 
             my $person = Covetel::LDAP::Person->new(
                 {
-                    uid       => $uid,
-                    firstname => $firstname,
-                    lastname  => $lastname,
-                    ced     => $ced,
-                    email     => $email,
+                    uid          => $uid,
+                    firstname    => $firstname,
+                    lastname     => $lastname,
+                    ced          => $ced,
+                    email        => $email,
                 }
             );
 
-            $person->password($password);
+            $person->password($pass_tmp);
 
             my $dn = $person->dn();
 
             if ( $person->add ) {
+                # Password con Net::LDAP::Extension::SetPassword
+                my $ldap = Covetel::LDAP->new;
+                my $mesg = $ldap->server->set_password( user => $dn,
+                                                newpasswd => $password,
+                                              );
+                die "error: ",  $mesg->code(),  ": ",  $mesg->error() if ($mesg->code());
                 $c->stash->{mensaje} = "La persona $firstname $lastname ha sido
             ingresada exitosamente";
                 $c->stash->{sucess} = 1;
@@ -190,7 +198,9 @@ sub change_pass : Local : FormConfig {
             );
             my $persona = $ldap->person( { uid => $uid } );
             my $dn = $persona->dn;
-            if ( $person->change_pass( $new_pass, $dn ) ) {
+            #if ( $person->change_pass( $new_pass, $dn ) ) {
+            # Cambiando password con libreria Net::LDAP::Extension::SetPassword
+            if ( $ldap->server->set_password( user => $dn, oldpasswd => $pass_actual, newpasswd => $new_pass) ) {
                 $c->stash->{mensaje} = "Contraseña Actualizada";
             }
             else {
@@ -252,7 +262,9 @@ sub reset_pass : Local : FormConfig {
                 );
                 my $persona = $ldap->person( { uid => $uid } );
                 my $dn = $persona->dn;
-                if ( $person->change_pass( $new_pass, $dn ) ) {
+                #if ( $person->change_pass( $new_pass, $dn ) ) {
+                # Reset password con libreria Net::LDAP::Extension::SetPassword
+                if ( $ldap->server->set_password( user => $dn, newpasswd => $new_pass) ) {
                     $c->stash->{mensaje} = "Contraseña Actualizada";
                 }
                 else {
