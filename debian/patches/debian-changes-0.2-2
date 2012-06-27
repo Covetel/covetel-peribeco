@@ -1,0 +1,49 @@
+Description: Upstream changes introduced in version 0.2-2
+ This patch has been created by dpkg-source during the package build.
+ Here's the last changelog entry, hopefully it gives details on why
+ those changes were made:
+ .
+ covetel-peribeco (0.2-2) unstable; urgency=low
+ .
+   * nuevo upstream
+ .
+ The person named in the Author field signed this changelog entry.
+Author: Luis Alfredo da Silva <luisdasilva@covetel.com.ve>
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: http://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: <YYYY-MM-DD>
+
+--- covetel-peribeco-0.2.orig/Peribeco/script/peribeco.psgi
++++ covetel-peribeco-0.2/Peribeco/script/peribeco.psgi
+@@ -1,16 +1,14 @@
+ #!/usr/bin/env perl
+ use strict;
+-use warnings;
+ 
+-use lib qw{/home/Peribeco/Peribeco/lib};
+ use Plack::Builder;
+-use Peribeco;
++use PERIBECO;
+ 
+-Peribeco->setup_engine('PSGI');
+-my $app = sub { Peribeco->run(@_) };
++PERIBECO->setup_engine('PSGI');
++my $app = sub { PERIBECO->run(@_) };
+ 
+ builder {
+- enable_if { $_[0]->{REMOTE_ADDR} eq '127.0.0.1' }
++    enable_if { $_[0]->{REMOTE_ADDR} eq '127.0.0.1' }
+         "Plack::Middleware::ReverseProxy";
+- $app;
++    $app;
+ };

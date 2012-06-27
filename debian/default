@@ -1,0 +1,9 @@
+CATALYST_DEBUG=0
+STARMAN_DEBUG=0
+COVETEL_LDAP_CONFIG=/opt/Peribeco/Peribeco/config.yml
+PERIBECO_CONFIG=/opt/Peribeco/Peribeco/configuracion.yml
+PERL5LIB=/opt/Peribeco/Peribeco/lib:$PERL5LIB
+WORKERS=10
+PERIBECO_LOG=/opt/Peribeco/logs
+PERIBECO_HOST=localhost
+PERIBECO_PORT=5000

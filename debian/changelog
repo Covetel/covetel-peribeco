@@ -1,0 +1,61 @@
+covetel-peribeco (0.2-6) unstable; urgency=low
+
+  * another postinst fix 
+
+ -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Wed, 16 May 2012 01:45:38 -0430
+
+covetel-peribeco (0.2-5) unstable; urgency=low
+
+  * postinst fixed 
+
+ -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Wed, 16 May 2012 01:41:40 -0430
+
+covetel-peribeco (0.2-4) unstable; urgency=low
+
+  * carpeta logs y variables de entorno en init.d  
+
+ -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Wed, 16 May 2012 01:27:54 -0430
+
+covetel-peribeco (0.2-3) unstable; urgency=low
+
+  * variables de entorno de la aplicacion 
+
+ -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Tue, 15 May 2012 18:58:07 -0430
+
+covetel-peribeco (0.2-2) unstable; urgency=low
+
+  * nuevo upstream
+
+ -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Tue, 15 May 2012 15:59:01 -0430
+
+covetel-peribeco (0.2) unstable; urgency=low
+
+  * Non-maintainer upload.
+
+ --  <elsanto@igraine.covetel.com.ve>  Tue, 17 Apr 2012 23:36:48 -0430
+
+covetel-peribeco (0.1-2.2) unstable; urgency=low
+
+  * Agregando la dependencia libcatalyst-authentication-store-ldap-perl
+
+ --  <elsanto@igraine.covetel.com.ve>  Tue, 17 Apr 2012 23:22:08 -0430
+
+covetel-peribeco (0.1-2.1) unstable; urgency=low
+
+  * Cambios en la ruta de instalación del paquete.
+  * Conversión a todas las arquitecturas.
+  * Eliminación de postinst.
+
+ -- Carlos Paredes <cparedes@covetel.com.ve>  Tue, 10 Apr 2012 00:53:44 -0430
+
+covetel-peribeco (0.1-2) unstable; urgency=low
+
+  * archivo README
+
+ -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Mon, 09 Apr 2012 18:06:32 +0000
+
+covetel-peribeco (0.1-1) unstable; urgency=low
+
+  * Initial release packing
+
+ -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Thu, 05 Apr 2012 21:15:18 +0000

@@ -1,0 +1,17 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use 5.010;
+
+given($ARGV[0]){
+    when('configure'){
+		my $dir = '/opt/Peribeco/logs';
+		mkdir $dir unless -d $dir;
+    }
+
+    when(/(abort-upgrade)|(abort-remove)|(abort-deconfigure)/){ }
+    default {
+        exit 0;
+    }
+}
+

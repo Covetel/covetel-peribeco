@@ -1,0 +1,90 @@
+#! /bin/sh
+
+### BEGIN INIT INFO
+# Provides:          peribeco-starman
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts the peribeco-starman web server
+# Description:       starts peribeco-starman using start-stop-daemon
+### END INIT INFO
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+NGINX_DAEMON=/usr/sbin/nginx
+
+NAME=peribeco-starman
+DESC="Starman based launcher for PERIBECO PSGI"
+PIDFILE="/var/run/$NAME.pid"
+DAEMON=/usr/bin/starman
+
+# Include peribeco defaults if available
+if [ -f /etc/default/covetel-peribeco ] ; then
+	. /etc/default/covetel-peribeco
+fi
+
+DAEMON_OPTS="--listen $PERIBECO_HOST:$PERIBECO_PORT --error-log=$PERIBECO_LOG/starman.log --workers $WORKERS -D --pid $PIDFILE /opt/Peribeco/Peribeco/script/peribeco.psgi"
+
+test -x $DAEMON || exit 0
+
+export CATALYST_DEBUG
+export CATALYST_CONFIG
+export PERIBECO_DIR
+export PERL5LIB
+export PERIBECO_CONFIG
+export STARTMAN_DEBUG
+export COVETEL_LDAP_CONFIG
+
+set -e
+
+. /lib/lsb/init-functions
+
+test_peribeco_starman_config() {
+  if $NGINX_DAEMON -t  >/dev/null 2>&1
+  then
+    return 0
+  else
+    $NGINX_DAEMON -t
+    return $?
+  fi
+}
+
+case "$1" in
+  start)
+	echo -n "Starting $DESC: "
+    start-stop-daemon --start --quiet --pidfile $PIDFILE \
+		--exec $DAEMON -- $DAEMON_OPTS || true
+    echo "$DAEMON $DAEMON_OPTS"
+	echo "$NAME."
+	;;
+  stop)
+	echo -n "Stopping $DESC: "
+	start-stop-daemon --stop --quiet --pidfile /var/run/$NAME.pid \
+		--signal 2 || true
+	echo "$NAME."
+	;;
+  restart|force-reload)
+	echo -n "Restarting $DESC: "
+	start-stop-daemon --stop --quiet --pidfile \
+		/var/run/$NAME.pid --exec $DAEMON || true
+	sleep 1
+	start-stop-daemon --start --quiet --pidfile \
+		/var/run/$NAME.pid --exec $DAEMON -- $DAEMON_OPTS || true
+	echo "$NAME."
+	;;
+  reload)
+        echo -n "Reloading $DESC configuration: "
+        start-stop-daemon --stop --signal HUP --quiet --pidfile /var/run/$NAME.pid \
+            --exec $DAEMON || true
+        echo "$NAME."
+        ;;
+  status)
+	status_of_proc -p /var/run/$NAME.pid $"DAEMON" peribeco_starman && exit 0 || exit $?
+	;;
+  *)
+	echo "Usage: $NAME {start|stop|restart|reload|force-reload|status|configtest}" >&2
+	exit 1
+	;;
+esac
+
+exit 0
