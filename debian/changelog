@@ -1,3 +1,16 @@
+covetel-peribeco (0.2-7.1) unstable; urgency=low
+
+  * small fixes 
+
+ -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Fri, 29 Jun 2012 17:45:04 -0430
+
+covetel-peribeco (0.2-7) unstable; urgency=low
+
+  * perl compilado solo para la aplicacion Peribeco 
+  * instalado starman en el perl 
+
+ -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Fri, 29 Jun 2012 16:02:50 -0430
+
 covetel-peribeco (0.2-6) unstable; urgency=low
 
   * another postinst fix 

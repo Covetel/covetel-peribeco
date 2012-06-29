@@ -10,13 +10,13 @@
 # Description:       starts peribeco-starman using start-stop-daemon
 ### END INIT INFO
 
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+PATH=/opt/Peribeco/perl/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 NGINX_DAEMON=/usr/sbin/nginx
 
 NAME=peribeco-starman
 DESC="Starman based launcher for PERIBECO PSGI"
 PIDFILE="/var/run/$NAME.pid"
-DAEMON=/usr/bin/starman
+DAEMON=/opt/Peribeco/perl/bin/starman
 
 # Include peribeco defaults if available
 if [ -f /etc/default/covetel-peribeco ] ; then
