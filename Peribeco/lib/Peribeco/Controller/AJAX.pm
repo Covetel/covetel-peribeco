@@ -4,6 +4,7 @@ use IO::Socket::INET;
 use Net::LDAP::Entry;
 use Net::LDAP;
 use Net::LDAP::Search;
+use Net::LDAP::Message;
 use namespace::autoclean;
 use Mail::RFC822::Address qw(valid);
 
@@ -56,6 +57,8 @@ sub mail_exists : Path('mail/exists') Args(1) ActionClass('REST') {}
 sub addMember : Path('grupos/add') Args ActionClass('REST') {}
 
 sub addListaMembers : Path('listas/add') Args ActionClass('REST') {}
+
+sub modify_rol : Path('listas/modify_rol') Args ActionClass('REST') {}
 
 sub delMember : Path('grupos/del') Args ActionClass('REST') {}
 
@@ -164,8 +167,8 @@ sub listas_GET {
                     '<input type="checkbox" name="del" value="'.$_->get_value($id).'">', 
                     $_->get_value($mail), 
                     &utf8_decode($_->get_value($desc)), 
-                    $self->remove_domain($_->get_value($member_mail)), 
-                    '<a href="/correo/listas/detalle/' . $_->get_value($id) . '"> Ver detalle </a>', 
+                    '<div class="members_div">' . $self->remove_domain($_->get_value($member_mail)) . '</div>',
+                    '<a href="/correo/listas/detalle/' . $_->get_value($id) . '"> Ver detalle </a>',
                 ]
                 } $mesg->entries,
         ];
@@ -202,8 +205,8 @@ sub quota_GET {
                 &utf8_decode($_->get_value($cname)), 
                 $_->get_value($account), 
                 $_->get_value($quota_size) ? $_->get_value($quota_size)." ".$size : "0 $size",
-                '<div class="progressbar"
-                id="progressbar-'.$_->get_value($account).'-'.$_->get_value($quota_size).'"></div>', 
+                '<div class="progressbar" id="progressbar-'.$_->get_value($account).'-'.$_->get_value($quota_size).'"></div>', 
+                '<div class="usage" id="usage-'.$_->get_value($account).'"></div>'
                 ]
             } grep { !($_->get_value($account) eq 'root') } $mesg->entries,
         ];
@@ -361,15 +364,103 @@ sub groupmembers_GET {
         map {
             [ 
             '<input type="checkbox" name="del" value="'.$_->uid.'">', 
-            &utf8_decode($_->firstname), 
-            &utf8_decode($_->lastname), 
-            $_->ced, 
-            $_->email,  
-            $_->uidNumber, 
-            $_->uid, 
+            &utf8_decode($_->firstname),
+            &utf8_decode($_->lastname),
+            $_->ced,
+            $_->email,
+            $_->uidNumber,
+            $_->uid,
             ]
         } grep { !($_->uid eq 'root') } @person, 
     ];
+
+    $self->status_ok($c, entity => \%datos);
+}
+
+sub modify_rol_PUT{
+    my($self, $c) = @_;
+    my $ldap = Covetel::LDAP->new;
+
+    my $personas = $c->req->data->{personas};
+    my $lid = $c->req->data->{lid};
+    my $tipo = $c->req->data->{tipo};
+
+    my %datos;
+    $datos{'respuesta'} = 0;
+
+    my $filter = '(&' .
+                 '(objectClass=groupOfNames)' .
+                 $c->config->{'Correo::Listas'}->{'filter'} .
+                 "(cn=$lid)" .
+                 ')';
+
+    my $attr_moderador = $c->config->{'Correo::Listas'}->{'attrs'}->{'moderador'};
+    my $attr_miembro = $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro'};
+    my $attr_correo = $c->config->{'Correo::Listas'}->{'attrs'}->{'correo'};
+    #my $attr_tipo = $c->config->{'Correo::Listas'}->{'attrs'}->{$tipo};
+
+    my $mesg_lista = $ldap->search({
+        filter => $filter,
+        base => $c->config->{'Correo::Listas'}->{'basedn'},
+        attrs => [ $attr_moderador, $attr_miembro ]
+    });
+
+    if(!$mesg_lista->is_error) {
+       my $lista = $mesg_lista->shift_entry;
+
+       foreach my $persona (@{$personas}) {
+           my $mesg_member = $ldap->search({
+                filter => "($attr_correo=$persona)",
+                #attrs => [$attr_correo]
+            });
+
+            if ($mesg_member->count){
+                my $entry = $mesg_member->shift_entry;
+
+                my @array = $lista->get_value($attr_moderador);
+                if($tipo =~ /miembro/ && $entry->dn ~~ @array) {
+                    if($#array + 1 > 1) {
+                        $lista->delete(
+                            $attr_moderador => $entry->dn
+                        );
+                    } else {
+                        $self->status_ok($c, entity => \%datos);
+                    }
+                }
+
+                @array = $lista->get_value($attr_miembro);
+                if($tipo =~ /moderador/ && $entry->dn ~~ @array) {
+                    $lista->add(
+                        $attr_moderador => $entry->dn
+                    );
+                }
+
+                my $mesg_action = $lista->update($ldap->server);
+
+                if ($mesg_action->is_error) {
+                    $self->status_not_found(
+                       $c,
+                       message => "No se pudo actualizar la entrada, el servidor LDAP no responde",
+                    );
+                    return;
+                }
+
+                $datos{'respuesta'} = 1;
+            } else {
+                $self->status_not_found(
+                   $c,
+                   message => "no se encontro al miembro: $persona",
+                );
+                return;
+            }
+       }
+    } else {
+        $self->status_not_found(
+           $c,
+           message => "No se encontro la lista: $lid",
+        );
+        return;
+    }
 
     $self->status_ok($c, entity => \%datos);
 }

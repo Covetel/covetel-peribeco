@@ -111,6 +111,40 @@
                 return false;
             }
         });
+
+
+        $("#combo_roles").change(function() {
+            var uids = $("input:checked").getCheckboxValues();
+            var lid = $("span.listaId").html();
+            var tipo = $("#combo_roles").val();
+            var datos = ({'personas': uids, 'lid':lid, 'tipo':tipo});
+            var jsoon = $.JSON.encode(datos);
+            $.ajax({
+                url: "/ajax/listas/modify_rol",
+                type: "PUT",
+                data: jsoon,
+                dataType: "json",
+                contentType: "application/json",
+                processData: false,
+                complete: function(data) {
+                    tabla_listas.fnReloadAjax();
+                    $("input:checked").removeAttr('checked');
+                    $("#info_rol").attr("selected", "selected");
+                }
+            });
+        });
+
+        $("input:checkbox").click(function() {
+            var checked = $("input:checked").length;
+            if(checked != 0) {
+                $("#combo_roles").removeAttr("disabled");
+            } else {
+                $("#combo_roles").attr("disabled", "disabled");
+            }
+        });
+
+
+
     }); // end of document.ready
 </script>
 [% END %]
@@ -127,7 +161,7 @@
         <br />
         <div class="informacionsmall">En el siguiente campo introduzca los UID de
         las personas que desea agregar a este grupo,  separados por coma.</div>
-        <div class="text label constraint_required constraint_length">
+        <div class="txt label constraint_required constraint_length">
             <label for="personas">Personas a Agregar</label>
             <textarea cols="20" rows="10" id="personas" title="Ingrese la personas a agregar" name="personas"></textarea>
         </div>
@@ -155,6 +189,11 @@
                 <td class="left" colspan="7"> 
                     <button id="remove_from_lista"> Remover de la Lista </button>  
                     <button id="select_all"> Marcar Todos </button>  
+                    <select name="roles" id="combo_roles">
+                        <option value="miembro">Miembro</option>
+                        <option value="moderador">Moderador</option>
+                        <option disabled="disabled" value="seleccionado" id="info_rol" selected="selected">Elija un rol</option>
+                    </select>
                 </td>
             </tr>
         </tfoot>
