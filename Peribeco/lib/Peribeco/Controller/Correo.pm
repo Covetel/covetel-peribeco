@@ -6,6 +6,7 @@ use Net::LDAP::Entry;
 use Covetel::LDAP;
 use Covetel::LDAP::Person;
 use Data::Dumper;
+use v5.14;
 use utf8;
 
 BEGIN { extends 'Catalyst::Controller::HTML::FormFu'; }
@@ -96,37 +97,72 @@ sub crear :Path('listas/crear') :FormConfig('correo/listas_crear.yml') {
             # Base de busqueda LDAP
             my $base = $c->config->{'Correo::Listas'}->{'basedn'};
 
-            # DN 
-            my $dn
-                = $c->config->{'Correo::Listas'}->{'attrs'}->{'nombre'} . '='
-                . $uid . ","
-                . $base;
-
-            $lista->dn($dn);
-
+            #Determina ObjectClass
             my $objectClass = $c->config->{'Correo::Listas'}->{'objectClass'};
-
+            
             my @objectclass = split ' ', $objectClass;
 
-            $lista->add( objectClass => [ @objectclass ] );
+            #Switch que evalua objectclass y limita atributos
+            foreach my $objc (@objectclass) {
+                given ($objc) {
+                    when ('qmailGroup') {
+                        # DN 
+                        my $dn
+                            = $c->config->{'Correo::Listas'}->{'attrs'}->{'nombre'} . '='
+                            . $uid . ","
+                            . $base;
+            
+                        $lista->dn($dn);
+            
+                        $lista->add( objectClass => [ @objectclass ] );
+            
+                        # Construyo la cadena del correo
+                        my $mail = $uid . '@' . $c->config->{domain};
+            
+                        # Atributos MUST de la entrada. 
+                        $lista->add( 
+                            mailMessageStore => '/dev/null',
+                            mailAlternateAddress => $mail,
+                            $c->config->{'Correo::Listas'}->{'attrs'}->{'correo'} => $mail,
+                            $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro'} => $moderator->dn,
+                            $c->config->{'Correo::Listas'}->{'attrs'}->{'nombre'} => $uid,
+                        );
+    
+                        # Datos del moderador
+                        $lista->add(
+                            $c->config->{'Correo::Listas'}->{'attrs'}->{'moderador'} => $moderator->dn,
+                            $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro_correo'} => $moderator->mail,
+                        );
+                    }
+                    when ('sendmailMTA') {
+                        # Construyo la cadena del correo
+                        my $mail = $uid . '@' . $c->config->{domain};
 
-            # Construyo la cadena del correo
-            my $mail = $uid . '@' . $c->config->{domain};
-
-            # Atributos MUST de la entrada. 
-            $lista->add( 
-                mailMessageStore => '/dev/null',
-                mailAlternateAddress => $mail,
-                $c->config->{'Correo::Listas'}->{'attrs'}->{'correo'} => $mail,
-                $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro'} => $moderator->dn,
-                $c->config->{'Correo::Listas'}->{'attrs'}->{'nombre'} => $uid,
-            );
-
-            # Datos del moderador
-            $lista->add(
-                $c->config->{'Correo::Listas'}->{'attrs'}->{'moderador'} => $moderator->dn,
-                $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro_correo'} => $moderator->mail,
-            );
+                        # DN 
+                        my $dn
+                            =
+                            $c->config->{'Correo::Listas'}->{'attrs'}->{'correo'} . '='
+                            . $mail . ","
+                            . $base;
+            
+                        $lista->dn($dn);
+            
+                        $lista->add( objectClass => [ @objectclass ] );
+            
+                        # Datos del moderador
+                        $lista->add( 
+                            homeDirectory => '/dev/null',
+                            $c->config->{'Correo::Listas'}->{'attrs'}->{'correo'} => $mail,
+                            $c->config->{'Correo::Listas'}->{'attrs'}->{'nombre'} => $uid,
+                        );
+    
+                        # Datos de los miembros
+                        $lista->add(
+                            $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro_correo'} => $moderator->mail,
+                        );
+                    }
+                }
+            }
 
             # Agrego la lista al ldap. 
             my $resp = $self->{ldap}->add($lista);
