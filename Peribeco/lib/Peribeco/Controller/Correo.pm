@@ -159,6 +159,7 @@ sub crear :Path('listas/crear') :FormConfig('correo/listas_crear.yml') {
                         # Datos de los miembros
                         $lista->add(
                             $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro_correo'} => $moderator->mail,
+                            $c->config->{'Correo::Listas'}->{'attrs'}->{'mailhost'} => $c->config->{'Correo::Listas'}->{'values'}->{'mailhost'},
                         );
                     }
                 }
@@ -195,23 +196,53 @@ sub detalle : Path('listas/detalle'){
     if ($c->assert_user_roles(qw/Administradores/)) {
         my $ldap = Covetel::LDAP->new;
 
-        my $filter = '(&' .
-                     '(objectClass=groupOfNames)' .
-                     $c->config->{'Correo::Listas'}->{'filter'} .
-                     "(cn=$lid)" .
-                     ')';
+        #Determina ObjectClass
+        my $objectClass = $c->config->{'Correo::Listas'}->{'objectClass'};
+        
+        my @objectclass = split ' ', $objectClass;
 
-        my $mesg = $ldap->search({
-            filter => $filter,
-            base => $c->config->{'Correo::Listas'}->{'basedn'},
-            attrs => ['cn', 'description']
-        });
-
-        if($mesg->count) {
-            my $resp = $mesg->shift_entry;
-            my $lista = { nombre => $resp->get_value('cn'),
-                          description => $resp->get_value('description') };
-            $c->stash->{lista} = $lista;
+        #Switch que evalua objectclass y limita atributos
+        foreach my $objc (@objectclass) {
+            given ($objc) {
+                when ('qmailGroup') {
+                    my $filter = '(&' .
+                                 '(objectClass=groupOfNames)' .
+                                 $c->config->{'Correo::Listas'}->{'filter'} .
+                                 "(cn=$lid)" .
+                                 ')';
+            
+                    my $mesg = $ldap->search({
+                        filter => $filter,
+                        base => $c->config->{'Correo::Listas'}->{'basedn'},
+                        attrs => ['cn', 'description']
+                    });
+            
+                    if($mesg->count) {
+                        my $resp = $mesg->shift_entry;
+                        my $lista = { nombre => $resp->get_value('cn'),
+                                      description => $resp->get_value('description') };
+                        $c->stash->{lista} = $lista;
+                    }
+                }
+                when ('sendmailMTA') {
+                    my $filter = '(&' .
+                                 $c->config->{'Correo::Listas'}->{'filter'} .
+                                 "(sendmailMTAKey=$lid)" .
+                                 ')';
+            
+                    my $mesg = $ldap->search({
+                        filter => $filter,
+                        base => $c->config->{'Correo::Listas'}->{'basedn'},
+                        attrs => ['sendmailMTAKey']
+                    });
+            
+                    if($mesg->count) {
+                        my $resp = $mesg->shift_entry;
+                        my $lista = { nombre => $resp->get_value('sendmailMTAKey') };
+                        $c->stash->{lista} = $lista;
+                    }
+                }
+            }
         }
     }
 }
