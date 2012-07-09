@@ -7,7 +7,7 @@ use Net::LDAP::Search;
 use Net::LDAP::Message;
 use namespace::autoclean;
 use Mail::RFC822::Address qw(valid);
-use v5.14;
+use v5.10;
 
 BEGIN {extends 'Catalyst::Controller::REST'; }
 use utf8;
