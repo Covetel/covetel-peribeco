@@ -247,6 +247,13 @@ sub detalle : Path('listas/detalle'){
     }
 }
 
+sub reenvios : Path('reenvios') {
+    my ( $self, $c ) = @_;
+    if ( $c->assert_user_roles(qw/Administradores/) ) {
+        $c->stash->{template} = 'correo/reenvios/lista.tt';
+    }
+}
+
             
 =head1 AUTHOR
 
