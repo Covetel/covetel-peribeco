@@ -12,6 +12,9 @@
     <span>
         <a href="/correo/quota">Quota</a>
     </span>
+    <span>
+        <a href="/correo/reenvios">Reenvíos</a>
+    </span>
      [% END %]
     <span>
         <a href="/logout">Salir</a>
