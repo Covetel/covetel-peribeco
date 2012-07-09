@@ -6,7 +6,7 @@ use Net::LDAP::Entry;
 use Covetel::LDAP;
 use Covetel::LDAP::Person;
 use Data::Dumper;
-use v5.14;
+use v5.10;
 use utf8;
 
 BEGIN { extends 'Catalyst::Controller::HTML::FormFu'; }
