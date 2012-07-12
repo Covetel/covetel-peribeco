@@ -51,6 +51,8 @@ sub groupmembers : Local : ActionClass('REST') {}
 
 sub listamembers : Local : ActionClass('REST') {}
 
+sub listadirecciones : Local : ActionClass('REST') {}
+
 sub usuario_exists : Path('usuario/exists') Args(1) ActionClass('REST') {}
 
 sub mail_exists : Path('mail/exists') Args(1) ActionClass('REST') {}
@@ -59,11 +61,15 @@ sub addMember : Path('grupos/add') Args ActionClass('REST') {}
 
 sub addListaMembers : Path('listas/add') Args ActionClass('REST') {}
 
+sub addforward : Path('reenvios/add') Args ActionClass('REST') {}
+
 sub modify_rol : Path('listas/modify_rol') Args ActionClass('REST') {}
 
 sub delMember : Path('grupos/del') Args ActionClass('REST') {}
 
 sub delListaMembers : Path('listas/del') Args ActionClass('REST') {}
+
+sub delforward : Path('reenvios/del') Args ActionClass('REST') {}
 
 sub delete_groups : Path('delete/groups') Args ActionClass('REST') {}
 
@@ -78,6 +84,8 @@ sub getquota : Path('quota/use') Args(1) ActionClass('REST') {}
 sub delete_lista : Path('delete/lista') Args ActionClass('REST') {}
 
 sub autocomplete_usuarios : Path('autocomplete/usuarios') Args ActionClass('REST') {}
+
+sub autocomplete_mail : Path('autocomplete/mail') Args ActionClass('REST') {}
 
 sub utf8_decode {
     my ($str) = @_;
@@ -1083,6 +1091,329 @@ sub autocomplete_usuarios_GET {
     }
 
     $c->log->debug(@datos);
+    $self->status_ok($c, entity => \@datos);
+}
+
+sub listadirecciones_GET {
+    my ($self, $c, $lid) = @_;
+    my %datos;
+    my $ldap = Covetel::LDAP->new;
+
+    my $attr_miembro_correo = $c->config->{'Correo::Reenvios'}->{'attrs'}->{'miembro_correo'};
+    my $attr_correo = $c->config->{'Correo::Reenvios'}->{'attrs'}->{'correo'};
+ 
+    #Determina ObjectClass
+    my $objectClass = $c->config->{'Correo::Reenvios'}->{'objectClass'};
+    
+    my @objectclass = split ' ', $objectClass;
+ 
+    #Switch que evalua objectclass y limita atributos
+    foreach my $objc (@objectclass) {
+        given ($objc) {
+             when ('qmailGroup') {
+                 #Se desconoce metodo para llevar los forward con el objectClass qmailGroup
+             }
+             when ('sendmailMTA') {
+                 my $filter = '(&' .
+                              $c->config->{'Correo::Reenvios'}->{'filter'} .
+                              "(sendmailMTAKey=$lid)" .
+                              ')';
+                 
+                 my $mesg = $ldap->search({
+                     filter => $filter,
+                     base => $c->config->{'Correo::Reenvios'}->{'basedn'},
+                     attrs => [ $attr_miembro_correo ]
+                 });
+                 
+                 my @entries;
+                 if($mesg->count) {
+                     my $resp = $mesg->shift_entry;
+                     my @rfcmembers = $resp->get_value($attr_miembro_correo);
+                 
+                     foreach (@rfcmembers) {
+                         $mesg = $ldap->search({
+                             filter => "($attr_correo=" . $_ . ')',
+                             attrs => ['mail', 'uid']
+                         });
+                 
+                         my $entry = $mesg->shift_entry;
+
+                         push @entries, $entry;
+                 
+                     }
+                 
+                 } else {
+                     # No se encontraron elementos, se responde con 404
+                     $self->status_not_found(
+                        $c,
+                        message => "No se encontro la lista: $lid",
+                     );
+                     return;
+                 }
+                 
+                 $datos{aaData} = [
+                     map {
+                     [
+                         '<input type="checkbox" name="del" value="'.$_->get_value($attr_correo).'">',
+                         $_->get_value($attr_correo),
+                         $_->get_value('uid'),
+                     ]
+                     } grep { !($_->{uid} eq 'root') } @entries,
+                 ];
+                 
+                 $self->status_ok($c, entity => \%datos);
+             }
+        }
+    }
+}
+
+sub addforward_PUT {
+    my($self, $c) = @_;
+    my $ldap = Covetel::LDAP->new;
+
+    my $direccion = $c->req->data->{direcciones};
+    my $lid      = $c->req->data->{lid};
+
+    my $attr_miembro_correo = $c->config->{'Correo::Reenvios'}->{'attrs'}->{'miembro_correo'};
+    my $attr_correo = $c->config->{'Correo::Reenvios'}->{'attrs'}->{'correo'};
+
+   #Determina ObjectClass
+   my $objectClass = $c->config->{'Correo::Reenvios'}->{'objectClass'};
+   
+   my @objectclass = split ' ', $objectClass;
+
+   #Switch que evalua objectclass y limita atributos
+   foreach my $objc (@objectclass) {
+       given ($objc) {
+            when ('qmailGroup') {
+                 #Covetel no utiliza ningun metodo para este objectclass
+            }
+            when ('sendmailMTA') {
+                my $filter = '(&' .
+                $c->config->{'Correo::Reenvios'}->{'filter'} .
+                "(sendmailMTAKey=$lid)" .
+                ')';
+
+                my $mesg_lista = $ldap->search({
+                    filter => $filter,
+                    base => $c->config->{'Correo::Reenvios'}->{'basedn'},
+                    attrs => [$c->config->{'Correo::Reenvios'}->{'attrs'}->{'miembro_correo'}]
+                });
+
+            
+                if(!$mesg_lista->count){
+                     my $lista = Net::LDAP::Entry->new;
+         
+                     # Base de busqueda LDAP
+                     my $base = $c->config->{'Correo::Reenvios'}->{'basedn'};
+
+                     # Construyo la cadena del correo
+                     my $mail = $lid . '@' . $c->config->{domain};
+
+                     # DN 
+                     my $dn
+                         =
+                         $c->config->{'Correo::Reenvios'}->{'attrs'}->{'correo'} . '='
+                         . $mail . ","
+                         . $base;
+            
+                     $lista->dn($dn);
+            
+                     $lista->add( objectClass => [ @objectclass ] );
+            
+                     # Datos del moderador
+                     $lista->add( 
+                         homeDirectory => '/dev/null',
+                         $c->config->{'Correo::Reenvios'}->{'attrs'}->{'correo'} => $mail,
+                         $c->config->{'Correo::Reenvios'}->{'attrs'}->{'nombre'} => $lid,
+                     );
+    
+                     # Datos de los miembros
+                     $lista->add(
+                         $c->config->{'Correo::Reenvios'}->{'attrs'}->{'miembro_correo'} => $mail,
+                         $c->config->{'Correo::Reenvios'}->{'attrs'}->{'mailhost'} => $c->config->{'Correo::Reenvios'}->{'values'}->{'mailhost'},
+                         sendmailMTAAliasGrouping => $c->config->{'Correo::Reenvios'}->{'values'}->{'sendmailMTAAliasGrouping'},
+                     );
+
+                    # Agrego la lista al ldap. 
+                    my $resp = $ldap->server->add($lista);
+
+                    if ( $resp->is_error ) {
+                        $c->stash->{error} = 1;
+                        $c->stash->{mensaje} = "Error agregando la lista a LDAP." . $resp->error_text; 
+                    }
+                    else {
+                        $c->stash->{mensaje} = "La lista de correo ha sido registrada exitosamente";
+                        $c->stash->{sucess} = 1;
+                    }
+                }
+
+                my $mesg_reenvio = $ldap->search({
+                    filter => $filter,
+                    base => $c->config->{'Correo::Reenvios'}->{'basedn'},
+                    attrs => [$c->config->{'Correo::Reenvios'}->{'attrs'}->{'miembro_correo'}]
+                });
+
+                if($mesg_reenvio->is_error){
+                    $self->status_not_found(
+                         $c,
+                         message => "No se encontro la lista para reenvio: $lid",
+                     );
+                     return;
+                }
+
+                my $reenvio = $mesg_reenvio->shift_entry;
+             
+                my %datos;
+                my @direcciones;
+                foreach (@{$direccion}){
+                    s/\s+//g;
+                    my $mesg = $ldap->search({
+                        filter => "($attr_correo=$_)",
+                        attrs => [$attr_correo]
+                    });
+                    if ($mesg->count){
+                        my $entry = $mesg->shift_entry;
+                        $reenvio->add(
+                               $attr_miembro_correo => $entry->get_value($attr_correo),
+                           )->update($ldap->server);
+                    } else {
+                        if(valid $_) {
+                            $reenvio->add(
+                               $attr_miembro_correo => $_
+                           )->update($ldap->server);
+                        } else {
+                            $self->status_not_found(
+                               $c,
+                               message => "No se pudo encontrar el usuario $_",
+                             );
+                        }
+                    }
+                    push @direcciones, $_;
+                }
+                $datos{direcciones} = \@direcciones;
+                $self->status_ok($c, entity => \%datos);
+             }
+       }
+   }
+}
+
+sub delforward_DELETE {
+    my($self, $c) = @_;
+    my $ldap = Covetel::LDAP->new;
+
+    my %datos;
+    my $del = $c->req->data->{direcciones};
+    my $lid = $c->req->data->{lid};
+
+    my $attr_miembro_correo = $c->config->{'Correo::Reenvios'}->{'attrs'}->{'miembro_correo'};
+    my $attr_correo = $c->config->{'Correo::Reenvios'}->{'attrs'}->{'correo'};
+
+    #Determina ObjectClass
+    my $objectClass = $c->config->{'Correo::Reenvios'}->{'objectClass'};
+     
+    my @objectclass = split ' ', $objectClass;
+
+    #Switch que evalua objectclass y limita atributos
+    foreach my $objc (@objectclass) {
+        given ($objc) {
+            when ('qmailGroup') {
+                 #Covetel no utiliza ningun metodo para este objectclass
+            }
+            when ('sendmailMTA') {
+                my $filter = '(&' .
+                             $c->config->{'Correo:Reenvios'}->{'filter'} .
+                             "(sendmailMTAKey=$lid)" .
+                             ')';
+              
+                my $mesg_reenvio = $ldap->search({
+                    filter => $filter,
+                    base => $c->config->{'Correo:Reenvios'}->{'basedn'},
+                    attrs => [ $attr_miembro_correo ]
+                });
+                
+                if(!$mesg_reenvio->is_error) {
+                   my $lista = $mesg_reenvio->shift_entry;
+                   # TODO: no se permiten suicidios. 
+                   # Un moderator no puede eliminarse a si mismo si no hay más attr_moderadores.
+                   # si esto ocurre devuelva un mensaje de error. 
+              
+                     foreach (@{$del}) {
+                         print $_;
+                        my $mesg_member = $ldap->search({
+                            filter => "($attr_correo=$_)",
+                            attrs => [$attr_correo]
+                        });
+                        if ($mesg_member->count){
+                            my $entry = $mesg_member->shift_entry;
+              
+                   # TODO: Evaluar el valor de retorno $mesg de las operaciones update. 
+                   # si es un error, utilizar $self->status_bad_request 
+              
+                            $lista->delete(
+                                   $attr_miembro_correo => $entry->get_value($attr_correo),
+                               )->update($ldap->server);
+                        } else {
+                            if(valid $_) {
+                                $lista->delete(
+                                   $attr_miembro_correo => $_
+                               )->update($ldap->server);
+                            } else {
+                                $self->status_not_found(
+                                   $c,
+                                   message => "No se pudo verificar/validar usuario $_",
+                                );
+                            }
+                        }
+                     }
+                } else {
+                    $self->status_not_found(
+                       $c,
+                       message => "No se encontro la lista: $lid",
+                    );
+                    return;
+                }
+
+                $self->status_ok($c, entity => \%datos);
+
+                my $mesg_delete = $ldap->search({
+                    filter => $filter,
+                    base => $c->config->{'Correo:Reenvios'}->{'basedn'},
+                    attrs => [ 'dn', $attr_miembro_correo ]
+                });
+
+                my $forws = $mesg_delete->shift_entry; 
+                if (!$forws->get_value($attr_miembro_correo)) {
+                    my $resp_del = $ldap->server->delete($forws->dn);
+                }
+            }
+        }
+    }
+}
+
+sub autocomplete_mail_GET {
+    my($self, $c) = @_;
+    my $ldap = Covetel::LDAP->new;
+    my $autoc = lc($c->req->params->{term});
+
+    my $filter = "(mail=$autoc*)";
+
+    my $mesg = $ldap->search({
+        filter => $filter,
+        attrs => ['mail']
+    });
+
+    if($mesg->is_error) {
+        return;
+    }
+
+    my @entries = $mesg->entries;
+
+    my @datos;
+    foreach my $entry (@entries) {
+        push @datos, $entry->get_value('mail');
+    }
+
     $self->status_ok($c, entity => \@datos);
 }
 
