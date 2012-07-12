@@ -140,7 +140,10 @@ sub modify_data : Local : FormConfig {
 
         my $ldap = Covetel::LDAP->new;
         my $base = $ldap->config->{'Covetel::LDAP'}->{'base_personas'};
-        $uid = $c->user->uid;
+        #Validación para administradores modificar datos
+        if ($uid eq $c->user->uid) {
+            $uid = $c->user->uid;
+        }
 
         my $persona = $ldap->person( { uid => $uid } );
         my $dn      = $persona->dn;
