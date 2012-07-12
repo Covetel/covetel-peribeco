@@ -130,20 +130,33 @@ sub detalle : Local {
 sub modify_data : Local : FormConfig {
     my ( $self, $c, $uid ) = @_;
     my $form = $c->stash->{form};
+
+    #Obtengo elemento fieldset
+    my $fieldset = $form->get_element( { type => 'Fieldset' } );
+
+    #Creo elemento oculto con el uid en el formulario
+    my $element = $fieldset->element(
+        {
+            type  => 'Text',
+            name  => 'uid',
+            value => $uid
+        }
+    );
+
+    $element->add_attrs( { class => 'input_text oculto' } );
+    $element->add_attrs( { id    => 'uid_field' } );
+
     $form->auto_constraint_class('constraint_%t');
     if ( $form->submitted_and_valid ) {
 
         #capturando campos
+        $uid = $c->req->param("uid");
         my $nombre   = $c->req->param("nombre");
         my $apellido = $c->req->param("apellido");
         my $ced      = $c->req->param("ced");
 
         my $ldap = Covetel::LDAP->new;
         my $base = $ldap->config->{'Covetel::LDAP'}->{'base_personas'};
-        #Validación para administradores modificar datos
-        if ($uid eq $c->user->uid) {
-            $uid = $c->user->uid;
-        }
 
         my $persona = $ldap->person( { uid => $uid } );
         my $dn      = $persona->dn;
