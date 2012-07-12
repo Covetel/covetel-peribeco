@@ -160,6 +160,7 @@ sub crear :Path('listas/crear') :FormConfig('correo/listas_crear.yml') {
                         $lista->add(
                             $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro_correo'} => $moderator->mail,
                             $c->config->{'Correo::Listas'}->{'attrs'}->{'mailhost'} => $c->config->{'Correo::Listas'}->{'values'}->{'mailhost'},
+                            sendmailMTAAliasGrouping => $c->config->{'Correo::Listas'}->{'values'}->{'sendmailMTAAliasGrouping'},
                         );
                     }
                 }
@@ -248,10 +249,11 @@ sub detalle : Path('listas/detalle'){
 }
 
 sub reenvios : Path('reenvios') {
-    my ( $self, $c ) = @_;
-    if ( $c->assert_user_roles(qw/Administradores/) ) {
-        $c->stash->{template} = 'correo/reenvios/lista.tt';
-    }
+    my ( $self, $c,  $uid ) = @_;
+    my $ldap = Covetel::LDAP->new;
+    my $account = $ldap->person( { uid => $uid } );
+    $c->stash->{account} = $account;
+    $c->stash->{template} = 'correo/reenvios/detalle.tt';
 }
 
             
