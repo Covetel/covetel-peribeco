@@ -252,6 +252,8 @@ sub reenvios : Path('reenvios') {
     my ( $self, $c,  $uid ) = @_;
     my $ldap = Covetel::LDAP->new;
     my $account = $ldap->person( { uid => $uid } );
+    $c->stash->{domain} = $c->config->{domain};
+    $c->stash->{domain2} = $c->config->{'Correo::Reenvios'}->{'values'}->{'domain'}; 
     $c->stash->{account} = $account;
     $c->stash->{template} = 'correo/reenvios/detalle.tt';
 }
