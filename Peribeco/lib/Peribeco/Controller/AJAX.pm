@@ -81,6 +81,8 @@ sub global_quota : Path('quota/global_quota') Args ActionClass('REST') {}
 
 sub getquota : Path('quota/use') Args(1) ActionClass('REST') {}
 
+sub info_persona : Path('info/persona') Args(1) ActionClass('REST') {}
+
 sub delete_lista : Path('delete/lista') Args ActionClass('REST') {}
 
 sub autocomplete_usuarios : Path('autocomplete/usuarios') Args ActionClass('REST') {}
@@ -307,6 +309,19 @@ sub getquota_GET {
     $self->status_ok($c, entity => \@resp);
 
     $socket->close;
+}
+
+sub info_persona_GET {
+    my ( $self, $c, $uid ) = @_;
+
+    my $ldap = Covetel::LDAP->new;
+    my $person = $ldap->person({ uid => $uid });
+    
+    my $datos = $person->firstname.",".$person->lastname.",".$person->ced;
+    
+    push (my @persona, $datos);
+
+    $self->status_ok($c, entity => \@persona);
 }
 
 sub usuario_exists_GET {
