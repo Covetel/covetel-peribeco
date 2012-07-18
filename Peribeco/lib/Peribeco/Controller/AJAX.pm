@@ -1278,15 +1278,12 @@ sub addforward_PUT {
                                $attr_miembro_correo => $entry->get_value($attr_correo),
                            )->update($ldap->server);
                     } else {
-                        if(valid $_) {
+                        if (($_ =~  $c->config->{domain}) || ($_ =~ $c->config->{'Correo::Reenvios'}->{'values'}->{'domain'})) {
                             $reenvio->add(
                                $attr_miembro_correo => $_
                            )->update($ldap->server);
                         } else {
-                            $self->status_not_found(
-                               $c,
-                               message => "No se pudo encontrar el usuario $_",
-                             );
+                            $self->status_not_found( $c, message => "No se pudo encontrar el usuario $_", );
                         }
                     }
                     push @direcciones, $_;

@@ -78,8 +78,8 @@
                             });
                    } 
                    $("#mensaje").remove();
-                   var ojo = $("#lista_direcciones tbody tr").size()
-                   if (ojo == 1) {
+                   var reload = $("#lista_direcciones tbody tr").size()
+                   if (reload == 1) {
                         location.reload();
                    }    
                 }
@@ -145,10 +145,9 @@
     <form id="form_add_forward" action="#">
     <fieldset>
         <legend><span class="AccountID">[% account.uid %]</span></legend>
-        <div class="informacion">[% lista.description %]</div><br />
+        <div class="informacion">Solo permitidos los dominios [% domain %] y [% domain2 %].</div><br />
         <br />
-        <div class="informacionsmall">En el siguiente campo introduzca las
-        direcciones,  separadas por coma.</div>
+        <div class="informacionsmall">En el siguiente campo introduzca las direcciones,  separadas por coma. </div>
         <div class="txt label constraint_required constraint_length">
             <label for="personas">Direcciones de Reenvío</label>
             <textarea cols="20" rows="10" id="direcciones" title="Ingrese las
