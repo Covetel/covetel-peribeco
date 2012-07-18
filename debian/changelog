@@ -1,3 +1,15 @@
+covetel-peribeco (0.2-8) unstable; urgency=low
+
+  * Separando perl al paquete covetel-peribeco-perl 
+
+ -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Wed, 18 Jul 2012 11:16:17 -0430
+
+covetel-peribeco (0.2-7.2) unstable; urgency=low
+
+  * update app 
+
+ -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Mon, 02 Jul 2012 21:20:08 -0430
+
 covetel-peribeco (0.2-7.1) unstable; urgency=low
 
   * small fixes 
