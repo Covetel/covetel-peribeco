@@ -33,90 +33,104 @@ sub index : Path : Args(0) {
 
 sub lista : Local {
     my ( $self, $c ) = @_;
-    if ( $c->assert_user_roles(qw/Administradores/) ) {
-        my $ldap  = Covetel::LDAP->new;
-        my @lista = $ldap->person();
-        $c->stash->{personas} = \@lista;
+    if ($c->config->{'Modulos'}->{'Personas'} == 1 ) {
+        if ( $c->assert_user_roles(qw/Administradores/) ) {
+            my $ldap  = Covetel::LDAP->new;
+            my @lista = $ldap->person();
+            $c->stash->{personas} = \@lista;
+            $c->stash->{modules} = $c->config->{'Modulos'}; 
+        }
+    }else{
+        $c->res->body('Modulo no disponible');
     }
 }
 
 sub eliminar : Local {
     my ( $self, $c, $uid ) = @_;
-    if ( $c->assert_user_roles(qw/Administradores/) ) {
-        my $ldap = Covetel::LDAP->new;
-        my $person = $ldap->person( { uid => $uid } );
-        if ($person) {
-            if ( $person->del() ) {
-                $c->stash->{mensaje} = "El registro de la persona
-                " . $person->firstname . " fue eliminado exitosamente";
+    if ($c->config->{'Modulos'}->{'Personas'} == 1 ) {
+        if ( $c->assert_user_roles(qw/Administradores/) ) {
+            my $ldap = Covetel::LDAP->new;
+            my $person = $ldap->person( { uid => $uid } );
+            if ($person) {
+                if ( $person->del() ) {
+                    $c->stash->{mensaje} = "El registro de la persona
+                    " . $person->firstname . " fue eliminado exitosamente";
+                }
+            }
+            else {
+                $c->stash->{error}   = 1;
+                $c->stash->{mensaje} = "No se encontro la persona";
             }
         }
-        else {
-            $c->stash->{error}   = 1;
-            $c->stash->{mensaje} = "No se encontro la persona";
-        }
+    }else{
+        $c->res->body('Modulo no disponible');
     }
 }
 
 sub crear : Local : FormConfig {
     my ( $self, $c ) = @_;
-    if ( $c->assert_user_roles(qw/Administradores/) ) {
-
-        # Clases para los campos requeridos.
-        my $form = $c->stash->{form};
-        $form->auto_constraint_class('constraint_%t');
-
-        if ( $form->submitted_and_valid ) {
-            my $uid       = $c->req->param("uid");
-            my $firstname = $c->req->param("nombre");
-            my $lastname  = $c->req->param("apellido");
-            my $password  = $c->req->param("passwd");
-            my $ced       = $c->req->param("ced");
-            my $email     = $c->req->param("mail");
-            my $pass_tmp  = "RyimOov5";
-
-            my $person = Covetel::LDAP::Person->new(
-                {
-                    uid          => $uid,
-                    firstname    => $firstname,
-                    lastname     => $lastname,
-                    ced          => $ced,
-                    email        => $email,
+    if ($c->config->{'Modulos'}->{'Personas'} == 1 ) {
+        if ( $c->assert_user_roles(qw/Administradores/) ) {
+        $c->stash->{modules} = $c->config->{'Modulos'}; 
+    
+            # Clases para los campos requeridos.
+            my $form = $c->stash->{form};
+            $form->auto_constraint_class('constraint_%t');
+    
+            if ( $form->submitted_and_valid ) {
+                my $uid       = $c->req->param("uid");
+                my $firstname = $c->req->param("nombre");
+                my $lastname  = $c->req->param("apellido");
+                my $password  = $c->req->param("passwd");
+                my $ced       = $c->req->param("ced");
+                my $email     = $c->req->param("mail");
+                my $pass_tmp  = "RyimOov5";
+    
+                my $person = Covetel::LDAP::Person->new(
+                    {
+                        uid          => $uid,
+                        firstname    => $firstname,
+                        lastname     => $lastname,
+                        ced          => $ced,
+                        email        => $email,
+                    }
+                );
+    
+                $person->password($pass_tmp);
+    
+                my $dn = $person->dn();
+    
+                if ( $person->add ) {
+                    # Password con Net::LDAP::Extension::SetPassword
+                    my $ldap = Covetel::LDAP->new;
+                    my $mesg = $ldap->server->set_password( user => $dn,
+                                                    newpasswd => $password,
+                                                  );
+                    die "error: ",  $mesg->code(),  ": ",  $mesg->error() if ($mesg->code());
+                    $c->stash->{mensaje} = "La persona $firstname $lastname ha sido
+                ingresada exitosamente";
+                    $c->stash->{sucess} = 1;
                 }
-            );
-
-            $person->password($pass_tmp);
-
-            my $dn = $person->dn();
-
-            if ( $person->add ) {
-                # Password con Net::LDAP::Extension::SetPassword
-                my $ldap = Covetel::LDAP->new;
-                my $mesg = $ldap->server->set_password( user => $dn,
-                                                newpasswd => $password,
-                                              );
-                die "error: ",  $mesg->code(),  ": ",  $mesg->error() if ($mesg->code());
-                $c->stash->{mensaje} = "La persona $firstname $lastname ha sido
-            ingresada exitosamente";
-                $c->stash->{sucess} = 1;
+                else {
+                    $c->stash->{error} = 1;
+                    $c->stash->{mensaje} =
+                      "<strong> Error Crítico en LDAP:</strong>"
+                      . $person->ldap->error_str();
+                }
             }
-            else {
+            elsif ( $form->has_errors && $form->submitted ) {
+    
+                # Obtengo el campo que fallo
+                my @err_fields = $form->has_errors;
+                my $label      = $form->get_field( $err_fields[0] )->label;
+    
                 $c->stash->{error} = 1;
                 $c->stash->{mensaje} =
-                  "<strong> Error Crítico en LDAP:</strong>"
-                  . $person->ldap->error_str();
+    "Ha ocurrido un error en el campo <span class='strong'> $label </span> ";
             }
         }
-        elsif ( $form->has_errors && $form->submitted ) {
-
-            # Obtengo el campo que fallo
-            my @err_fields = $form->has_errors;
-            my $label      = $form->get_field( $err_fields[0] )->label;
-
-            $c->stash->{error} = 1;
-            $c->stash->{mensaje} =
-"Ha ocurrido un error en el campo <span class='strong'> $label </span> ";
-        }
+    }else{
+        $c->res->body('Modulo no disponible');
     }
 }
 
