@@ -71,7 +71,7 @@ sub crear : Local  : FormConfig {
         }
         }
     }else{
-        $c->res->body('Modulo no disponible');
+        $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
     }
 }
 
@@ -85,7 +85,7 @@ sub lista : Local {
             $c->stash->{modules} = $c->config->{'Modulos'}; 
         }
     }else{
-        $c->res->body('Modulo no disponible');
+        $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
     }
 }
 
@@ -105,7 +105,7 @@ sub eliminar : Local {
             }
         }
     }else{
-        $c->res->body('Modulo no disponible');
+        $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
     }
 }
 
@@ -132,7 +132,7 @@ sub detalle : Local {
             }
         }
     }else{
-        $c->res->body('Modulo no disponible');
+        $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
     }
 }
 
