@@ -41,7 +41,7 @@ sub lista : Local {
             $c->stash->{modules} = $c->config->{'Modulos'}; 
         }
     }else{
-        $c->res->body('Modulo no disponible');
+        $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
     }
 }
 
@@ -63,7 +63,7 @@ sub eliminar : Local {
             }
         }
     }else{
-        $c->res->body('Modulo no disponible');
+        $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
     }
 }
 
@@ -130,15 +130,20 @@ sub crear : Local : FormConfig {
             }
         }
     }else{
-        $c->res->body('Modulo no disponible');
+        $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
     }
 }
 
 sub detalle : Local {
     my ( $self, $c, $uid ) = @_;
-    my $ldap = Covetel::LDAP->new;
-    my $person = $ldap->person( { uid => $uid } );
-    $c->stash->{persona} = $person;
+    if ($c->config->{'Modulos'}->{'Personas'} == 1 ) {
+        my $ldap = Covetel::LDAP->new;
+        my $person = $ldap->person( { uid => $uid } );
+        $c->stash->{persona} = $person;
+        $c->stash->{modules} = $c->config->{'Modulos'}; 
+    }else{
+        $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
+    }
 }
 
 sub modify_data : Local : FormConfig {
