@@ -1,25 +1,37 @@
 <div class="menu" id="menu"> 
-     [% IF c.check_user_roles('Administradores') %]
-    <span>
-        <a href="/personas/lista">Personas</a>
-    </span>
-    <span>
-        <a href="/grupos/lista">Grupos</a>
-    </span>
-    <span>
-        <a href="/correo/listas">Listas</a>
-    </span>
-    <span>
-        <a href="/correo/quota">Quota</a>
-    </span>
-     [% END %]
-    <span>
-        <a href="/correo/reenvios/[% c.user.uid %]">Reenvíos Automáticos</a>
-    </span>
+    [% IF c.check_user_roles('Administradores') %]
+        [% IF modules.Personas %]
+            <span>
+                <a href="/personas/lista">Personas</a>
+            </span>
+        [% END %]
+        [% IF modules.Grupos %]
+            <span>
+                <a href="/grupos/lista">Grupos</a>
+            </span>
+        [% END %]
+        [% IF modules.Listas %]
+            <span>
+                <a href="/correo/listas">Listas</a>
+            </span>
+        [% END %]
+        [% IF modules.Quota %]
+            <span>
+                <a href="/correo/quota">Quota</a>
+        </span>
+        [% END %]
+        [% IF modules.Reenvios %]
+            <span>
+                <a href="/correo/reenvios/[% c.user.uid %]">Reenvíos Automáticos</a>
+            </span>
+        [% END %]
+    [% END %]
     <span>
         <a href="/logout">Salir</a>
     </span>
-    <span class ="pass">
-        <a href="/personas/detalle/[% c.user.uid %]">Usuario Conectado: [% c.user.uid %]</a>
-    </span>
+    [% IF modules.Personas %]
+        <span class ="pass">
+            <a href="/personas/detalle/[% c.user.uid %]">Usuario Conectado: [% c.user.uid %]</a>
+        </span>
+    [% END %]
 </div>
