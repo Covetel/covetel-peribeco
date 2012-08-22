@@ -20,11 +20,16 @@
                 <a href="/correo/quota">Quota</a>
         </span>
         [% END %]
-        [% IF modules.Reenvios %]
-            <span>
-                <a href="/correo/reenvios/[% c.user.uid %]">Reenvíos Automáticos</a>
-            </span>
-        [% END %]
+    [% END %]
+    [% IF modules.Reenvios %]
+        <span>
+            <a href="/correo/reenvios/[% c.user.uid %]">Reenvíos Automáticos</a>
+        </span>
+    [% END %]
+    [% IF modules.Vacations %]
+        <span>
+            <a href="/correo/vacations/[% c.user.uid %]">Fuera de Oficina</a>
+        </span>
     [% END %]
     <span>
         <a href="/logout">Salir</a>
