@@ -1,0 +1,48 @@
+[% BLOCK header %]
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+        $("#vacations").val("0");
+
+        $("#vacations").click(function() {  
+            if($("#vacations").is(':checked')) {  
+                $("#vacations").val("1");
+            } else {  
+                $("#vacations").val("0");
+            }  
+        });  
+
+        var uid = $("#uid_field").val();
+        var datos = ({'uid': uid});
+        var jsoon = $.JSON.encode(datos);
+        $.ajax({
+            url: "/ajax/info/vacations/"+uid, 
+            type: "GET",
+            dataType: "json",
+            complete: function (data) {
+                var info = $.parseJSON(data.responseText).toString().split(","); 
+                if (info[0] == "TRUE") {
+                    $("#vacations").attr("checked","checked")
+                    $("#vacations").val("1");
+                } else {
+                    $("#vacations").val("0");
+                }
+
+                $("#autorespuesta").val(info[1]);
+            }
+        });
+
+        $("input.input_reset").click(function(){
+            $("#vacations").val("0");
+        });
+
+    });
+</script>
+[% END %]
+<p> 
+ <a class="enlace" href="/personas/lista" title="Listar Personas"> Volver a la
+     lista de Personas </a>
+</p>
+<div id="contenido">
+        [% INCLUDE "mensajes.tt" %]
+        [% form %]
+</div>
