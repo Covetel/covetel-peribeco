@@ -273,7 +273,6 @@ sub detalle : Path('listas/detalle'){
 sub reenvios : Path('reenvios') {
     my ( $self, $c,  $uid ) = @_;
     if ($c->config->{'Modulos'}->{'Reenvios'} == 1 ) {
-        if ( $c->assert_user_roles(qw/Administradores/) ) {
             my $ldap = Covetel::LDAP->new;
             my $account = $ldap->person( { uid => $uid } );
             $c->stash->{modules} = $c->config->{'Modulos'}; 
@@ -281,13 +280,93 @@ sub reenvios : Path('reenvios') {
             $c->stash->{domain2} = $c->config->{'Correo::Reenvios'}->{'values'}->{'domain'}; 
             $c->stash->{account} = $account;
             $c->stash->{template} = 'correo/reenvios/detalle.tt';
-        }
     }else{
         $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
     }
 }
 
+sub vacations : Path('vacations') :FormConfig('correo/vacations_detalle.yml') {
+    my ( $self, $c,  $uid ) = @_;
+    if ($c->config->{'Modulos'}->{'Vacations'} == 1 ) {
+            $c->stash->{modules} = $c->config->{'Modulos'}; 
+            $c->stash->{template} = 'correo/vacations/vacations_detalle.tt';
+            my $form = $c->stash->{form};
+
+            #Obtengo elemento fieldset
+            my $fieldset = $form->get_element( { type => 'Fieldset' } );
+
+            #Creo elemento oculto con el uid en el formulario
+            my $element = $fieldset->element(
+                {
+                    type  => 'Text',
+                    name  => 'uid',
+                    value => $uid
+                }
+            );
+
+            $element->add_attrs( { class => 'input_text oculto' } );
+            $element->add_attrs( { id    => 'uid_field' } );
+
+            $form->auto_constraint_class('constraint_%t');
+    
+            if ( $form->submitted_and_valid ) {
+
+                $uid = $c->req->param("uid");
+                my $sw;
+                my $info; 
+                
+                if ( $c->req->param("Vacations") == 1) {
+                    $sw = "TRUE";
+                }else{
+                    $sw = "FALSE";
+                }
+        
+                if ($c->req->param("Autorespuesta") ne '') {
+                    $info = $c->req->param("Autorespuesta");
+                }
+
+                my $ldap = Covetel::LDAP->new;
+                my $base = $ldap->config->{'Covetel::LDAP'}->{'base_personas'};
+
+
+                my $filter = '(&'.$c->config->{'Correo:Reenvios'}->{'filter'}."(uid=$uid)".')';
             
+                my $mesg = $ldap->search({ 
+                        filter => $filter, 
+                        base => $c->config->{'Correo::Vacations'}->{'basedn'},
+                        attrs => ['*'], 
+                    });
+            
+                if ($mesg->count){
+                    foreach ($mesg->entries) {
+
+                        my $entry = $mesg->entry;
+
+                        print Dumper ($entry);
+         
+                        my $mesg = $ldap->server->modify(
+                            $entry->dn, 
+                            replace => {
+                               $c->config->{'Correo::Vacations'}->{'attrs'}->{'active'} => $sw, 
+                               $c->config->{'Correo::Vacations'}->{'attrs'}->{'mensaje'} => $info, 
+                            }
+                        );
+         
+                        if (! $mesg->is_error ) {
+                            $c->stash->{mensaje} = "Datos Actualizados";
+                        }
+                        else {
+                            $c->stash->{error}   = 1;
+                            $c->stash->{mensaje} = "Error al actualizar ". $mesg->error_text . " " . $mesg->error_desc . " " . $mesg->error;
+                        }
+                            }
+                } 
+           }
+    }else{
+        $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
+    }
+}
+
 =head1 AUTHOR
 
 ApHu,,,
