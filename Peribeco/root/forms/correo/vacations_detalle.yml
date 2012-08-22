@@ -1,0 +1,64 @@
+action: /correo/vacations
+# indicator is the field that is used to test for form submission
+#indicator: Botones.submit
+
+# Start listing the form elements
+#auto_fieldset: 1
+
+languages:
+    - es
+
+elements:
+    - type: Fieldset
+      name: datos_fieldset
+      legend: Fuera de Oficina 
+      elements:
+        - type: Block
+          tag: div
+          content: 'Marque la casilla si quiere habilitar o deshabilitar el fuera de oficina e introduzca un mensaje para auto-respuesta'
+          attributes:
+              class: informacion
+
+        - type: Checkbox 
+          name: Vacations
+          label: Fuera de Oficina
+          attributes:
+              title: 'Por favor marque la casilla para activar o desactivar el fuera de oficina'
+              class: input_text
+              id: vacations
+
+        - type: Text
+          name: Autorespuesta 
+          label: Autorespuesta 
+          attributes:
+              title: 'Por favor ingrese el mensaje de Autorespuesta'
+              class: input_text
+              id: autorespuesta
+          constraints:
+            - Required
+
+    # The Submit button
+    - type: Multi
+      name: Botones
+      elements:
+        - type: Submit
+          name: submit
+          # The text to be displayed
+          value: Asignar
+          attributes:
+              title: Presione este botón para guardar los cambios 
+              class: input_submit
+              id: set_vacations_submit
+        
+        - type: Reset
+          name: reset
+          # The text to be displayed
+          value: Reiniciar
+          attributes:
+              title: Presione este botón para inicializar en blanco los campos del formulario.
+              class: input_reset
+
+filter:
+    # Filtrado de espacios en blanco y caracteres HTML
+    - TrimEdges
+    - HTMLEscape    
