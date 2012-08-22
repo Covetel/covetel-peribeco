@@ -90,6 +90,8 @@ sub autocomplete_usuarios : Path('autocomplete/usuarios') Args ActionClass('REST
 
 sub autocomplete_mail : Path('autocomplete/mail') Args ActionClass('REST') {}
 
+sub vacations : Path('info/vacations') Args(1) ActionClass('REST') {}
+
 sub utf8_decode {
     my ($str) = @_;
     utf8::decode($str);
@@ -1457,6 +1459,30 @@ sub autocomplete_mail_GET {
     }
 
     $self->status_ok($c, entity => \@datos);
+}
+
+sub vacations_GET {
+    my ( $self, $c, $uid ) = @_;
+
+    my $ldap = Covetel::LDAP->new;
+    my $base = $ldap->config->{'Covetel::LDAP'}->{'base_personas'};
+    my $filter = '(&'.$c->config->{'Correo:Reenvios'}->{'filter'}."(uid=$uid)".')';
+    
+    my $mesg = $ldap->search({ 
+            filter => $filter, 
+            base => $c->config->{'Correo::Vacations'}->{'basedn'},
+            attrs => ['*'], 
+        });
+    
+    if ($mesg->count){
+        foreach ($mesg->entries) {
+            my $datos = $_->get_value($c->config->{'Correo::Vacations'}->{'attrs'}->{'active'}).",".$_->get_value($c->config->{'Correo::Vacations'}->{'attrs'}->{'mensaje'});
+            
+            push (my @info, $datos);
+
+            $self->status_ok($c, entity => \@info);
+        }
+    }
 }
 
 =head1 AUTHOR
