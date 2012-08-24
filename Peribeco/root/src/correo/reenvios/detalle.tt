@@ -1,0 +1,185 @@
+[% BLOCK header %]
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+
+        var listacn = $("span.AccountID").html();
+        tabla_listas = $("#lista_direcciones").dataTable({
+            "sAjaxSource": '/ajax/listadirecciones/' + listacn,
+            "oLanguage": {
+                "sUrl": "/static/js/dataTables.spanish.txt"
+            },
+            "bJQueryUI": true,
+            "bRetrieve": true,
+            "fnDrawCallback": function () {
+                my_hover();
+            }
+        });
+
+        // Add member to a list
+    $("form#form_add_forward").submit(function(){ return false; });
+
+    // Boton agregar personas a una lista.
+    $("button#add_forward").click(function(){
+        var uid = $("textarea#direcciones").val();
+        var direcciones = uid.split(',');
+        var lid = $("span.AccountID").html();
+        var datos = ({'direcciones':direcciones, 'lid':lid});
+        var jsoon = $.JSON.encode(datos);
+            $.ajax({
+                url: "/ajax/reenvios/add",
+                type: "PUT",
+                data: jsoon,
+                dataType: "json",
+                contentType: 'application/json',
+                processData: false,
+                complete: function (data) {
+                    $("#direcciones").val('');
+                    tabla_listas.fnReloadAjax();
+                    if (data.status == 200){
+                            $("div#all").append('<div id="mensaje"> </div>');
+                            $("div#mensaje").html("Las direcciones fueron agregadas para reenvío");
+                            $( "#mensaje" ).dialog({ 
+                                title: 'Aviso', 
+                                buttons: { "Ok": function() { $(this).dialog("close"); } }, 
+                                modal: true,
+                            });
+                   } 
+                }
+            }); // Fin de ajax
+    });
+
+    $("button#remove_forward").click(function(){
+        var uids = $("input:checked").getCheckboxValues();
+        var lid = $("span.AccountID").html();
+        var datos = ({'direcciones': uids, 'lid':lid});
+        var jsoon = $.JSON.encode(datos);
+            $.ajax({
+                url: "/ajax/reenvios/del",
+                type: "DELETE",
+                data: jsoon, 
+                dataType: "json",
+                contentType: 'application/json',
+                processData: false,
+                complete: function (data) {
+                    tabla_listas.fnReloadAjax();
+                    if (data.status == 200){
+                            $("div#all").append('<div id="mensaje"> </div>');
+                            $("div#mensaje").html("Fue removida satisfactoriamente la dirección seleccionada");
+                            $( "#mensaje" ).dialog({ 
+                                title: 'Aviso', 
+                                buttons: { "Ok": function() { 
+                                    $(this).dialog("close"); 
+                                    var no = $("#lista_direcciones tbody tr").size()
+                                    if (no == 0) {
+                                        location.reload();
+                                    }    
+                                    } }, 
+                                modal: true,
+                            });
+                   } 
+                   $("#mensaje").remove();
+                   var reload = $("#lista_direcciones tbody tr").size()
+                   if (reload == 1) {
+                        location.reload();
+                   }    
+                }
+            }); // Fin de ajax
+
+    });
+
+    $("#direcciones").autocomplete({
+        source: '/ajax/autocomplete/mail',
+        minLength: 4,
+    });
+
+    function split( val ) {
+            return val.split( /,\s*/ );
+    }
+    function extractLast( term ) {
+            return split( term ).pop();
+    }
+
+    $( "#direcciones" )
+        // don't navigate away from the field on tab when selecting an item
+        .bind( "keydown", function( event ) {
+            if ( event.keyCode === $.ui.keyCode.TAB &&
+                    $( this ).data( "autocomplete" ).menu.active ) {
+                event.preventDefault();
+            }
+        })
+        .autocomplete({
+            source: function( request, response ) {
+                $.getJSON( "/ajax/autocomplete/mail", {
+                    term: extractLast( request.term )
+                }, response );
+            },
+            search: function() {
+                // custom minLength
+                var term = extractLast( this.value );
+                if ( term.length < 2 ) {
+                    return false;
+                }
+            },
+            focus: function() {
+                // prevent value inserted on focus
+                return false;
+            },
+            select: function( event, ui ) {
+                var terms = split( this.value );
+                // remove the current input
+                terms.pop();
+                // add the selected item
+                terms.push( ui.item.value );
+                // add placeholder to get the comma-and-space at the end
+                terms.push( "" );
+                this.value = terms.join( ", " );
+                return false;
+            }
+        });
+
+    }); // end of document.ready
+</script>
+[% END %]
+
+<div id="contenido">
+    <form id="form_add_forward" action="#">
+    <fieldset>
+        <legend><span class="AccountID">[% account.uid %]</span></legend>
+        <div class="informacion">Solo permitidos los dominios [% domain %] y [% domain2 %].</div><br />
+        <br />
+        <div class="informacionsmall">En el siguiente campo introduzca las direcciones,  separadas por coma. </div>
+        <div class="txt label constraint_required constraint_length">
+            <label for="personas">Direcciones de Reenvío</label>
+            <textarea cols="20" rows="10" id="direcciones" title="Ingrese las
+            direcciones a agregar" name="direcciones"></textarea>
+        </div>
+        <div class="multi">
+            <div class="elements">
+                <button id="add_forward"> Agregar direcciones de reenvío</button> 
+            </div>
+        </div>
+    </fieldset>
+    </form>
+
+    <table id="lista_direcciones" width="100%">
+        <thead> 
+            <tr>
+                <th>&nbsp; </th> 
+                <th> Email </th> 
+                <th> UidNumber </th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <td class="left" colspan="7"> 
+                    <button id="remove_forward"> Remover dirección </button>  
+                    <button id="select_all"> Marcar Todos </button>  
+                </td>
+            </tr>
+        </tfoot>
+        <tbody>
+            <tr> <td> &nbsp; </td> </tr>
+        </tbody>
+    </table>
+        
+</div>

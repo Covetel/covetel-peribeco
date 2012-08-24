@@ -1,5 +1,24 @@
 [% BLOCK header %]
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
 
+        var uid = $("#uid_field").val();
+        var datos = ({'uid': uid});
+        var jsoon = $.JSON.encode(datos);
+        $.ajax({
+            url: "/ajax/info/persona/"+uid, 
+            type: "GET",
+            dataType: "json",
+            complete: function (data) {
+                var persona = $.parseJSON(data.responseText).toString().split(","); 
+                $("#nombre").val(persona[0]);
+                $("#apellido").val(persona[1]);
+                $("#ced").val(persona[2]);
+            }
+        });
+
+    }); // end of document.ready  
+</script>
 [% END %]
 
 <p> 
