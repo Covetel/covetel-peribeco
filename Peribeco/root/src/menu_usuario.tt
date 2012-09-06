@@ -3,10 +3,6 @@
     [% IF modules.Personas %]
         <a class="enlace" href="/personas/crear" alt="Crear Persona"> Registrar una nueva Persona </a>
         <a class="enlace" href="/personas/lista" alt="Lista Personas"> Listar Personas </a>
-        <span>
-            <a class="enlace" href="/personas/change_pass/[% persona.uid %]" alt="Cambiar Password">Cambiar Password </a> 
-            <a class="enlace" href="/personas/modify_data/[% persona.uid %]" alt="Modificar datos">Modificar Datos</a>
-        </span>
     [% END %]
 [% END %]
 [% IF c.user.uid == persona.uid %]
@@ -19,6 +15,7 @@
 [% ELSE %]
     [% IF modules.Personas %]
         <a class="enlace" href="/personas/reset_pass/[% persona.uid %]" alt="Cambiar Password">Reiniciar Contraseña</a>
+        <a class="enlace" href="/personas/modify_data/[% persona.uid %]" alt="Modificar datos">Modificar Datos</a>
     [% END %]
 [% END %]
 </p>
