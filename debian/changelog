@@ -1,3 +1,9 @@
+covetel-peribeco (0.2-10) unstable; urgency=low
+
+  * Fueron removidas las dependencias de peribeco-nginx y peribeco-perl 
+
+ -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Thu, 06 Sep 2012 12:18:26 -0430
+
 covetel-peribeco (0.2-9) unstable; urgency=low
 
   * codigo actualizado y reempaquetado 
