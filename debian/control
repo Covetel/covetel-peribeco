@@ -8,6 +8,6 @@ Homepage: http://www.covetel.com.ve
 
 Package: covetel-peribeco
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, covetel-peribeco-nginx, covetel-peribeco-perl
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Control de usuarios y grupos de un ldap
  Peribeco es una aplicacion web que nos facilita la administracion de usuarios y grupos en un ldap
