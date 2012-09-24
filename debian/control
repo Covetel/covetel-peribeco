@@ -8,6 +8,6 @@ Homepage: http://www.covetel.com.ve
 
 Package: covetel-peribeco
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, libcatalyst-perl, libcatalyst-devel-perl, libcatalyst-action-rest-perl, libcatalyst-model-cdbi-perl, libcatalyst-view-tt-perl, libtest-www-mechanize-catalyst-perl, libcatalyst-modules-perl, libcatalyst-authentication-store-ldap-perl, libcatalyst-plugin-unicode-encoding-perl, libnamespace-autoclean-perl, libyaml-libyaml-perl, libmail-rfc822-address-perl, starman, libcatalyst-engine-psgi-perl, covetel-peribeco-nginx
+Depends: ${shlibs:Depends}, ${misc:Depends}, covetel-peribeco-nginx
 Description: Control de usuarios y grupos de un ldap
  Peribeco es una aplicacion web que nos facilita la administracion de usuarios y grupos en un ldap

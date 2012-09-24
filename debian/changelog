@@ -1,8 +1,8 @@
 covetel-peribeco (0.2-12) unstable; urgency=low
 
-  * dependencias para que perl funcione solo con el perl del sistema squeeze 
+  * commit 5022679e6 
 
- -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Mon, 24 Sep 2012 13:54:47 -0430
+ -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Mon, 24 Sep 2012 18:21:38 -0430
 
 covetel-peribeco (0.2-11) unstable; urgency=low
 
