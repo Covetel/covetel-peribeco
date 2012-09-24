@@ -37,7 +37,11 @@ sub index :Path :Args(0) :FormConfig {
 	    my $login   = $c->req->param("login");
 	    my $passw   = $c->req->param("passw");
         if ( $c->authenticate( { id => $login, password => $passw } ) ) {
-            $c->response->redirect($c->uri_for($c->controller('personas')->action_for('lista')));
+            if ( $c->check_user_roles(qw/Administradores/) ) { 
+                $c->response->redirect($c->uri_for($c->controller('personas')->action_for('lista')));
+            }else{
+                $c->response->redirect($c->uri_for('/personas/detalle/'.$c->user->uid));
+            }
         } else {
             $c->stash->{error} = 1;
             $c->stash->{mensaje} = "Usuario o password no validos";
