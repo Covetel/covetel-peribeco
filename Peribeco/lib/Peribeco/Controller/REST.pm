@@ -7,6 +7,10 @@ use Data::Dumper;
 
 BEGIN { extends 'Catalyst::Controller::REST'; }
 
+__PACKAGE__->config(
+  'default'   => 'application/json',
+);
+
 =head1 NAME
 
 Peribeco::Controller::REST - Catalyst Controller
@@ -19,16 +23,15 @@ Catalyst Controller.
 
 =cut
 
-
-sub begin : Private {
+sub auto : Private {
     my ($self, $c) = @_;
    
     $self->{vacation} = {
         active  => $c->config->{'Correo::Vacations'}->{'attrs'}->{'active'}, 
         info    => $c->config->{'Correo::Vacations'}->{'attrs'}->{'mensaje'}, 
     };
-    
-#    $self->{ldap} = Covetel::LDAP->new;
+   
+    $self->{ldap} = Covetel::LDAP->new;
 
     $self->{user_ldap_entry} = $c->session->{user_ldap_entry};
 
@@ -127,8 +130,8 @@ sub vacation_POST {
 =cut
 
 sub vacation_GET {
-    my ($self, $c) = @_;
-
+    my ($self, $c, $param) = @_;
+        
     $self->status_ok(
         $c,
         entity => {
@@ -148,12 +151,13 @@ sub vacation_PUT {
     my ($self, $c) = @_;
     
     my $data = $c->req->data;
+    $c->log->debug(Dumper($c->req->data));
     
     $self->status_ok(
         $c,
         entity => {
             vacation => 1,
-            message  => "Me fui de vacaciones",
+            message  => "FUNCIONAA !!", 
         }
     );
 }
