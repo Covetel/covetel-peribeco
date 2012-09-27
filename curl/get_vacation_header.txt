@@ -1,0 +1,10 @@
+HTTP/1.0 302 Found
+Date: Thu, 27 Sep 2012 10:51:31 GMT
+Server: HTTP::Server::PSGI
+Location: http://localhost:3000/login
+Vary: Content-Type
+Content-Length: 6
+Content-Type: text/x-yaml; charset=UTF-8
+Set-Cookie: peribeco_session=8436c79e9ca58d832d5d564b73fdb49aa0be1a21; path=/; expires=Thu, 27-Sep-2012 12:51:31 GMT; HttpOnly
+X-Catalyst: 5.90016
+

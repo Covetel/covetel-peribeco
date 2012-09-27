@@ -24,6 +24,16 @@ requires 'Catalyst::Plugin::Unicode::Encoding';
 requires 'YAML::XS';
 requires 'Catalyst::Authentication::Store::LDAP';
 
+# Walter Vargas <walter@covetel.com.ve>
+# Tue Sep 25 21:30:41 VET 2012
+
+requires 'Mail::RFC822::Address';
+requires 'Catalyst::Controller::REST';
+requires 'Catalyst::Controller::HTML::FormFu';
+requires 'Email::Sender::Simple';
+requires 'Email::MIME::Creator';
+
+
 requires 'Config::General'; # This should reflect the config file format you've chosen
                  # See Catalyst::Plugin::ConfigLoader for supported formats
 test_requires 'Test::More' => '0.88';
