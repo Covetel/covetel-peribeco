@@ -55,28 +55,35 @@ sub in_vacation : Private {
 
 $self->update_vacation_info({ active => 1, info => 'string'});
 
+=cut
 
-sub update_vacation_info : Local {
+sub update_vacation_info : Private {
     my ($self, $c, $vacation) = @_;
 
-    my $e = $self->{user_ldap_entry};
+    my $e = $c->user->ldap_entry;
 
-    $e->replace( 
-            $self->{vacation}->{active} => $vacation->{active},
-            $self->{vacation}->{info} => $vacation->{info},
-    );
+    $vacation->{active} =~ s/1/TRUE/;
+    $vacation->{active} =~ s/0/FALSE/;
 
-    my $resp = $e->update($self->{ldap}->server);
+    foreach (keys %{$vacation}){
+        my $action = $e->exists( $self->{vacation}->{$_} ) ? 'replace' : 'add'; 
+        $e->$action( $self->{vacation}->{$_} => $vacation->{$_} );
+    }
 
-    unless ($resp->error){
-        return 1;
-    } else {
+    my $server = $self->{ldap}->server;
+
+    my $r = $server->modify($e);
+
+    $c->log->debug(Dumper($r));
+
+    if ($r->error){
         return 0;
+    } else {
+        return 1;
     }
 
     #TODO: Validar la $resp.
 }
-=cut
 
 =head2 get_vacation_info
 
@@ -105,6 +112,7 @@ sub vacation : Local : ActionClass('REST') {}
 
 Set vacation info about an user
 
+=cut
 
 sub vacation_POST {
     my ($self, $c) = @_;
@@ -116,15 +124,14 @@ sub vacation_POST {
         info    => $data->{info} 
     };  
 
-    $self->status_ok( $c, entity => { mensaje => "pruebas" } );
     
-    #if ($self->update_vacation_info($vacation)){
-    #} else {
-    #    $self->status_bad_request($c, message => "Error actualizando los datos"); 
-    #}
+    if ($self->update_vacation_info($c, $vacation)){
+        $self->status_ok( $c, entity => { mensaje => "Vacation status set" } );
+    } else {
+        $self->status_bad_request($c, message => "Error in update_vacation_info"); 
+    }
 }
 
-=cut 
 =head2 vacation_GET 
 
 =cut
