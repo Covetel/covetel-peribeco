@@ -7,9 +7,9 @@ use Data::Dumper;
 
 BEGIN { extends 'Catalyst::Controller::REST'; }
 
-__PACKAGE__->config(
-  'default'   => 'application/json',
-);
+#__PACKAGE__->config(
+#  'default'   => 'application/json',
+#);
 
 =head1 NAME
 
@@ -33,7 +33,7 @@ sub auto : Private {
    
     $self->{ldap} = Covetel::LDAP->new;
 
-    $self->{user_ldap_entry} = $c->session->{user_ldap_entry};
+    $self->{user_ldap_entry} = $c->user->ldap_entry;
 
 }
 
@@ -72,11 +72,9 @@ sub update_vacation_info : Private {
 
     my $server = $self->{ldap}->server;
 
-    my $r = $server->modify($e);
+    my $r = $e->update($server);
 
-    $c->log->debug(Dumper($r));
-
-    if ($r->error){
+    if ($r->is_error){
         return 0;
     } else {
         return 1;
@@ -124,7 +122,6 @@ sub vacation_POST {
         info    => $data->{info} 
     };  
 
-    
     if ($self->update_vacation_info($c, $vacation)){
         $self->status_ok( $c, entity => { mensaje => "Vacation status set" } );
     } else {
@@ -157,16 +154,6 @@ Change vacation status
 sub vacation_PUT {
     my ($self, $c) = @_;
     
-    my $data = $c->req->data;
-    $c->log->debug(Dumper($c->req->data));
-    
-    $self->status_ok(
-        $c,
-        entity => {
-            vacation => 1,
-            message  => "FUNCIONAA !!", 
-        }
-    );
 }
 
 =head2 index
