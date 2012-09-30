@@ -358,7 +358,6 @@ sub info_persona_GET {
 
 sub usuario_exists_GET {
     my ( $self, $c, $uid ) = @_;
-    $c->log->debug($uid);
     my $resp = {};
 
 
@@ -375,7 +374,6 @@ sub usuario_exists_GET {
 
 sub mail_exists_GET {
     my ( $self, $c, $uid ) = @_;
-    $c->log->debug($uid);
     my $resp = {};
 
 
@@ -405,10 +403,7 @@ sub groupmembers_GET {
 
     if ($grupo) {
         my $members = $grupo->members;
-        use Data::Dumper;
-        $c->log->debug(Dumper($members));
         foreach (@{$members}) {
-            $c->log->debug($_);
             my $p = $ldap->person({uid => $_});
             if ($p) {
                 push @person,  $p;
@@ -855,7 +850,6 @@ sub delMember_DELETE {
     my $members = $g->members();
     my $new_members;
     map { push @{$new_members} , $_ unless $_ ~~ @{$del} } @{$members};
-    $c->log->debug(Dumper($new_members));
     $g->members($new_members);
     $g->update;
     $self->status_ok($c, entity => \%datos);
@@ -1137,7 +1131,6 @@ sub autocomplete_usuarios_GET {
         push @datos, $entry->get_value('uid');
     }
 
-    $c->log->debug(@datos);
     $self->status_ok($c, entity => \@datos);
 }
 
