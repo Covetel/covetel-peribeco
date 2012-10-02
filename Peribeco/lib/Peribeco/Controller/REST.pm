@@ -2,6 +2,7 @@ package Peribeco::Controller::REST;
 use Moose;
 use namespace::autoclean;
 use Net::LDAP;
+use Net::LDAPS;
 use Net::LDAP::Entry;
 use Data::Dumper;
 
@@ -31,10 +32,28 @@ sub auto : Private {
         info    => $c->config->{'Correo::Vacations'}->{'attrs'}->{'mensaje'}, 
     };
    
-    $self->{ldap} = Covetel::LDAP->new;
+    $self->{ldap} = $self->ldap_server($c);
 
     $self->{user_ldap_entry} = $c->session->{user_ldap_entry};
 
+}
+
+
+
+sub ldap_server : Private {
+        my ($self, $c) = @_; 
+        my $host = $c->config->{'authentication'}->{'realms'}->{'ldap'}->{'store'}->{'ldap_server'};
+        my $dn = $c->config->{'authentication'}->{'realms'}->{'ldap'}->{'store'}->{'binddn'};
+        my $pw = $c->config->{'authentication'}->{'realms'}->{'ldap'}->{'store'}->{'bindpw'};
+        my $ldap;       
+        if ( $c->config->{'authentication'}->{'realms'}->{'ldap'}->{'store'}->{'start_tls'} ){
+                $ldap = Net::LDAPS->new($host);
+        } else {
+                $ldap = Net::LDAP->new($host);
+        }
+        $ldap->bind( $dn, password => $pw );    
+
+        return $ldap;
 }
 
 =head2 in_vacation
@@ -67,16 +86,16 @@ sub update_vacation_info : Private {
 
     foreach (keys %{$vacation}){
         my $action = $e->exists( $self->{vacation}->{$_} ) ? 'replace' : 'add'; 
+
         $e->$action( $self->{vacation}->{$_} => $vacation->{$_} );
     }
 
-    my $server = $self->{ldap}->server;
+    my $ldap = $self->{ldap};
 
-    my $r = $server->modify($e);
+    my $resp = $e->update($ldap);
 
-    $c->log->debug(Dumper($r));
 
-    if ($r->error){
+    if ($resp->is_error){
         return 0;
     } else {
         return 1;
@@ -124,7 +143,6 @@ sub vacation_POST {
         info    => $data->{info} 
     };  
 
-    
     if ($self->update_vacation_info($c, $vacation)){
         $self->status_ok( $c, entity => { mensaje => "Vacation status set" } );
     } else {
@@ -158,7 +176,6 @@ sub vacation_PUT {
     my ($self, $c) = @_;
     
     my $data = $c->req->data;
-    $c->log->debug(Dumper($c->req->data));
     
     $self->status_ok(
         $c,
