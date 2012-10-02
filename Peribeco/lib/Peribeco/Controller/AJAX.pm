@@ -153,18 +153,29 @@ sub remove_domain {
     map {s/@.*$//} @list;
     my $str = join(",",@list);
     return $str;
-    
 }
 
 sub listas_GET {
     my ( $self, $c ) = @_;
     
     my $ldap = Covetel::LDAP->new;
+
+    my $filter;
     
+    if ($c->config->{domain} =~ /cantv/) {
+        $filter = "(&".$c->config->{'Correo::Listas'}->{'filter'}."(uid=".$c->user->uid."))";
+    }else{
+        $filter = $c->config->{'Correo::Listas'}->{'filter'};
+    }
+
+    if ($c->check_user_roles(qw/Administradores/)) {
+        $filter = $c->config->{'Correo::Listas'}->{'filter'};
+    }
+
     my $mesg = $ldap->search({ 
-            filter => $c->config->{'Correo::Listas'}->{'filter'},
+            filter => $filter,
             base => $c->config->{'Correo::Listas'}->{'basedn'},
-            attrs => '*'
+            attrs => ['*']
         });
 
     my %datos;
@@ -201,7 +212,7 @@ sub quota_GET {
     my $mesg = $ldap->search({ 
             filter => $c->config->{'Correo::Quota'}->{'filter'},
             base => $c->config->{'Correo::Quota'}->{'basedn'},
-            attrs => '*'
+            attrs => ['*']
         });
 
     my %datos;
@@ -614,14 +625,15 @@ sub listamembers_GET {
                  my $mesg = $ldap->search({
                      filter => $filter,
                      base => $c->config->{'Correo::Listas'}->{'basedn'},
-                     attrs => [ $attr_miembro_correo ]
+                     attrs => [ $attr_miembro_correo, $attr_moderador ]
                  });
                  
                  my @entries;
                  if($mesg->count) {
                      my $resp = $mesg->shift_entry;
                      my @rfcmembers = $resp->get_value($attr_miembro_correo);
-                 
+                     my @moderators = $resp->get_value($attr_moderador);
+
                      foreach (@rfcmembers) {
                          $mesg = $ldap->search({
                              filter => "($attr_correo=" . $_ . ')',
@@ -631,7 +643,7 @@ sub listamembers_GET {
                          my $entry = $mesg->shift_entry;
                          if (defined $entry) {
                              $entry->add(
-                                 tipo    => 'Miembro', 
+                                 tipo    => $entry->get_value($attr_moderador) ~~ @moderators ? "Moderador" : "Miembro", 
                              );
                          } else {
                              $entry = Net::LDAP::Entry->new;
@@ -779,7 +791,6 @@ sub addListaMembers_PUT {
                     }
                     push @usuarios, $_;
                 }
-                print Dumper @usuarios;
                 $datos{usuarios} = \@usuarios;
                 $self->status_ok($c, entity => \%datos);
              }
@@ -832,7 +843,6 @@ sub addListaMembers_PUT {
                      }
                      push @usuarios, $_;
                  }
-                 print Dumper @usuarios;
                  $datos{usuarios} = \@usuarios;
                  $self->status_ok($c, entity => \%datos);
              }
@@ -892,9 +902,6 @@ sub delListaMembers_DELETE {
               
                 if(!$mesg_lista->is_error) {
                    my $lista = $mesg_lista->shift_entry;
-                   # TODO: no se permiten suicidios. 
-                   # Un moderator no puede eliminarse a si mismo si no hay más attr_moderadores.
-                   # si esto ocurre devuelva un mensaje de error. 
               
                      foreach (@{$del}) {
                          print $_;
@@ -945,20 +952,17 @@ sub delListaMembers_DELETE {
                 my $mesg_lista = $ldap->search({
                     filter => $filter,
                     base => $c->config->{'Correo::Listas'}->{'basedn'},
-                    attrs => [ $attr_miembro_correo ]
+                    attrs => [ $attr_miembro_correo, $attr_moderador ]
                 });
               
                 if(!$mesg_lista->is_error) {
                    my $lista = $mesg_lista->shift_entry;
-                   # TODO: no se permiten suicidios. 
-                   # Un moderator no puede eliminarse a si mismo si no hay más attr_moderadores.
-                   # si esto ocurre devuelva un mensaje de error. 
+                   my @moderators = $lista->get_value($attr_moderador);
               
                      foreach (@{$del}) {
-                         print $_;
                         my $mesg_member = $ldap->search({
                             filter => "($attr_correo=$_)",
-                            attrs => [$attr_correo]
+                            attrs => [$attr_correo, 'uid']
                         });
                         if ($mesg_member->count){
                             my $entry = $mesg_member->shift_entry;
@@ -966,9 +970,17 @@ sub delListaMembers_DELETE {
                    # TODO: Evaluar el valor de retorno $mesg de las operaciones update. 
                    # si es un error, utilizar $self->status_bad_request 
               
-                            $lista->delete(
-                                   $attr_miembro_correo => $entry->get_value($attr_correo),
-                               )->update($ldap->server);
+                            if ( $entry->get_value('uid') ne $c->user->uid ) {
+                                $lista->delete(
+                                       $attr_miembro_correo => $entry->get_value($attr_correo),
+                                   )->update($ldap->server);
+                            }else{
+                                $self->status_bad_request(
+                                    $c,
+                                    message => "",
+                                );
+                                return;
+                            }
                         } else {
                             if(valid $_) {
                                 $lista->delete(
@@ -979,6 +991,7 @@ sub delListaMembers_DELETE {
                                    $c,
                                    message => "No se pudo verificar/validar usuario $_",
                                 );
+                                return;
                             }
                         }
                      }
@@ -1029,60 +1042,62 @@ This method delete an entry of distribution list.
 
 sub delete_lista_DELETE {
     my ( $self, $c ) = @_;
-    my $ldap = Covetel::LDAP->new;
-    my %resp;
+    if ( $c->assert_user_roles(qw/Administradores/) ) {
+        my $ldap = Covetel::LDAP->new;
+        my %resp;
 
-    my $ids = $c->req->data->{ids};
+        my $ids = $c->req->data->{ids};
 
-    # Busco cada una de las listas en LDAP
-    # TODO: Esto debería estar en una modelo. Catalyst::Model::LDAP
+        # Busco cada una de las listas en LDAP
+        # TODO: Esto debería estar en una modelo. Catalyst::Model::LDAP
 
-    # Busco el filtro de búsqueda utilizado para las listas en la
-    # configuración. 
-    
-    my $filter = $c->config->{'Correo::Listas'}->{'filter'};
-    my $nombre = $c->config->{'Correo::Listas'}->{'attrs'}->{'nombre'};
-
-    #$filter = '(&' . $filter . '('. $nombre .'='.  .'))';
-
-    my @entries; # entradas que van a ser eliminadas.
-    
-    foreach my $id (@{$ids}){
+        # Busco el filtro de búsqueda utilizado para las listas en la
+        # configuración. 
         
-        my $cf = "(&$filter($nombre=$id))";
-        my $mesg = $ldap->search({ filter => $cf });
+        my $filter = $c->config->{'Correo::Listas'}->{'filter'};
+        my $nombre = $c->config->{'Correo::Listas'}->{'attrs'}->{'nombre'};
 
-        if ($mesg->count){
+        #$filter = '(&' . $filter . '('. $nombre .'='.  .'))';
 
-            push @entries, $mesg->shift_entry;
+        my @entries; # entradas que van a ser eliminadas.
+        
+        foreach my $id (@{$ids}){
             
-        } else {
-            # No se encontraron elementos, se responde con 404
-            $self->status_not_found(
-               $c,
-               message => "No se encontro la lista: $id",
-            );
-            return;
+            my $cf = "(&$filter($nombre=$id))";
+            my $mesg = $ldap->search({ filter => $cf });
+
+            if ($mesg->count){
+
+                push @entries, $mesg->shift_entry;
+                
+            } else {
+                # No se encontraron elementos, se responde con 404
+                $self->status_not_found(
+                   $c,
+                   message => "No se encontro la lista: $id",
+                );
+                return;
+            }
         }
+
+         #sleep 6; # sleep utilizado para simular que se rompe el LDAP
+
+        foreach my $e (@entries){
+            my $resp = $ldap->server->delete($e);
+
+            if ($resp->is_error){
+                $self->status_bad_request(
+                   $c,
+                   message => "No se pudo eliminar la lista " . $e->get_value($nombre) . ", errores ldap: "
+                   . $resp->error . ' ' . $resp->code . ' ' .
+                   $resp->error_text . ' ' . $resp->error_desc,
+                );
+                return;
+            }         
+        }
+
+        $self->status_ok($c, entity => { status => 1 });
     }
-
-     #sleep 6; # sleep utilizado para simular que se rompe el LDAP
-
-    foreach my $e (@entries){
-        my $resp = $ldap->server->delete($e);
-
-        if ($resp->is_error){
-            $self->status_bad_request(
-               $c,
-               message => "No se pudo eliminar la lista " . $e->get_value($nombre) . ", errores ldap: "
-               . $resp->error . ' ' . $resp->code . ' ' .
-               $resp->error_text . ' ' . $resp->error_desc,
-            );
-            return;
-        }         
-    }
-
-    $self->status_ok($c, entity => { status => 1 });
 }
 
 sub delete_persons_DELETE {

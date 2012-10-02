@@ -10,11 +10,13 @@
                 <a href="/grupos/lista">Grupos</a>
             </span>
         [% END %]
+    [% END %]
         [% IF modules.Listas %]
             <span>
                 <a href="/correo/listas">Listas</a>
             </span>
         [% END %]
+    [% IF c.check_user_roles('Administradores') %]
         [% IF modules.Quota %]
             <span>
                 <a href="/correo/quota">Quota</a>
