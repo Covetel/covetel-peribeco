@@ -342,8 +342,6 @@ sub vacations : Path('vacations') :FormConfig('correo/vacations_detalle.yml') {
 
                         my $entry = $mesg->entry;
 
-                        print Dumper ($entry);
-         
                         my $mesg = $ldap->server->modify(
                             $entry->dn, 
                             replace => {
@@ -351,7 +349,7 @@ sub vacations : Path('vacations') :FormConfig('correo/vacations_detalle.yml') {
                                $c->config->{'Correo::Vacations'}->{'attrs'}->{'mensaje'} => $info, 
                             }
                         );
-         
+
                         if (! $mesg->is_error ) {
                             $c->stash->{mensaje} = "Datos Actualizados";
                         }
