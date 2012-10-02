@@ -34,7 +34,7 @@ sub auto : Private {
    
     $self->{ldap} = $self->ldap_server($c);
 
-    $self->{user_ldap_entry} = $c->session->{user_ldap_entry};
+    $self->{user_ldap_entry} = $c->user->ldap_entry;
 
 }
 
@@ -86,14 +86,12 @@ sub update_vacation_info : Private {
 
     foreach (keys %{$vacation}){
         my $action = $e->exists( $self->{vacation}->{$_} ) ? 'replace' : 'add'; 
-
         $e->$action( $self->{vacation}->{$_} => $vacation->{$_} );
     }
 
     my $ldap = $self->{ldap};
 
     my $resp = $e->update($ldap);
-
 
     if ($resp->is_error){
         return 0;
@@ -126,6 +124,13 @@ sub get_vacation_info : Private {
 =cut
 
 sub vacation : Local : ActionClass('REST') {}
+
+=head2 maillist
+
+REST API for maillist.
+
+=cut
+sub maillist : Local : ActionClass('REST') {}
 
 =head2 vacation_POST
 
@@ -166,24 +171,120 @@ sub vacation_GET {
     );
 }
 
-=head2 vacation_PUT
+=head2 maillist_GET
 
-Change vacation status
+
+=cut 
+
+sub maillist_GET {
+    my ($self, $c) = @_;
+    
+    my @maillist = $self->maillist_fetch($c);
+
+    if (@maillist){
+        while  (my $e = shift @maillist){
+                $c->log->debug(Dumper({$e->dump}));
+        }
+    } else {
+    
+    }
+    
+    $self->status_ok( $c, entity => { mensaje => "Vacation status set" } );
+}
+
+
+=head2 maillist_fetch
+
+Retrive maillist entries by uid
 
 =cut
 
-sub vacation_PUT {
+sub maillist_fetch : Private {
     my ($self, $c) = @_;
+
+    my ($op);
+
+    my $uid = $c->user->uid;
+
+    my $ldap = $self->{ldap};
+
+    my $filter = $c->config->{'Correo::Listas'}->{'filter'};
+
+    my $moderator_f = $c->config->{'Correo::Listas'}->{'attrs'}->{'moderador'};
+
+    if ($moderator_f){
+        # Operator is | or ( 
+        ($op) = ( $filter =~ /(^\(&|\|)/ );
+
+        $op =~ s/\(//;
+       
+        # if no op so op is &.
+        $op = $op // "&"; 
+
+        # Fields of filter
+        my @fields = ( $filter =~ /(\w+=\w+)/g );
+
+        # Add new field to list
+        push @fields, "$moderator_f=$uid";
+
+        # Agrego los parentesis a los campos
+        map { $_ = "($_)" } @fields;
+
+        my $fields = join '', @fields;
+        
+        # Build filter again
+        $filter = '(' . $op . $fields . ')';
+    }
+
+    $c->log->debug($filter);
+
+    my $mesg = $ldap->search(
+            filter => $filter,
+            base => $c->config->{'Correo::Listas'}->{'basedn'},
+            attrs => ['*'],
+    );
     
+    if ($mesg->count){
+        return $mesg->entries;
+    } else { 
+        return 0;
+    }
+}
+
+=head2 maillist_POST
+
+Modify maillist members
+
+=cut
+
+sub maillist_POST {
+    my ($self, $c) = @_;
+
     my $data = $c->req->data;
     
-    $self->status_ok(
-        $c,
-        entity => {
-            vacation => 1,
-            message  => "FUNCIONAA !!", 
-        }
-    );
+    my $maillist = { 
+        members  => $data->{members}, 
+    };  
+
+    if ($self->maillist_update_members($c, $maillist)){
+        $self->status_ok( $c, entity => { mensaje => "Members modifed" } );
+    } else {
+        $self->status_bad_request($c, message => "Error in
+            maillist_update_members"); 
+    }
+}
+
+=head2 maillist_update_members : Private
+
+$self->maillist_update_members($c, $maillist);
+
+=cut
+
+sub maillist_update_members {
+    my ($self, $c, $maillist) = @_;
+   
+
+    1;
 }
 
 =head2 index
