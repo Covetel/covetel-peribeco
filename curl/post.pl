@@ -15,7 +15,7 @@ my $data = encode_json($hash);
 my $url = "http://localhost:3000/rest/vacation/";
 
 my $req = HTTP::Request->new(POST => $url);
-$req->header("Cookie" => "peribeco_session=b4fb9470311fd6f6efc5061b80276ee5c94be744");
+$req->header("Cookie" => "peribeco_session=c614676f4ceeaf09f8153b70de7ddaad8edb80cc");
 $req->content_type('application/json');
 $req->content($data);
 
