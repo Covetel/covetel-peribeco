@@ -952,20 +952,17 @@ sub delListaMembers_DELETE {
                 my $mesg_lista = $ldap->search({
                     filter => $filter,
                     base => $c->config->{'Correo::Listas'}->{'basedn'},
-                    attrs => [ $attr_miembro_correo ]
+                    attrs => [ $attr_miembro_correo, $attr_moderador ]
                 });
               
                 if(!$mesg_lista->is_error) {
                    my $lista = $mesg_lista->shift_entry;
-                   # TODO: no se permiten suicidios. 
-                   # Un moderator no puede eliminarse a si mismo si no hay más attr_moderadores.
-                   # si esto ocurre devuelva un mensaje de error. 
+                   my @moderators = $lista->get_value($attr_moderador);
               
                      foreach (@{$del}) {
-                         print $_;
                         my $mesg_member = $ldap->search({
                             filter => "($attr_correo=$_)",
-                            attrs => [$attr_correo]
+                            attrs => [$attr_correo, 'uid']
                         });
                         if ($mesg_member->count){
                             my $entry = $mesg_member->shift_entry;
@@ -973,9 +970,17 @@ sub delListaMembers_DELETE {
                    # TODO: Evaluar el valor de retorno $mesg de las operaciones update. 
                    # si es un error, utilizar $self->status_bad_request 
               
-                            $lista->delete(
-                                   $attr_miembro_correo => $entry->get_value($attr_correo),
-                               )->update($ldap->server);
+                            if ( $entry->get_value('uid') ne $c->user->uid ) {
+                                $lista->delete(
+                                       $attr_miembro_correo => $entry->get_value($attr_correo),
+                                   )->update($ldap->server);
+                            }else{
+                                $self->status_bad_request(
+                                    $c,
+                                    message => "",
+                                );
+                                return;
+                            }
                         } else {
                             if(valid $_) {
                                 $lista->delete(
@@ -986,6 +991,7 @@ sub delListaMembers_DELETE {
                                    $c,
                                    message => "No se pudo verificar/validar usuario $_",
                                 );
+                                return;
                             }
                         }
                      }
