@@ -175,7 +175,7 @@ sub listas_GET {
     my $mesg = $ldap->search({ 
             filter => $filter,
             base => $c->config->{'Correo::Listas'}->{'basedn'},
-            attrs => '*'
+            attrs => ['*']
         });
 
     my %datos;
@@ -212,7 +212,7 @@ sub quota_GET {
     my $mesg = $ldap->search({ 
             filter => $c->config->{'Correo::Quota'}->{'filter'},
             base => $c->config->{'Correo::Quota'}->{'basedn'},
-            attrs => '*'
+            attrs => ['*']
         });
 
     my %datos;
