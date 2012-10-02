@@ -153,16 +153,27 @@ sub remove_domain {
     map {s/@.*$//} @list;
     my $str = join(",",@list);
     return $str;
-    
 }
 
 sub listas_GET {
     my ( $self, $c ) = @_;
     
     my $ldap = Covetel::LDAP->new;
+
+    my $filter;
     
+    if ($c->config->{domain} =~ /cantv/) {
+        $filter = "(&".$c->config->{'Correo::Listas'}->{'filter'}."(uid=".$c->user->uid."))";
+    }else{
+        $filter = $c->config->{'Correo::Listas'}->{'filter'};
+    }
+
+    if ($c->check_user_roles(qw/Administradores/)) {
+        $filter = $c->config->{'Correo::Listas'}->{'filter'};
+    }
+
     my $mesg = $ldap->search({ 
-            filter => $c->config->{'Correo::Listas'}->{'filter'},
+            filter => $filter,
             base => $c->config->{'Correo::Listas'}->{'basedn'},
             attrs => '*'
         });
