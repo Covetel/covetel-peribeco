@@ -38,10 +38,6 @@
     });
 </script>
 [% END %]
-<p> 
- <a class="enlace" href="/personas/lista" title="Listar Personas"> Volver a la
-     lista de Personas </a>
-</p>
 <div id="contenido">
         [% INCLUDE "mensajes.tt" %]
         [% form %]
