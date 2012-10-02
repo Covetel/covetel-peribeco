@@ -625,14 +625,15 @@ sub listamembers_GET {
                  my $mesg = $ldap->search({
                      filter => $filter,
                      base => $c->config->{'Correo::Listas'}->{'basedn'},
-                     attrs => [ $attr_miembro_correo ]
+                     attrs => [ $attr_miembro_correo, $attr_moderador ]
                  });
                  
                  my @entries;
                  if($mesg->count) {
                      my $resp = $mesg->shift_entry;
                      my @rfcmembers = $resp->get_value($attr_miembro_correo);
-                 
+                     my @moderators = $resp->get_value($attr_moderador);
+
                      foreach (@rfcmembers) {
                          $mesg = $ldap->search({
                              filter => "($attr_correo=" . $_ . ')',
@@ -642,7 +643,7 @@ sub listamembers_GET {
                          my $entry = $mesg->shift_entry;
                          if (defined $entry) {
                              $entry->add(
-                                 tipo    => 'Miembro', 
+                                 tipo    => $entry->get_value($attr_moderador) ~~ @moderators ? "Moderador" : "Miembro", 
                              );
                          } else {
                              $entry = Net::LDAP::Entry->new;
@@ -790,7 +791,6 @@ sub addListaMembers_PUT {
                     }
                     push @usuarios, $_;
                 }
-                print Dumper @usuarios;
                 $datos{usuarios} = \@usuarios;
                 $self->status_ok($c, entity => \%datos);
              }
@@ -843,7 +843,6 @@ sub addListaMembers_PUT {
                      }
                      push @usuarios, $_;
                  }
-                 print Dumper @usuarios;
                  $datos{usuarios} = \@usuarios;
                  $self->status_ok($c, entity => \%datos);
              }
@@ -903,9 +902,6 @@ sub delListaMembers_DELETE {
               
                 if(!$mesg_lista->is_error) {
                    my $lista = $mesg_lista->shift_entry;
-                   # TODO: no se permiten suicidios. 
-                   # Un moderator no puede eliminarse a si mismo si no hay más attr_moderadores.
-                   # si esto ocurre devuelva un mensaje de error. 
               
                      foreach (@{$del}) {
                          print $_;
