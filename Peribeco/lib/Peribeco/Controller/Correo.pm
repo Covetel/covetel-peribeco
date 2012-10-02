@@ -167,6 +167,8 @@ sub crear :Path('listas/crear') :FormConfig('correo/listas_crear.yml') {
                                 homeDirectory => '/dev/null',
                                 $c->config->{'Correo::Listas'}->{'attrs'}->{'correo'} => $mail,
                                 $c->config->{'Correo::Listas'}->{'attrs'}->{'nombre'} => $uid,
+                                $c->config->{'Correo::Listas'}->{'attrs'}->{'moderador'} => $moderator->uid,
+                                $c->config->{'Correo::Listas'}->{'attrs'}->{'descripcion'} => $desc,
                             );
         
                             # Datos de los miembros
