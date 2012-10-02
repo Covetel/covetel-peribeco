@@ -8,9 +8,9 @@ use Data::Dumper;
 
 BEGIN { extends 'Catalyst::Controller::REST'; }
 
-__PACKAGE__->config(
-  'default'   => 'application/json',
-);
+#__PACKAGE__->config(
+#  'default'   => 'application/json',
+#);
 
 =head1 NAME
 
@@ -89,11 +89,11 @@ sub update_vacation_info : Private {
         $e->$action( $self->{vacation}->{$_} => $vacation->{$_} );
     }
 
-    my $ldap = $self->{ldap};
+    my $server = $self->{ldap}->server;
 
-    my $resp = $e->update($ldap);
+    my $r = $e->update($server);
 
-    if ($resp->is_error){
+    if ($r->is_error){
         return 0;
     } else {
         return 1;
@@ -244,6 +244,7 @@ sub maillist_fetch : Private {
             attrs => ['*'],
     );
     
+<<<<<<< HEAD
     if ($mesg->count){
         return $mesg->entries;
     } else { 
@@ -285,6 +286,8 @@ sub maillist_update_members {
    
 
     1;
+=======
+>>>>>>> 5377a7c51b97a8b480ddf5f99f06009f9be7fa45
 }
 
 =head2 index
