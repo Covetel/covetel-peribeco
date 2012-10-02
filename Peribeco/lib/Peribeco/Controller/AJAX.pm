@@ -163,7 +163,14 @@ sub listas_GET {
     my $filter;
     
     if ($c->config->{domain} =~ /cantv/) {
-        $filter = "(&".$c->config->{'Correo::Listas'}->{'filter'}."(uid=".$c->user->uid."))";
+    
+        my $moderator_f = $c->config->{'Correo::Listas'}->{'attrs'}->{'moderador'};
+        $filter = $c->config->{'Correo::Listas'}->{'filter'};
+        my $uid = $c->user->uid;
+
+        $filter = $c->controller('REST')->filter_append($c,$filter,"$moderator_f=$uid");
+        $c->log->debug($filter);
+
     }else{
         $filter = $c->config->{'Correo::Listas'}->{'filter'};
     }
@@ -171,6 +178,7 @@ sub listas_GET {
     if ($c->check_user_roles(qw/Administradores/)) {
         $filter = $c->config->{'Correo::Listas'}->{'filter'};
     }
+    $c->log->debug($filter);
 
     my $mesg = $ldap->search({ 
             filter => $filter,
