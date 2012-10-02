@@ -207,13 +207,14 @@ sub crear :Path('listas/crear') :FormConfig('correo/listas_crear.yml') {
     }else{
         $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
     }
+    $c->stash->{modules} = $c->config->{'Modulos'}; 
 }
 
 sub detalle : Path('listas/detalle'){
     my ( $self, $c, $lid ) = @_;
-    if ($c->config->{'Modulos'}->{'Listas'} == 1 ) {
-        if ($c->assert_user_roles(qw/Administradores/) ) {
             $c->stash->{template} = 'correo/listas/detalle.tt';
+            $c->stash->{domain} = $c->config->{domain};
+
             my $ldap = Covetel::LDAP->new;
     
             #Determina ObjectClass
