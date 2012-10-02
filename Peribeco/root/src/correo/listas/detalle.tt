@@ -54,8 +54,15 @@
                 contentType: 'application/json',
                 processData: false,
                 complete: function (data) {
-                  //  $("div#mensaje").html("Las personas fueron removidas del grupo exitosamente");
-                  //  $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
+                    if (data.status == 200){
+                        $("div#all").append('<div id="mensaje"> </div>');
+                        $("div#mensaje").html("Las personas fueron removidas del grupo exitosamente");
+                        $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
+                    }else{
+                        $("div#all").append('<div id="mensaje"> </div>');
+                        $("div#mensaje").html("Ocurrio un error al tratar de eliminar el miembro");
+                        $( "#mensaje" ).dialog({ buttons: { "Ok": function() { $(this).dialog("close"); } } });
+                    }
                     tabla_listas.fnReloadAjax();
                 }
             }); // Fin de ajax
@@ -149,7 +156,9 @@
 </script>
 [% END %]
 <p> 
+[% IF c.check_user_roles('Administradores') %]
  <a class="enlace" href="/correo/listas/crear" title="Crear Lista de Correo"> Crear lista de correo</a>
+[% END %]
  <a class="enlace" href="/correo/listas" title="Lista Listas de Correo"> Listar listas de correo</a>
 </p>
 
@@ -189,11 +198,13 @@
                 <td class="left" colspan="7"> 
                     <button id="remove_from_lista"> Remover de la Lista </button>  
                     <button id="select_all"> Marcar Todos </button>  
+                    [% IF domain != 'cantv.com.ve' %]
                     <select name="roles" id="combo_roles">
                         <option value="miembro">Miembro</option>
                         <option value="moderador">Moderador</option>
                         <option disabled="disabled" value="seleccionado" id="info_rol" selected="selected">Elija un rol</option>
                     </select>
+                    [% END %]
                 </td>
             </tr>
         </tfoot>
@@ -201,8 +212,4 @@
             <tr> <td> &nbsp; </td> </tr>
         </tbody>
     </table>
-
-    <div class="oculto" title="Operacion Exitosa" id="mensaje">
-        Las personas fueron agregadas exitosamente al grupo
-    </div>
 </div>

@@ -67,6 +67,7 @@ sub eliminar : Local {
     }else{
         $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
     }
+   $c->stash->{modules} = $c->config->{'Modulos'}; 
 }
 
 sub crear : Local : FormConfig {
@@ -134,6 +135,7 @@ sub crear : Local : FormConfig {
     }else{
         $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
     }
+    $c->stash->{modules} = $c->config->{'Modulos'}; 
 }
 
 sub detalle : Local {
@@ -219,6 +221,7 @@ sub modify_data : Local : FormConfig {
     }else{
         $c->res->body('No tiene permisos para ver esta información <a class="enlace" href="/personas/detalle/'.$c->user->uid.'"alt="Regresar"> Regresar </a>');
     }
+    $c->stash->{modules} = $c->config->{'Modulos'}; 
 }
 
 sub change_pass : Local : FormConfig {
@@ -270,6 +273,7 @@ sub change_pass : Local : FormConfig {
     }else{
         $c->res->body('No tiene permisos para ver esta información <a class="enlace" href="/personas/detalle/'.$c->user->uid.'" alt="Regresar"> Regresar </a>');
     }
+    $c->stash->{modules} = $c->config->{'Modulos'}; 
 }
 
 sub reset_pass : Local : FormConfig {
@@ -335,6 +339,7 @@ sub reset_pass : Local : FormConfig {
 "Ha ocurrido un error en el campo <span class='strong'> $label </span> ";
         }
     }
+    $c->stash->{modules} = $c->config->{'Modulos'}; 
 }
 
 =head1 AUTHOR
