@@ -1042,60 +1042,62 @@ This method delete an entry of distribution list.
 
 sub delete_lista_DELETE {
     my ( $self, $c ) = @_;
-    my $ldap = Covetel::LDAP->new;
-    my %resp;
+    if ( $c->assert_user_roles(qw/Administradores/) ) {
+        my $ldap = Covetel::LDAP->new;
+        my %resp;
 
-    my $ids = $c->req->data->{ids};
+        my $ids = $c->req->data->{ids};
 
-    # Busco cada una de las listas en LDAP
-    # TODO: Esto debería estar en una modelo. Catalyst::Model::LDAP
+        # Busco cada una de las listas en LDAP
+        # TODO: Esto debería estar en una modelo. Catalyst::Model::LDAP
 
-    # Busco el filtro de búsqueda utilizado para las listas en la
-    # configuración. 
-    
-    my $filter = $c->config->{'Correo::Listas'}->{'filter'};
-    my $nombre = $c->config->{'Correo::Listas'}->{'attrs'}->{'nombre'};
-
-    #$filter = '(&' . $filter . '('. $nombre .'='.  .'))';
-
-    my @entries; # entradas que van a ser eliminadas.
-    
-    foreach my $id (@{$ids}){
+        # Busco el filtro de búsqueda utilizado para las listas en la
+        # configuración. 
         
-        my $cf = "(&$filter($nombre=$id))";
-        my $mesg = $ldap->search({ filter => $cf });
+        my $filter = $c->config->{'Correo::Listas'}->{'filter'};
+        my $nombre = $c->config->{'Correo::Listas'}->{'attrs'}->{'nombre'};
 
-        if ($mesg->count){
+        #$filter = '(&' . $filter . '('. $nombre .'='.  .'))';
 
-            push @entries, $mesg->shift_entry;
+        my @entries; # entradas que van a ser eliminadas.
+        
+        foreach my $id (@{$ids}){
             
-        } else {
-            # No se encontraron elementos, se responde con 404
-            $self->status_not_found(
-               $c,
-               message => "No se encontro la lista: $id",
-            );
-            return;
+            my $cf = "(&$filter($nombre=$id))";
+            my $mesg = $ldap->search({ filter => $cf });
+
+            if ($mesg->count){
+
+                push @entries, $mesg->shift_entry;
+                
+            } else {
+                # No se encontraron elementos, se responde con 404
+                $self->status_not_found(
+                   $c,
+                   message => "No se encontro la lista: $id",
+                );
+                return;
+            }
         }
+
+         #sleep 6; # sleep utilizado para simular que se rompe el LDAP
+
+        foreach my $e (@entries){
+            my $resp = $ldap->server->delete($e);
+
+            if ($resp->is_error){
+                $self->status_bad_request(
+                   $c,
+                   message => "No se pudo eliminar la lista " . $e->get_value($nombre) . ", errores ldap: "
+                   . $resp->error . ' ' . $resp->code . ' ' .
+                   $resp->error_text . ' ' . $resp->error_desc,
+                );
+                return;
+            }         
+        }
+
+        $self->status_ok($c, entity => { status => 1 });
     }
-
-     #sleep 6; # sleep utilizado para simular que se rompe el LDAP
-
-    foreach my $e (@entries){
-        my $resp = $ldap->server->delete($e);
-
-        if ($resp->is_error){
-            $self->status_bad_request(
-               $c,
-               message => "No se pudo eliminar la lista " . $e->get_value($nombre) . ", errores ldap: "
-               . $resp->error . ' ' . $resp->code . ' ' .
-               $resp->error_text . ' ' . $resp->error_desc,
-            );
-            return;
-        }         
-    }
-
-    $self->status_ok($c, entity => { status => 1 });
 }
 
 sub delete_persons_DELETE {
