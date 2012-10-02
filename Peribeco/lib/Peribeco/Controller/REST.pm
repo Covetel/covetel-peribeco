@@ -4,7 +4,10 @@ use namespace::autoclean;
 use Net::LDAP;
 use Net::LDAPS;
 use Net::LDAP::Entry;
+use JSON;
+
 use Data::Dumper;
+
 
 BEGIN { extends 'Catalyst::Controller::REST'; }
 
@@ -181,15 +184,27 @@ sub maillist_GET {
     
     my @maillist = $self->maillist_fetch($c);
 
+    my $all = []; 
+    
     if (@maillist){
-        while  (my $e = shift @maillist){
-                $c->log->debug(Dumper({$e->dump}));
+
+        while ($_ = shift @maillist){
+            push @{$all}, {
+                cn => $_->get_value("cn"),
+                members => [ $_->get_value("sendmailMTAAliasValue") ],
+                mail => $_->get_value("mail"),
+                sendmailMTAKey => $_->get_value("sendmailMTAKey"),   
+            }; 
         }
+
+        $self->status_ok( $c, entity => $all );
+
     } else {
-    
+        $self->status_not_found(
+            $c, 
+            message => "Lists not found"
+        ); 
     }
-    
-    $self->status_ok( $c, entity => { mensaje => "Vacation status set" } );
 }
 
 
@@ -202,41 +217,16 @@ Retrive maillist entries by uid
 sub maillist_fetch : Private {
     my ($self, $c) = @_;
 
-    my ($op);
-
     my $uid = $c->user->uid;
-
     my $ldap = $self->{ldap};
-
     my $filter = $c->config->{'Correo::Listas'}->{'filter'};
-
     my $moderator_f = $c->config->{'Correo::Listas'}->{'attrs'}->{'moderador'};
 
     if ($moderator_f){
-        # Operator is | or ( 
-        ($op) = ( $filter =~ /(^\(&|\|)/ );
 
-        $op =~ s/\(//;
-       
-        # if no op so op is &.
-        $op = $op // "&"; 
+        $filter = $self->filter_append($filter,"$moderator_f=$uid");
 
-        # Fields of filter
-        my @fields = ( $filter =~ /(\w+=\w+)/g );
-
-        # Add new field to list
-        push @fields, "$moderator_f=$uid";
-
-        # Agrego los parentesis a los campos
-        map { $_ = "($_)" } @fields;
-
-        my $fields = join '', @fields;
-        
-        # Build filter again
-        $filter = '(' . $op . $fields . ')';
     }
-
-    $c->log->debug($filter);
 
     my $mesg = $ldap->search(
             filter => $filter,
@@ -244,13 +234,77 @@ sub maillist_fetch : Private {
             attrs => ['*'],
     );
     
-<<<<<<< HEAD
     if ($mesg->count){
         return $mesg->entries;
     } else { 
-        return 0;
+        return;
     }
 }
+
+=head2 maillist_fetch_by_mail 
+
+$self->maillist_fetch_by_mail($c,"aba@covetel.com.ve");
+
+=cut
+
+sub maillist_fetch_by_mail : Private {
+    my ($self, $c, $mail) = @_;
+    
+    my $uid = $c->user->uid;
+    my $ldap = $self->{ldap};
+    my $filter = $c->config->{'Correo::Listas'}->{'filter'};
+    my $moderator_f = $c->config->{'Correo::Listas'}->{'attrs'}->{'moderador'};
+    my $mail_f = $c->config->{'Correo::Listas'}->{'attrs'}->{'correo'};
+
+    $filter = $self->filter_append($filter, "$mail_f=$mail");
+    
+    my $mesg = $ldap->search(
+            filter => $filter,
+            base => $c->config->{'Correo::Listas'}->{'basedn'},
+            attrs => ['*'],
+    );
+    
+    if ($mesg->count){
+        return $mesg->shift_entry;
+    } else { 
+        return;
+    }
+}
+
+=head2 filter_append
+
+$self->filter_append($c,$filter,"uid=walter");
+
+=cut
+
+sub filter_append : Private {
+    my ($self, $filter, $tail, $op) = @_;
+        
+    # Operator is | or ( 
+    ($op) = ( $filter =~ /(^\(&|\|)/ );
+
+    $op =~ s/\(//;
+   
+    # if no op so op is &.
+    $op = $op // "&"; 
+
+    # Fields of filter
+    my @fields = ( $filter =~ /(\w+=\w+)/g );
+
+    # Add new field to list
+    push @fields, $tail;
+
+    # Agrego los parentesis a los campos
+    map { $_ = "($_)" } @fields;
+
+    my $fields = join '', @fields;
+    
+    # Build filter again
+    $filter = '(' . $op . $fields . ')';
+
+    return $filter;
+}
+
 
 =head2 maillist_POST
 
@@ -262,11 +316,11 @@ sub maillist_POST {
     my ($self, $c) = @_;
 
     my $data = $c->req->data;
-    
-    my $maillist = { 
-        members  => $data->{members}, 
-    };  
 
+    my $maillist = $data->{maillist};
+
+    $self->status_ok( $c, entity => { mensaje => "Members modifed" } );
+    
     if ($self->maillist_update_members($c, $maillist)){
         $self->status_ok( $c, entity => { mensaje => "Members modifed" } );
     } else {
@@ -283,11 +337,21 @@ $self->maillist_update_members($c, $maillist);
 
 sub maillist_update_members {
     my ($self, $c, $maillist) = @_;
-   
 
-    1;
-=======
->>>>>>> 5377a7c51b97a8b480ddf5f99f06009f9be7fa45
+    my $members_f = $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro_correo'};
+
+    my $maillist_entry = $self->maillist_fetch_by_mail($c, $maillist->{mail});
+
+    $maillist_entry->replace( $members_f => $maillist->{members});
+
+    my $r = $maillist_entry->update($self->{ldap});
+
+    if ($r->is_error){
+        return 0;
+    } else {
+        return 1;
+    }
+
 }
 
 =head2 index
