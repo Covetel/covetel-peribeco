@@ -224,7 +224,7 @@ sub maillist_fetch : Private {
 
     if ($moderator_f){
 
-        $filter = $self->filter_append($filter,"$moderator_f=$uid");
+        $filter = $self->filter_append($c, $filter,"$moderator_f=$uid");
 
     }
 
@@ -256,7 +256,7 @@ sub maillist_fetch_by_mail : Private {
     my $moderator_f = $c->config->{'Correo::Listas'}->{'attrs'}->{'moderador'};
     my $mail_f = $c->config->{'Correo::Listas'}->{'attrs'}->{'correo'};
 
-    $filter = $self->filter_append($filter, "$mail_f=$mail");
+    $filter = $self->filter_append($c, $filter, "$mail_f=$mail");
     
     my $mesg = $ldap->search(
             filter => $filter,
@@ -278,8 +278,9 @@ $self->filter_append($c,$filter,"uid=walter");
 =cut
 
 sub filter_append : Private {
-    my ($self, $filter, $tail, $op) = @_;
-        
+    my ($self, $c, $filter, $tail) = @_;
+    
+    my $op;
     # Operator is | or ( 
     ($op) = ( $filter =~ /(^\(&|\|)/ );
 
