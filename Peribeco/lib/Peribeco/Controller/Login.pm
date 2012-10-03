@@ -43,10 +43,9 @@ sub index :Path :Args(0) :FormConfig {
             $c->session->{user_ldap_entry} = $c->user->ldap_entry;
 
             if ( $c->check_user_roles(qw/Administradores/) ) { 
-                #$c->response->redirect($c->uri_for($c->controller('personas')->action_for('')));
-                $c->response->redirect($c->uri_for('/personas/detalle/'.$c->user->uid));
+                $c->response->redirect($c->uri_for($c->config->{'HomePage'}->{'admin'}));
             }else{
-                $c->response->redirect($c->uri_for('/personas/detalle/'.$c->user->uid));
+                $c->response->redirect($c->uri_for($c->config->{'HomePage'}->{'user'}));
             }
         } else {
             $c->stash->{error} = 1;
