@@ -284,7 +284,7 @@ sub reenvios : Path('reenvios') {
 }
 
 sub vacations : Path('vacations') :FormConfig('correo/vacations_detalle.yml') {
-    my ( $self, $c,  $uid ) = @_;
+    my ( $self, $c) = @_;
     if ($c->config->{'Modulos'}->{'Vacations'} == 1 ) {
             $c->stash->{modules} = $c->config->{'Modulos'}; 
             $c->stash->{template} = 'correo/vacations/vacations_detalle.tt';
@@ -298,7 +298,7 @@ sub vacations : Path('vacations') :FormConfig('correo/vacations_detalle.yml') {
                 {
                     type  => 'Text',
                     name  => 'uid',
-                    value => $uid
+                    value => $c->user->uid
                 }
             );
 
@@ -309,10 +309,10 @@ sub vacations : Path('vacations') :FormConfig('correo/vacations_detalle.yml') {
     
             if ( $form->submitted_and_valid ) {
 
-                $uid = $c->req->param("uid");
+                my $uid = $c->user->uid;
                 my $sw;
                 my $info; 
-                
+
                 if ( $c->req->param("Vacations") == 1) {
                     $sw = "TRUE";
                 }else{
@@ -328,7 +328,7 @@ sub vacations : Path('vacations') :FormConfig('correo/vacations_detalle.yml') {
 
 
                 my $filter = '(&'.$c->config->{'Correo:Reenvios'}->{'filter'}."(uid=$uid)".')';
-            
+
                 my $mesg = $ldap->search({ 
                         filter => $filter, 
                         base => $c->config->{'Correo::Vacations'}->{'basedn'},

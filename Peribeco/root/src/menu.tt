@@ -30,7 +30,7 @@
     [% END %]
     [% IF modules.Vacations %]
         <span>
-            <a href="/correo/vacations/[% c.user.uid %]">Fuera de Oficina</a>
+            <a href="/correo/vacations">Fuera de Oficina</a>
         </span>
     [% END %]
     <span>
