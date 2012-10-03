@@ -34,10 +34,6 @@
             $("#vacations").val("0");
         });
 
-        $("input.input_submit").click(function(){
-            $("#vacations").val("1");
-        });
-
     });
 </script>
 [% END %]
