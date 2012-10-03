@@ -37,8 +37,14 @@ sub index :Path :Args(0) :FormConfig {
 	    my $login   = $c->req->param("login");
 	    my $passw   = $c->req->param("passw");
         if ( $c->authenticate( { id => $login, password => $passw } ) ) {
+            
+            # Stash $entry of user.
+            
+            $c->session->{user_ldap_entry} = $c->user->ldap_entry;
+
             if ( $c->check_user_roles(qw/Administradores/) ) { 
-                $c->response->redirect($c->uri_for($c->controller('personas')->action_for('lista')));
+                #$c->response->redirect($c->uri_for($c->controller('personas')->action_for('')));
+                $c->response->redirect($c->uri_for('/personas/detalle/'.$c->user->uid));
             }else{
                 $c->response->redirect($c->uri_for('/personas/detalle/'.$c->user->uid));
             }

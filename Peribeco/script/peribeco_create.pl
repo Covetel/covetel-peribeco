@@ -10,11 +10,11 @@ Catalyst::ScriptRunner->run('Peribeco', 'Create');
 
 =head1 NAME
 
-diut_create.pl - Create a new Catalyst Component
+peribeco_create.pl - Create a new Catalyst Component
 
 =head1 SYNOPSIS
 
-diut_create.pl [options] model|view|controller name [helper] [options]
+peribeco_create.pl [options] model|view|controller name [helper] [options]
 
  Options:
    --force        don't create a .new file where a file to be created exists
@@ -22,14 +22,14 @@ diut_create.pl [options] model|view|controller name [helper] [options]
    --help         display this help and exits
 
  Examples:
-   diut_create.pl controller My::Controller
-   diut_create.pl -mechanize controller My::Controller
-   diut_create.pl view My::View
-   diut_create.pl view HTML TT
-   diut_create.pl model My::Model
-   diut_create.pl model SomeDB DBIC::Schema MyApp::Schema create=dynamic\
+   peribeco_create.pl controller My::Controller
+   peribeco_create.pl -mechanize controller My::Controller
+   peribeco_create.pl view My::View
+   peribeco_create.pl view HTML TT
+   peribeco_create.pl model My::Model
+   peribeco_create.pl model SomeDB DBIC::Schema MyApp::Schema create=dynamic\
    dbi:SQLite:/tmp/my.db
-   diut_create.pl model AnotherDB DBIC::Schema MyApp::Schema create=static\
+   peribeco_create.pl model AnotherDB DBIC::Schema MyApp::Schema create=static\
    [Loader opts like db_schema, naming] dbi:Pg:dbname=foo root 4321
    [connect_info opts like quote_char, name_sep]
 

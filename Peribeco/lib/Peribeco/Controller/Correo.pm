@@ -49,10 +49,8 @@ sub index : Path : Args(0) {
 sub listas : Path('listas') {
     my ( $self, $c ) = @_;
     if ($c->config->{'Modulos'}->{'Listas'} == 1 ) {
-    if ( $c->assert_user_roles(qw/Administradores/) ) {
         $c->stash->{template} = 'correo/listas/lista.tt';
         $c->stash->{modules} = $c->config->{'Modulos'}; 
-    }
     }else{
         $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
     }
@@ -169,6 +167,8 @@ sub crear :Path('listas/crear') :FormConfig('correo/listas_crear.yml') {
                                 homeDirectory => '/dev/null',
                                 $c->config->{'Correo::Listas'}->{'attrs'}->{'correo'} => $mail,
                                 $c->config->{'Correo::Listas'}->{'attrs'}->{'nombre'} => $uid,
+                                $c->config->{'Correo::Listas'}->{'attrs'}->{'moderador'} => $moderator->uid,
+                                $c->config->{'Correo::Listas'}->{'attrs'}->{'descripcion'} => $desc,
                             );
         
                             # Datos de los miembros
@@ -207,13 +207,14 @@ sub crear :Path('listas/crear') :FormConfig('correo/listas_crear.yml') {
     }else{
         $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
     }
+    $c->stash->{modules} = $c->config->{'Modulos'}; 
 }
 
 sub detalle : Path('listas/detalle'){
     my ( $self, $c, $lid ) = @_;
-    if ($c->config->{'Modulos'}->{'Listas'} == 1 ) {
-        if ($c->assert_user_roles(qw/Administradores/) ) {
             $c->stash->{template} = 'correo/listas/detalle.tt';
+            $c->stash->{domain} = $c->config->{domain};
+
             my $ldap = Covetel::LDAP->new;
     
             #Determina ObjectClass
@@ -264,10 +265,7 @@ sub detalle : Path('listas/detalle'){
                     }
                 }
             }
-        }
-    }else{
-        $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
-    }
+    $c->stash->{modules} = $c->config->{'Modulos'}; 
 }
 
 sub reenvios : Path('reenvios') {
@@ -342,8 +340,6 @@ sub vacations : Path('vacations') :FormConfig('correo/vacations_detalle.yml') {
 
                         my $entry = $mesg->entry;
 
-                        print Dumper ($entry);
-         
                         my $mesg = $ldap->server->modify(
                             $entry->dn, 
                             replace => {
@@ -351,7 +347,7 @@ sub vacations : Path('vacations') :FormConfig('correo/vacations_detalle.yml') {
                                $c->config->{'Correo::Vacations'}->{'attrs'}->{'mensaje'} => $info, 
                             }
                         );
-         
+
                         if (! $mesg->is_error ) {
                             $c->stash->{mensaje} = "Datos Actualizados";
                         }

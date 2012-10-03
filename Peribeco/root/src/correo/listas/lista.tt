@@ -49,10 +49,11 @@
 [% END %]
 
 <p> 
+[% IF c.check_user_roles('Administradores') %]
  <a class="enlace" href="/correo/listas/crear" title="Crear una lista de
      correo"> Crear una lista de correo </a>
 </p>
-
+[% END %]
 
 <div id="contenido">
     <table id="lista_listas" class="dataTable" width="100%">
@@ -67,10 +68,12 @@
         </thead>
         <tfoot>
             <tr>
-                <td class="left" colspan="8"> 
-                    <button id="remove_list"> Eliminar </button>  
-                    <button id="select_all"> Marcar Todos </button>  
-                </td>
+                [% IF c.check_user_roles('Administradores') %]
+                    <td class="left" colspan="8"> 
+                        <button id="remove_list"> Eliminar </button>  
+                        <button id="select_all"> Marcar Todos </button>  
+                    </td>
+                [% END %]
             </tr>
         </tfoot>
         <tbody>
