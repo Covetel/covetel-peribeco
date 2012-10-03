@@ -27,7 +27,7 @@ elements:
               class: input_text
               id: vacations
 
-        - type: Text
+        - type: Textarea
           name: Autorespuesta 
           label: Autorespuesta 
           attributes:
