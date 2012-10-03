@@ -31,12 +31,12 @@ use Catalyst qw/
 
 extends 'Catalyst';
 
-our $VERSION = '0.2-3';
+our $VERSION = '0.2-13';
 $VERSION = eval $VERSION;
 
 # Configure the application.
 #
-# Note that settings in diut.conf (or other external
+# Note that settings in Peribeco.conf (or other external
 # configuration file that you set up manually) take precedence
 # over this when using ConfigLoader. Thus configuration
 # details given here can function as a default configuration,
@@ -59,23 +59,35 @@ __PACKAGE__->setup();
 
 =head1 NAME
 
-Peribeco - Catalyst based application
+Covetel Peribeco - Gestion de Plataforma Corporativa
 
 =head1 SYNOPSIS
 
-    script/diut_server.pl
+    script/Peribeco_server.pl
 
 =head1 DESCRIPTION
 
-[enter your description here]
+=head2 Modulos Disponibles
 
-=head1 SEE ALSO
+=over
 
-L<Peribeco::Controller::Root>, L<Catalyst>
+=item Gestion de Usuarios
+
+=item Gestion de Grupos
+
+=item Gestion de Listas de Correo
+
+=item Fuera de Oficina
+
+=item Reenvios de Correo
+
+=item Gestion de Quotas
+
+=back
 
 =head1 AUTHOR
 
-elsanto,,,
+Cooperativa Venezolana de Tecnologias Libres R.S., <info@covetel.com.ve> 
 
 =head1 LICENSE
 
