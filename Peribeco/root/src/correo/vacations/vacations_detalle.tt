@@ -1,7 +1,6 @@
 [% BLOCK header %]
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function(){
-        $("#vacations").val("0");
 
         $("#vacations").click(function() {  
             if($("#vacations").is(':checked')) {  
@@ -33,6 +32,10 @@
 
         $("input.input_reset").click(function(){
             $("#vacations").val("0");
+        });
+
+        $("input.input_submit").click(function(){
+            $("#vacations").val("1");
         });
 
     });
