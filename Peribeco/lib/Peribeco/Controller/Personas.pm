@@ -225,11 +225,10 @@ sub modify_data : Local : FormConfig {
 }
 
 sub change_pass : Local : FormConfig {
-    my ( $self, $c, $uid ) = @_;
-    if ($uid eq $c->user->uid) {
-        $uid = $c->user->uid;
-    }
-    if ($uid eq $c->user->uid || $c->assert_user_roles(qw/Administradores/) ) {
+    my ( $self, $c ) = @_;
+    my $uid = $c->user->uid;
+
+    if ($uid eq $c->user->uid || $c->check_user_roles(qw/Administradores/) ) {
         my $form = $c->stash->{form};
         $form->auto_constraint_class('constraint_%t');
         if ( $form->submitted_and_valid ) {
