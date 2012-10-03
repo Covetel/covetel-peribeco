@@ -134,6 +134,7 @@ sub detalle : Local {
     }else{
         $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
     }
+    $c->stash->{modules} = $c->config->{'Modulos'}; 
 }
 
 
