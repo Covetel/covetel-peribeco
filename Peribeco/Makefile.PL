@@ -17,7 +17,7 @@ requires 'namespace::autoclean';
 
 requires 'Catalyst::Plugin::Authorization::ACL';
 requires 'Catalyst::Plugin::Session::Store::FastMmap';
-requires 'Catalyst::Plugin::Static::Simple.pm'; 
+requires 'Catalyst::Plugin::Static::Simple'; 
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::Unicode::Encoding';
 requires 'YAML::XS';
