@@ -42,7 +42,7 @@ sub index :Path :Args(0) :FormConfig {
             $c->session->{user_ldap_entry} = $c->user->ldap_entry;
 
             # Si tiene listas de correo que administrar entonces
-            if ($c->controller('REST')->maillist_fetch($c)){
+            if ($c->check_user_roles(qw/Administradores/) || $c->controller('REST')->maillist_fetch($c)){
                 $c->session->{maillist} = 1; 
             } else {
                 $c->session->{maillist} = 0; 

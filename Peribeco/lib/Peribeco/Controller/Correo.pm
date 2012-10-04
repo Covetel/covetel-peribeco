@@ -48,7 +48,13 @@ sub index : Path : Args(0) {
 
 sub listas : Path('listas') {
     my ( $self, $c ) = @_;
-    if ($c->config->{'Modulos'}->{'Listas'} == 1 && $c->controller('REST')->maillist_fetch($c) ) {
+    if (
+        ( $c->check_user_roles(qw/Administradores/) && $c->config->{'Modulos'}->{'Listas'} == 1 )
+        || 
+        ( $c->config->{'Modulos'}->{'Listas'} == 1 && $c->controller('REST')->maillist_fetch($c) )
+      )
+    {
+## Please see file perltidy.ERR
         $c->stash->{template} = 'correo/listas/lista.tt';
         $c->stash->{modules} = $c->config->{'Modulos'}; 
     }else{
