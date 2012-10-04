@@ -653,11 +653,15 @@ sub listamembers_GET {
                          my $entry = $mesg->shift_entry;
                          if (defined $entry) {
                             if ($entry->dn =~ /^mail/) {
+                                my $mgn = $entry->get_value('givenName') ? $entry->get_value('givenName') : '-'; 
+                                my $msn = $entry->get_value('sn') ? $entry->get_value('sn') : '-'; 
+                                my $muid = $entry->get_value('uid') ?
+                                $entry->get_value('uid') : '-'; 
                                 $entry->add(
                                     tipo      => 'Cuenta Virtual',
-                                    givenName => '-',
-                                    sn        => '-',
-                                    uid       => '-',
+                                    givenName => $mgn,
+                                    sn        => $msn,
+                                    uid       => $muid,
                                 )
                             }else{
                                 $entry->add(
