@@ -48,11 +48,11 @@ sub index : Path : Args(0) {
 
 sub listas : Path('listas') {
     my ( $self, $c ) = @_;
-    if ($c->config->{'Modulos'}->{'Listas'} == 1 ) {
+    if ($c->config->{'Modulos'}->{'Listas'} == 1 && $c->controller('REST')->maillist_fetch($c) ) {
         $c->stash->{template} = 'correo/listas/lista.tt';
         $c->stash->{modules} = $c->config->{'Modulos'}; 
     }else{
-        $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
+        $c->response->redirect($c->session->{HomePage});
     }
 }
 
