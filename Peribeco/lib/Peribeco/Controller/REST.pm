@@ -218,7 +218,7 @@ sub maillist_fetch : Private {
     my ($self, $c) = @_;
 
     my $uid = $c->user->uid;
-    my $ldap = $self->{ldap};
+    my $ldap = $self->ldap_server($c);
     my $filter = $c->config->{'Correo::Listas'}->{'filter'};
     my $moderator_f = $c->config->{'Correo::Listas'}->{'attrs'}->{'moderador'};
 
