@@ -2,20 +2,28 @@
     [% IF c.check_user_roles('Administradores') %]
         [% IF modules.Personas %]
             <span>
-                <a href="/personas/lista">Personas</a>
+                <a href="/personas/lista"> [% c.config.Menu.Personas.caption %] </a>
             </span>
         [% END %]
         [% IF modules.Grupos %]
             <span>
-                <a href="/grupos/lista">Grupos</a>
+                <a href="/grupos/lista"> [% c.config.Menu.Grupos.caption %] </a>
             </span>
         [% END %]
     [% END %]
-        [% IF modules.Listas %]
-            <span>
-                <a href="/correo/listas">Listas</a>
-            </span>
-        [% END %]
+    
+    [% IF modules.Vacations %]
+        <span>
+            <a href="/correo/vacations"> [% c.config.Menu.OutOffice.caption %] </a>
+        </span>
+    [% END %]
+
+    [% IF modules.Listas && c.session.maillist == 1 %]
+        <span>
+            <a href="/correo/listas"> [% c.config.Menu.Listas.caption %] </a>
+        </span>
+    [% END %]
+
     [% IF c.check_user_roles('Administradores') %]
         [% IF modules.Quota %]
             <span>
@@ -25,12 +33,7 @@
     [% END %]
     [% IF modules.Reenvios %]
         <span>
-            <a href="/correo/reenvios/[% c.user.uid %]">Reenvíos Automáticos</a>
-        </span>
-    [% END %]
-    [% IF modules.Vacations %]
-        <span>
-            <a href="/correo/vacations">Fuera de Oficina</a>
+            <a href="/correo/reenvios/[% c.user.uid %]"> [% c.config.Menu.Forwards.caption %]  </a>
         </span>
     [% END %]
     <span>
