@@ -31,7 +31,6 @@ sub index :Path :Args(0) :FormConfig {
     my $form = $c->stash->{form};
 	$form->auto_constraint_class( 'constraint_%t' );
     
-    $c->log->debug($c->encoding->name);
 
     if ( $form->submitted_and_valid ) {
 	    my $login   = $c->req->param("login");
@@ -42,11 +41,19 @@ sub index :Path :Args(0) :FormConfig {
             
             $c->session->{user_ldap_entry} = $c->user->ldap_entry;
 
+            # Si tiene listas de correo que administrar entonces
+            if ($c->check_user_roles(qw/Administradores/) || $c->controller('REST')->maillist_fetch($c)){
+                $c->session->{maillist} = 1; 
+            } else {
+                $c->session->{maillist} = 0; 
+            } 
+
             if ( $c->check_user_roles(qw/Administradores/) ) { 
-                #$c->response->redirect($c->uri_for($c->controller('personas')->action_for('')));
-                $c->response->redirect($c->uri_for('/personas/detalle/'.$c->user->uid));
+                $c->session->{HomePage} = $c->config->{'HomePage'}->{'admin'};
+                $c->response->redirect($c->uri_for($c->config->{'HomePage'}->{'admin'}));
             }else{
-                $c->response->redirect($c->uri_for('/personas/detalle/'.$c->user->uid));
+                $c->session->{HomePage} = $c->config->{'HomePage'}->{'user'};
+                $c->response->redirect($c->uri_for($c->config->{'HomePage'}->{'user'}));
             }
         } else {
             $c->stash->{error} = 1;

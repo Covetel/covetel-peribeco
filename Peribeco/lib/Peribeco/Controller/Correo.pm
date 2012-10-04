@@ -48,11 +48,17 @@ sub index : Path : Args(0) {
 
 sub listas : Path('listas') {
     my ( $self, $c ) = @_;
-    if ($c->config->{'Modulos'}->{'Listas'} == 1 ) {
+    if (
+        ( $c->check_user_roles(qw/Administradores/) && $c->config->{'Modulos'}->{'Listas'} == 1 )
+        || 
+        ( $c->config->{'Modulos'}->{'Listas'} == 1 && $c->controller('REST')->maillist_fetch($c) )
+      )
+    {
+## Please see file perltidy.ERR
         $c->stash->{template} = 'correo/listas/lista.tt';
         $c->stash->{modules} = $c->config->{'Modulos'}; 
     }else{
-        $c->res->body('Modulo no disponible <a class="enlace" href="/personas/lista" alt="Regresar a lista de Personas"> Regresar </a>');
+        $c->response->redirect($c->session->{HomePage});
     }
 }
 
@@ -284,7 +290,7 @@ sub reenvios : Path('reenvios') {
 }
 
 sub vacations : Path('vacations') :FormConfig('correo/vacations_detalle.yml') {
-    my ( $self, $c,  $uid ) = @_;
+    my ( $self, $c) = @_;
     if ($c->config->{'Modulos'}->{'Vacations'} == 1 ) {
             $c->stash->{modules} = $c->config->{'Modulos'}; 
             $c->stash->{template} = 'correo/vacations/vacations_detalle.tt';
@@ -298,7 +304,7 @@ sub vacations : Path('vacations') :FormConfig('correo/vacations_detalle.yml') {
                 {
                     type  => 'Text',
                     name  => 'uid',
-                    value => $uid
+                    value => $c->user->uid
                 }
             );
 
@@ -309,10 +315,10 @@ sub vacations : Path('vacations') :FormConfig('correo/vacations_detalle.yml') {
     
             if ( $form->submitted_and_valid ) {
 
-                $uid = $c->req->param("uid");
+                my $uid = $c->user->uid;
                 my $sw;
                 my $info; 
-                
+
                 if ( $c->req->param("Vacations") == 1) {
                     $sw = "TRUE";
                 }else{
@@ -328,7 +334,7 @@ sub vacations : Path('vacations') :FormConfig('correo/vacations_detalle.yml') {
 
 
                 my $filter = '(&'.$c->config->{'Correo:Reenvios'}->{'filter'}."(uid=$uid)".')';
-            
+
                 my $mesg = $ldap->search({ 
                         filter => $filter, 
                         base => $c->config->{'Correo::Vacations'}->{'basedn'},

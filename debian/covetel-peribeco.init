@@ -64,25 +64,22 @@ case "$1" in
 	echo "$NAME."
 	;;
   restart|force-reload)
-	echo -n "Restarting $DESC: "
-	start-stop-daemon --stop --quiet --pidfile \
-		/var/run/$NAME.pid --exec $DAEMON || true
-	sleep 1
-	start-stop-daemon --start --quiet --pidfile \
-		/var/run/$NAME.pid --exec $DAEMON -- $DAEMON_OPTS || true
+	echo -n "Starting $DESC: "
+    start-stop-daemon --start --quiet --pidfile $PIDFILE \
+		--exec $DAEMON -- $DAEMON_OPTS || true
+    echo "$DAEMON $DAEMON_OPTS"
+	echo "$NAME."
+	sleep 5
+	echo -n "Stopping $DESC: "
+	start-stop-daemon --stop --quiet --pidfile /var/run/$NAME.pid \
+		--signal 2 || true
 	echo "$NAME."
 	;;
-  reload)
-        echo -n "Reloading $DESC configuration: "
-        start-stop-daemon --stop --signal HUP --quiet --pidfile /var/run/$NAME.pid \
-            --exec $DAEMON || true
-        echo "$NAME."
-        ;;
   status)
 	status_of_proc -p /var/run/$NAME.pid $"DAEMON" peribeco_starman && exit 0 || exit $?
 	;;
   *)
-	echo "Usage: $NAME {start|stop|restart|reload|force-reload|status|configtest}" >&2
+	echo "Usage: $NAME {start|stop|restart|force-reload|status}" >&2
 	exit 1
 	;;
 esac

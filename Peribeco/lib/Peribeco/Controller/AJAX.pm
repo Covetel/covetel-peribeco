@@ -554,6 +554,7 @@ sub listamembers_GET {
     foreach my $objc (@objectclass) {
         given ($objc) {
              when ('qmailGroup') {
+
                  my $filter = '(&' .
                               '(objectClass=groupOfNames)' .
                               $c->config->{'Correo::Listas'}->{'filter'} .
@@ -625,11 +626,12 @@ sub listamembers_GET {
                  $self->status_ok($c, entity => \%datos);
              }
              when ('sendmailMTA') {
-                 my $filter = '(&' .
-                              $c->config->{'Correo::Listas'}->{'filter'} .
-                              "(sendmailMTAKey=$lid)" .
-                              ')';
                  
+                 my $field = $c->config->{'Correo::Listas'}->{'attrs'}->{'nombre'};
+                 my $filter = $c->config->{'Correo::Listas'}->{'filter'};
+
+                 $filter = $c->controller('REST')->filter_append($c,$filter,"$field=$lid");
+
                  my $mesg = $ldap->search({
                      filter => $filter,
                      base => $c->config->{'Correo::Listas'}->{'basedn'},
@@ -650,9 +652,22 @@ sub listamembers_GET {
                  
                          my $entry = $mesg->shift_entry;
                          if (defined $entry) {
-                             $entry->add(
-                                 tipo    => $entry->get_value($attr_moderador) ~~ @moderators ? "Moderador" : "Miembro", 
-                             );
+                            if ($entry->dn =~ /^mail/) {
+                                my $mgn = $entry->get_value('givenName') ? $entry->get_value('givenName') : '-'; 
+                                my $msn = $entry->get_value('sn') ? $entry->get_value('sn') : '-'; 
+                                my $muid = $entry->get_value('uid') ?
+                                $entry->get_value('uid') : '-'; 
+                                $entry->add(
+                                    tipo      => 'Cuenta Virtual',
+                                    givenName => $mgn,
+                                    sn        => $msn,
+                                    uid       => $muid,
+                                )
+                            }else{
+                                $entry->add(
+                                    tipo    => $entry->get_value($attr_moderador) ~~ @moderators ? "Moderador" : "Miembro",
+                                );
+                            }
                          } else {
                              $entry = Net::LDAP::Entry->new;
                              $entry->add(
@@ -667,8 +682,6 @@ sub listamembers_GET {
                  
                      }
                  
-                     foreach my $entry (@entries) {
-                     }
                  } else {
                      # No se encontraron elementos, se responde con 404
                      $self->status_not_found(

@@ -1,3 +1,13 @@
+covetel-peribeco (0.2-14) unstable; urgency=low
+
+  * Fixed Bugs in /listas/detalle
+  * Close Ticket #20
+  * Close Ticket #17
+  * Fixed Bug for restart command in Init File
+  * FIxed Bug Wrong Redirect  
+
+ -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Thu, 04 Oct 2012 15:16:11 -0430
+
 covetel-peribeco (0.2-13) unstable; urgency=low
 
   * Se agregaron cambios a la fuente en las listas y el vacation 
