@@ -340,13 +340,22 @@ sub vacations : Path('vacations') :FormConfig('correo/vacations_detalle.yml') {
 
                         my $entry = $mesg->entry;
 
-                        my $mesg = $ldap->server->modify(
-                            $entry->dn, 
-                            replace => {
-                               $c->config->{'Correo::Vacations'}->{'attrs'}->{'active'} => $sw, 
-                               $c->config->{'Correo::Vacations'}->{'attrs'}->{'mensaje'} => $info, 
-                            }
-                        );
+                        if ($info ne "") {
+                            my $mesg = $ldap->server->modify(
+                                $entry->dn, 
+                                replace => {
+                                   $c->config->{'Correo::Vacations'}->{'attrs'}->{'active'} => $sw, 
+                                   $c->config->{'Correo::Vacations'}->{'attrs'}->{'mensaje'} => $info, 
+                                }
+                            );
+                        }else{
+                            my $mesg = $ldap->server->modify(
+                                $entry->dn, 
+                                replace => {
+                                   $c->config->{'Correo::Vacations'}->{'attrs'}->{'active'} => $sw, 
+                                }
+                            );
+                        }
 
                         if (! $mesg->is_error ) {
                             $c->stash->{mensaje} = "Datos Actualizados";
