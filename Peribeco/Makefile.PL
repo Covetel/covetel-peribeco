@@ -32,6 +32,11 @@ requires 'Catalyst::Controller::HTML::FormFu';
 requires 'Email::Sender::Simple';
 requires 'Email::MIME::Creator';
 
+# Walter Vargas <walter@covetel.com.ve>
+# Tue Oct  9 09:26:36 VET 2012
+
+requires 'Catalyst::Model::LDAP';
+
 
 requires 'Config::General'; # This should reflect the config file format you've chosen
                  # See Catalyst::Plugin::ConfigLoader for supported formats

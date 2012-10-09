@@ -164,6 +164,8 @@ sub vacation_POST {
 
 sub vacation_GET {
     my ($self, $c, $param) = @_;
+
+    #print Dumper  $c->model('LDAP::Correo')->forward_create('elmujica@cantv.com.ve', $c->user->mail);
         
     $self->status_ok(
         $c,
