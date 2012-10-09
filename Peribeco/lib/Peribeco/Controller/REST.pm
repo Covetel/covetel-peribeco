@@ -87,12 +87,15 @@ sub update_vacation_info : Private {
     $vacation->{active} =~ s/1/TRUE/;
     $vacation->{active} =~ s/0/FALSE/;
 
+    $c->log->debug(Dumper $vacation);
+
     foreach (keys %{$vacation}){
         my $action = $e->exists( $self->{vacation}->{$_} ) ? 'replace' : 'add'; 
         $e->$action( $self->{vacation}->{$_} => $vacation->{$_} );
     }
 
-    my $server = $self->{ldap}->server;
+
+    my $server = $self->{ldap};
 
     my $r = $e->update($server);
 
@@ -147,9 +150,11 @@ sub vacation_POST {
     my $data = $c->req->data;
 
     my $vacation = { 
-        active  => $data->{active}, 
-        info    => $data->{info} 
+        active  => $data->{vacation}, 
+        info    => $data->{message} 
     };  
+
+    $c->log->debug(Dumper $vacation);
 
     if ($self->update_vacation_info($c, $vacation)){
         $self->status_ok( $c, entity => { mensaje => "Vacation status set" } );
