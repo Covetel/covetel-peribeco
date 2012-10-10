@@ -8,6 +8,11 @@ use Data::Dumper;
     
     Peribeco::LDAP::Correo
 
+=head1 DESCRIPTION
+
+    This is a data model representation and operations over Mail entries in
+    LDAP
+
 =head1 METHODS
 
 =head2 forwards
@@ -36,13 +41,14 @@ sub forwards {
 
 =head2 forward_create
 
-Crea una entrada de tipo Reenvío.
+Create forward entry
 
 =head3 SINOPSYS
 
  my $model = $c->model('LDAP::Correo');
 
  if ($model->forward_create('rdeoli01cantv.com.ve','emujic')){
+     print "Entry created";
  } else {
      print "Message is: " , $model->_message;    
  }
@@ -67,11 +73,15 @@ sub forward_create {
     }
 }
 
+=head2 forwrad_new_entry($rfc822_mail,$uid);
+
+Return Net::LDAP::Entry for Forwards
+
+=cut
+
 sub forward_new_entry {
     my ($self, $forward, $uid) = @_;
     
-
-    # Defino la base de búsqueda.
     $self->base($self->forwards_base);
 
     my $dn = $self->forwards_dn_attr . '=' . $uid . ',' . $self->base;
@@ -100,11 +110,23 @@ sub forward_new_entry {
     return $e;
 }
 
+=head2 forwards_base 
+
+Return Forwards search base.
+
+=cut
+
 sub forwards_base {
     my $self = shift; 
 
     return $self->config->{'Correo::Reenvios'}->{'basedn'};
 }
+
+=head2 forwards_filter 
+
+Return Forwards LDAP filter
+
+=cut
 
 sub forwards_filter {
     my $self = shift;
@@ -112,11 +134,23 @@ sub forwards_filter {
     return $self->config->{'Correo::Reenvios'}->{'filter'}; 
 }
 
+=head2 forwards_dn_attr 
+
+Return attribute for RDN creation. 
+
+=cut 
+
 sub forwards_dn_attr {
     my $self = shift;
 
     return $self->config->{'Correo::Reenvios'}->{'entry'}->{'dn_attr'};
 }
+
+=head2 forwards_objectclass 
+
+Return ObjectClass list
+
+=cut
 
 sub forwards_objectclass {
     my $self = shift;
@@ -127,11 +161,11 @@ sub forwards_objectclass {
     return @objectClass;
 }
 
-sub forwards_rcpto {
-    my $self = shift; 
+=head2 forwards_default_attrs
 
-    return $self->config->{'Correo::Reenvios'}->{'attrs'}->{'rcpto'}; 
-}
+Return default attributes of Forward entry
+
+=cut 
 
 sub forwards_default_attrs {
     my $self = shift; 
