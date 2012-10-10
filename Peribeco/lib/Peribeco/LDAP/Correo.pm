@@ -34,33 +34,71 @@ sub forwards {
     }
 }
 
+=head2 forward_create
+
+Crea una entrada de tipo Reenvío.
+
+=head3 SINOPSYS
+
+ my $model = $c->model('LDAP::Correo');
+
+ if ($model->forward_create('rdeoli01cantv.com.ve','emujic')){
+ } else {
+     print "Message is: " , $model->_message;    
+ }
+
+=cut
+
 sub forward_create {
-    my ($self, $forward, $mail) = @_;
+    my ($self, $forward, $uid) = @_;
+
+    $DB::single=1;
     
+    my $e = $self->forward_new_entry($forward,$uid);
+
+    my $resp = $self->add($e);
+
+    $self->_message($resp);
+
+    if ($resp->is_error){
+        return undef;
+    } else {
+        return 1; 
+    }
+}
+
+sub forward_new_entry {
+    my ($self, $forward, $uid) = @_;
+    
+
     # Defino la base de búsqueda.
     $self->base($self->forwards_base);
 
-    my $objectclass_string = "top CourierMailAccount sendmailMTA sendmailMTAMap sendmailMTAMapObject"; 
-
-    my @objectClass = split ' ', $objectclass_string;
-
-    my $dn = 'mail=' . $forward . $self->base;
+    my $dn = $self->forwards_dn_attr . '=' . $uid . ',' . $self->base;
 
     my $e = Net::LDAP::Entry->new; 
 
-    $e->add( dn => $dn);
+    $e->dn($dn);
+
+    $e->add( objectClass => [ $self->forwards_objectclass ]);
 
     my $attrs = $self->forwards_default_attrs;
 
+    # Atributos Valuados
+    my $values = {
+        sendmailMTAKey => $uid, 
+        sendmailMTAAliasValue => $forward,
+    };
+
     foreach (keys %{$attrs}){
+        unless ($attrs->{$_}){
+            $attrs->{$_} = $values->{$_};
+        }
         $e->add($_ => $attrs->{$_}); 
     }
 
     return $e;
-
-
 }
-
 
 sub forwards_base {
     my $self = shift; 
@@ -72,6 +110,21 @@ sub forwards_filter {
     my $self = shift;
 
     return $self->config->{'Correo::Reenvios'}->{'filter'}; 
+}
+
+sub forwards_dn_attr {
+    my $self = shift;
+
+    return $self->config->{'Correo::Reenvios'}->{'entry'}->{'dn_attr'};
+}
+
+sub forwards_objectclass {
+    my $self = shift;
+    
+    my $string = $self->config->{'Correo::Reenvios'}->{'entry'}->{'objectclass_attr'}; 
+    my @objectClass = split ' ',$string;
+
+    return @objectClass;
 }
 
 sub forwards_rcpto {
