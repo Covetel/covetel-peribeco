@@ -44,4 +44,20 @@ sub filter_append {
     return $filter;
 }
 
+=head2 message 
+
+Get / Set Net::LDAP::Message 
+
+=cut 
+
+sub _message {
+    my ($self, $message) = @_;
+    unless ($message){
+        return $self->{message} ? $self->{message} : undef;
+    } else {
+        $self->{message} = $message;
+    }
+}
+
+
 1;
