@@ -29,7 +29,7 @@ The root page (/)
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
     unless ($c->check_user_roles(qw/Administradores/)){
-        $c->response->redirect($c->uri_for('/personas/detalle/'.$c->user->uid));
+        $c->response->redirect($c->session->{HomePage});
     }
 
 }
