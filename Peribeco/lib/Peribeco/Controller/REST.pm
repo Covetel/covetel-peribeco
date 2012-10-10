@@ -39,6 +39,8 @@ sub auto : Private {
 
     $self->{user_ldap_entry} = $c->user->ldap_entry;
 
+    $self->{model} = $c->model('LDAP::Correo');
+
 }
 
 
@@ -154,8 +156,6 @@ sub vacation_POST {
         info    => $data->{message} 
     };  
 
-    $c->log->debug(Dumper $vacation);
-
     if ($self->update_vacation_info($c, $vacation)){
         $self->status_ok( $c, entity => { mensaje => "Vacation status set" } );
     } else {
@@ -170,8 +170,6 @@ sub vacation_POST {
 sub vacation_GET {
     my ($self, $c, $param) = @_;
 
-    #print Dumper  $c->model('LDAP::Correo')->forward_create('elmujica@cantv.com.ve', $c->user->mail);
-        
     $self->status_ok(
         $c,
         entity => {
