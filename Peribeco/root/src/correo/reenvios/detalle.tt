@@ -46,6 +46,7 @@
                    } 
                 }
             }); // Fin de ajax
+
     });
 
     $("button#remove_forward").click(function(){
@@ -137,30 +138,93 @@
             }
         });
 
+        $('#add_forward_cc').click(function(){
+            if ($("#add_forward_cc").text() == 'Desactivar') {
+                var opt = '0';
+            }else{
+                var opt = '1';
+            }
+            var lid = $("span.AccountID").html();
+            var datos = ({'opt':opt, 'lid':lid});
+            var jsoon = $.JSON.encode(datos);
+                $.ajax({
+                    url: "/ajax/reenvios_cc/set",
+                    type: "PUT",
+                    data: jsoon,
+                    dataType: "json",
+                    contentType: 'application/json',
+                    processData: false,
+                    complete: function (data) {
+                            tabla_listas.fnReloadAjax();
+                            $("#add_forward_cc").text('Desactivar');
+                            $("div#all").append('<div id="mensaje"> </div>');
+                            $("div#mensaje").html("Se actualizó la opción de copia local");
+                            $( "#mensaje" ).dialog({
+                                title: 'Aviso', 
+                                modal: true,
+                            });
+                            location.reload();
+                    }
+                }); // Fin de ajax
+        });
+
+        var uid = $("span.AccountID").html();
+        var datos = ({'uid': uid});
+        var jsoon = $.JSON.encode(datos);
+        $.ajax({
+            url: "/ajax/info/forward_cc/"+uid, 
+            type: "GET",
+            dataType: "json",
+            complete: function (data) {
+                var info = $.parseJSON(data.responseText); 
+                if (info == '1') {
+                    $("#add_forward_cc").text('Desactivar');
+                }else{
+                    $("#add_forward_cc").text('Activar');
+                }
+            }
+        });
+
     }); // end of document.ready
 </script>
 [% END %]
 
 <div id="contenido">
-    <form id="form_add_forward" action="#">
-    <fieldset>
-        <legend><span class="AccountID">[% account.uid %]</span></legend>
-        <div class="informacion">Solo permitidos los dominios [% domain %] y [% domain2 %].</div><br />
-        <br />
-        <div class="informacionsmall">En el siguiente campo introduzca las direcciones,  separadas por coma. </div>
-        <div class="txt label constraint_required constraint_length">
-            <label for="personas">Direcciones de Reenvío</label>
-            <textarea cols="20" rows="10" id="direcciones" title="Ingrese las
-            direcciones a agregar" name="direcciones"></textarea>
-        </div>
-        <div class="multi">
-            <div class="elements">
-                <button id="add_forward"> Agregar direcciones de reenvío</button> 
+    <div class="form_left">
+        <form id="form_add_forward" action="#">
+        <fieldset>
+            <legend><span class="AccountID">[% account.uid %]</span></legend>
+            <div class="informacion">Solo permitidos los dominios [% domain %] y [% domain2 %].</div><br />
+            <br />
+            <div class="informacionsmall">En el siguiente campo introduzca las direcciones,  separadas por coma. </div>
+            <div class="txt label constraint_required constraint_length">
+                <label for="personas">Direcciones de Reenvío</label>
+                <textarea cols="20" rows="10" id="direcciones" title="Ingrese las
+                direcciones a agregar" name="direcciones"></textarea>
             </div>
-        </div>
-    </fieldset>
-    </form>
+            <div class="multi">
+                <div class="elements">
+                    <button id="add_forward"> Agregar direcciones de reenvío</button> 
+                </div>
+            </div>
+        </fieldset>
+        </form>
+    </div>
 
+    <div class="right_form">
+        <form id="form_add_forward_cc" action="#">
+        <fieldset>
+            <legend><span class="AccountID">[% account.uid %]</span></legend>
+            <div class="informacionsmall">Presione en el boton para Activar/Desactivar copia local </div>
+            <div class="txt label constraint_required constraint_length">
+                <label for="personas">Copia Local</label>
+                        <button id="add_forward_cc">Desactivada</button> 
+            </div>
+        </fieldset>
+        </form>
+    </div>
+
+    <div id="table">
     <table id="lista_direcciones" width="100%">
         <thead> 
             <tr>
@@ -181,5 +245,6 @@
             <tr> <td> &nbsp; </td> </tr>
         </tbody>
     </table>
+</div>
         
 </div>
