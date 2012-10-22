@@ -7,6 +7,7 @@ use Net::LDAP::Search;
 use Net::LDAP::Message;
 use namespace::autoclean;
 use Mail::RFC822::Address qw(valid);
+use Data::Dumper;
 use v5.10;
 
 BEGIN {extends 'Catalyst::Controller::REST'; }
@@ -63,6 +64,10 @@ sub addMember : Path('grupos/add') Args ActionClass('REST') {}
 sub addListaMembers : Path('listas/add') Args ActionClass('REST') {}
 
 sub addforward : Path('reenvios/add') Args ActionClass('REST') {}
+
+sub forwardcc : Path('reenvios_cc/set') Args ActionClass('REST') {}
+
+sub forwardcca : Path('info/forward_cc') Args(1) ActionClass('REST') {}
 
 sub modify_rol : Path('listas/modify_rol') Args ActionClass('REST') {}
 
@@ -1207,14 +1212,16 @@ sub listadirecciones_GET {
                      my @rfcmembers = $resp->get_value($attr_miembro_correo);
                  
                      foreach (@rfcmembers) {
-                         $mesg = $ldap->search({
-                             filter => "($attr_correo=" . $_ . ')',
-                             attrs => ['mail', 'uid']
-                         });
+                         unless ( $_ eq '\\root') {
+                             $mesg = $ldap->search({
+                                 filter => "($attr_correo=" . $_ . ')',
+                                 attrs => ['mail', 'uid']
+                             });
                  
-                         my $entry = $mesg->shift_entry;
+                             my $entry = $mesg->shift_entry;
 
-                         push @entries, $entry;
+                             push @entries, $entry;
+                         }    
                  
                      }
                  
@@ -1226,14 +1233,14 @@ sub listadirecciones_GET {
                      );
                      return;
                  }
-                 
+
                  $datos{aaData} = [
                      map {
-                     [
-                         '<input type="checkbox" name="del" value="'.$_->get_value($attr_correo).'">',
-                         $_->get_value($attr_correo),
-                         $_->get_value('uid'),
-                     ]
+                         [
+                             '<input type="checkbox" name="del" value="'.$_->get_value($attr_correo).'">',
+                             $_->get_value($attr_correo),
+                             $_->get_value('uid'),
+                         ]
                      } grep { !($_->{uid} eq 'root') } @entries,
                  ];
                  
@@ -1512,6 +1519,66 @@ sub vacations_GET {
             $self->status_ok($c, entity => \@info);
         }
     }
+}
+
+sub forwardcc_PUT {
+    my($self, $c) = @_;
+    my $ldap = Covetel::LDAP->new;
+
+    my $lid = $c->req->data->{lid};
+
+    my $opt = $c->req->data->{opt};
+    my $forward;
+
+    my $filter = '(&' .
+    $c->config->{'Correo::Reenvios'}->{'filter'} .
+    "(sendmailMTAKey=$lid)" .
+    ')';
+
+    my $mesg = $ldap->search({
+        filter => $filter,
+        base => $c->config->{'Correo::Reenvios'}->{'basedn'},
+        attrs => ['*']
+    });
+
+    if ($mesg->count) {
+        my $forward = $mesg->shift_entry;
+            if ($forward->get_value('sendmailMTAAliasValue') ne $lid && $opt == 1) {
+                $forward->add($c->config->{'Correo::Reenvios'}->{'attrs'}->{'miembro_correo'}=>"\\$lid",)->update($ldap->server);
+            }
+            if ($forward->get_value('sendmailMTAAliasValue') ne $lid && $opt == 0) {
+                $forward->delete($c->config->{'Correo::Reenvios'}->{'attrs'}->{'miembro_correo'}=>"\\$lid",)->update($ldap->server);
+            }    
+    }
+}
+
+sub forwardcca_GET {
+    my ( $self, $c, $uid ) = @_;
+
+    my $ldap = Covetel::LDAP->new;
+    my $datos;
+    
+    my $filter = '(&' .
+    $c->config->{'Correo::Reenvios'}->{'filter'} .
+    "(sendmailMTAKey=$uid)" .
+    "(sendmailMTAAliasValue=\\\\$uid)" .
+    ')';
+
+    my $mesg = $ldap->search({
+        filter => $filter,
+        base => $c->config->{'Correo::Reenvios'}->{'basedn'},
+        attrs => [$c->config->{'Correo::Reenvios'}->{'attrs'}->{'miembro_correo'}]
+    });
+    
+    if ($mesg->count){
+        $datos = 1;
+    }else{
+        $datos = 0;
+    }
+            
+    push (my @info, $datos);
+    
+    $self->status_ok($c, entity => \@info);
 }
 
 =head1 AUTHOR
