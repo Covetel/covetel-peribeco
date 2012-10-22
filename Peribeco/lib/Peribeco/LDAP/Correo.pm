@@ -6,37 +6,60 @@ use Data::Dumper;
 
 =head1 NAME 
     
-    Peribeco::LDAP::Correo
+Peribeco::LDAP::Correo
 
 =head1 DESCRIPTION
 
-    This is a data model representation and operations over Mail entries in
-    LDAP
+This is a data model representation and operations over Mail entries in
+LDAP
 
 =head1 METHODS
 
 =head2 forwards
 
-Get method for forwards by uid
+Get method for forwards by uid. This method return a Net::LDAP::Entry of Forward.
 
 =cut 
 
 sub forwards {
-    my ($self, $mail) = @_;
+    my ($self, $uid) = @_;
 
     # Defino la base de búsqueda.
     $self->base($self->forwards_base);
 
-    my $filter = $self->filter_append( $self->forwards_filter, $self->forwards_rcpto . '=' . $mail );
+    my $filter = $self->filter_append( 
+            $self->forwards_filter,
+            $self->forwards_dn_attr . '=' . $uid
+        );
 
     # Returns list of forwards for the mail account in $c->user->mail
     my $resp = $self->search($filter);
 
+    $self->_message($resp);
+
     if ($resp->count){
-        return $resp->entries;    
+        return $resp->shift_entry;    
     } else {
-        return (); 
+        return undef; 
     }
+}
+
+=head2 forward_list
+
+Return forward list
+
+=cut
+
+sub forward_list {
+    my ($self, $uid) = @_;
+
+    if (my $e = $self->forwards($uid)){
+        my @forwards = $e->get_value( $self->forwards_mail_dst );
+        return @forwards;
+    } else {
+        return undef;
+    }
+
 }
 
 =head2 forward_create
@@ -73,9 +96,15 @@ sub forward_create {
     }
 }
 
-=head2 forwrad_new_entry($rfc822_mail,$uid);
+=head2 forward_new_entry
 
-Return Net::LDAP::Entry for Forwards
+=over
+
+=item Return Net::LDAP::Entry for Forwards
+
+=item Require as parameters: C<forward( $rfc822_mail, $uid )>
+
+=back
 
 =cut
 
@@ -171,6 +200,18 @@ sub forwards_default_attrs {
     my $self = shift; 
 
     return $self->config->{'Correo::Reenvios'}->{'entry'}->{'default_attrs'}; 
+}
+
+=head2 forwards_mail_dst
+
+Return attr that store mail dst of forwards
+
+=cut 
+
+sub forwards_mail_dst {
+    my $self = shift; 
+
+    return $self->config->{'Correo::Reenvios'}->{'attrs'}->{'miembro_correo'}; 
 }
 
 1;
