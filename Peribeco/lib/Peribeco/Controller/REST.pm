@@ -89,8 +89,6 @@ sub update_vacation_info : Private {
     $vacation->{active} =~ s/1/TRUE/;
     $vacation->{active} =~ s/0/FALSE/;
 
-    $c->log->debug(Dumper $vacation);
-
     foreach (keys %{$vacation}){
         my $action = $e->exists( $self->{vacation}->{$_} ) ? 'replace' : 'add'; 
         $e->$action( $self->{vacation}->{$_} => $vacation->{$_} );
@@ -138,7 +136,16 @@ sub vacation : Local : ActionClass('REST') {}
 REST API for maillist.
 
 =cut
+
 sub maillist : Local : ActionClass('REST') {}
+
+=head2 Forwards
+
+REST API for Forwards
+
+=cut
+
+sub forwards : Local : ActionClass('REST') {}
 
 =head2 vacation_POST
 
@@ -360,6 +367,30 @@ sub maillist_update_members {
 
 }
 
+
+=head2 forwards_GET 
+
+Return Forwards list
+
+=cut
+
+sub forwards_GET {
+    my ($self, $c) = @_;
+
+    my $m = $self->{'model'};
+
+    if (my @forwards = $m->forward_list($c->user->uid)){
+        $self->status_ok( $c, entity => { forward => \@forwards } );
+    } else {
+        $self->status_not_found(
+            $c, 
+            message => "Forwards not found"
+        ); 
+    }
+    
+
+}
+
 =head2 index
 
 =cut
@@ -373,7 +404,7 @@ sub index :Path :Args(0) {
 
 =head1 AUTHOR
 
-,,,
+Walter Vargas,<water@covetel.com.ve>
 
 =head1 LICENSE
 
