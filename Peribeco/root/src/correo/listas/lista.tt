@@ -54,7 +54,6 @@
                             for (j=0;j<member.length;j++) {
                                 members=members+member[j]+'\n';
                                 $('#'+lista).append('<li>'+member[j]+'</li>');
-                                console.log(members);
                             }
                          }
                     },
