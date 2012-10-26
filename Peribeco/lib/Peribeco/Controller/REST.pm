@@ -387,8 +387,38 @@ sub forwards_GET {
             message => "Forwards not found"
         ); 
     }
-    
+}
 
+=head2 forwards_POST
+
+Update / Create Forwards
+
+=cut
+
+sub forwards_POST {
+    my ($self, $c) = @_;
+
+    my $m = $self->{'model'};
+    
+    my $data = $c->req->data;
+    my @forward = $data->{'forward'}; 
+    my $localcopy = $data->{'localcopy'}; 
+
+    if ($m->forwards($c->user->uid)){
+        # update 
+
+        if ($m->forward_update($c->user->uid, @forward)){
+            $c->log->debug("entro en update");
+            $self->status_ok( $c, entity => { message => "Forwards Updated" } );
+        } else {
+            $self->status_bad_request(
+                $c,
+                message => "Error in forward_update"
+            );
+        }
+    } else {
+        # create
+    }
 }
 
 =head2 index
