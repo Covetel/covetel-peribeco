@@ -4,13 +4,13 @@ use Net::LDAP::Entry;
 use common::sense;
 use Data::Dumper;
 
-=head1 NAME 
+=head1 NAME /
     
 Peribeco::LDAP::Correo
 
 =head1 DESCRIPTION
 
-This is a data model representation and operations over Mail entries in
+This is a data model representatio and operations over Mail entries in
 LDAP
 
 =head1 METHODS
@@ -18,6 +18,11 @@ LDAP
 =head2 forwards
 
 Get method for forwards by uid. This method return a Net::LDAP::Entry of Forward.
+
+=head3 EXAMPLE
+
+ my $model = $c->model('LDAP::Correo');
+ my $forward_entry = $model->forwards($uid);
 
 =cut 
 
@@ -48,6 +53,11 @@ sub forwards {
 
 Return forward list
 
+=head3 EXAMPLE
+
+ my $model = $c->model('LDAP::Correo');
+ my @forwards_mailrfc822 = $model->forward_list($uid);
+
 =cut
 
 sub forward_list {
@@ -66,7 +76,7 @@ sub forward_list {
 
 Create forward entry
 
-=head3 SINOPSYS
+=head3 EXAMPLE
 
  my $model = $c->model('LDAP::Correo');
 
@@ -81,8 +91,6 @@ Create forward entry
 sub forward_create {
     my ($self, $forward, $uid) = @_;
 
-    $DB::single=1;
-    
     my $e = $self->forward_new_entry($forward,$uid);
 
     my $resp = $self->add($e);
@@ -93,6 +101,53 @@ sub forward_create {
         return undef;
     } else {
         return 1; 
+    }
+}
+
+=head2 forward_update 
+
+This method update forwards mail address
+
+=head3 EXAMPLE
+
+ my $model = $c->model('LDAP::Correo');
+
+ my @forwards = qw/user@example.com user2@example.com/; 
+
+ my $uid = $c->user->uid;
+
+ $model->forward_update($uid, @forwards);
+
+=cut
+
+sub forward_update {
+    my ($self, $uid, @forwards) = @_; 
+
+    print Dumper {uid => $uid , forwards => @forwards};
+    
+    my $e = $self->forwards($uid);
+    
+
+    if ($e){
+
+        $e->replace(
+            $self->forwards_mail_dst => @forwards,
+        );
+
+        #my $resp = $self->modify($e);
+        my $resp = $e->update($self);
+
+        print Dumper $resp->error_text;
+
+        $self->_message($resp);
+
+        if ($resp->is_error){
+            return undef;
+        } else {
+            return 1; 
+        }
+    } else {
+        return undef;
     }
 }
 
