@@ -99,6 +99,8 @@ sub forward_create {
 
     my $e = $self->forward_new_entry($forward, $uid);
 
+  print Dumper $e->dump;
+
     my $resp = $self->add($e);
 
     $self->_message($resp);
@@ -127,17 +129,22 @@ This method update forwards mail address
 =cut
 
 sub forward_update {
-    my ($self, $uid, @forwards) = @_; 
+    my ($self, $uid, $localcopy, $forwards) = @_; 
 
     my $e = $self->forwards($uid);
+    
+    if ($localcopy){
+        my $localcopy_str = chr(92) . $uid;
+        push @{$forwards}, $localcopy_str 
+            unless grep {/$localcopy_str/} @{$forwards};  
+    }
 
     if ($e){
 
         $e->replace(
-            $self->forwards_mail_dst => @forwards,
+            $self->forwards_mail_dst => @{$forwards},
         );
 
-        #my $resp = $self->modify($e);
         my $resp = $e->update($self);
 
         $self->_message($resp);
@@ -182,7 +189,7 @@ sub forward_new_entry {
     # Atributos Valuados
     my $values = {
         $self->forwards_dn_attr => $uid, 
-        $self->forwards_mail_dst => @{$forward},
+        $self->forwards_mail_dst =>  $forward,
     };
 
     foreach (keys %{$attrs}){
