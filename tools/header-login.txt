@@ -1,0 +1,17 @@
+HTTP/1.0 302 Found
+Date: Mon, 22 Oct 2012 22:19:37 GMT
+Server: HTTP::Server::PSGI
+Location: http://127.0.0.1:3000/correo/vacations
+Content-Length: 317
+Content-Type: text/html; charset=utf-8
+Set-Cookie: peribeco_session=cc5a28fc702a28e0b98ac4bb7858678a6c2c86cc; path=/; expires=Tue, 23-Oct-2012 00:19:37 GMT; HttpOnly
+X-Catalyst: 5.90016
+
+HTTP/1.0 200 OK
+Date: Mon, 22 Oct 2012 22:19:38 GMT
+Server: HTTP::Server::PSGI
+Content-Length: 5279
+Content-Type: text/html; charset=utf-8
+Set-Cookie: peribeco_session=cc5a28fc702a28e0b98ac4bb7858678a6c2c86cc; path=/; expires=Tue, 23-Oct-2012 00:19:38 GMT; HttpOnly
+X-Catalyst: 5.90016
+

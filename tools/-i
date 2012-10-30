@@ -1,0 +1,15 @@
+HTTP/1.0 302 Found
+Date: Thu, 27 Sep 2012 10:42:48 GMT
+Server: HTTP::Server::PSGI
+Location: http://localhost:3000/login
+Content-Length: 306
+Content-Type: text/html; charset=utf-8
+X-Catalyst: 5.90016
+
+HTTP/1.0 200 OK
+Date: Thu, 27 Sep 2012 10:42:48 GMT
+Server: HTTP::Server::PSGI
+Content-Length: 3390
+Content-Type: text/html; charset=utf-8
+X-Catalyst: 5.90016
+
