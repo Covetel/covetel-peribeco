@@ -4,8 +4,8 @@ use Net::LDAP::Entry;
 use common::sense;
 use Data::Dumper;
 
-=head1 NAME /
-    
+=head1 NAME
+
 Peribeco::LDAP::Correo
 
 =head1 DESCRIPTION
@@ -24,7 +24,7 @@ Get method for forwards by uid. This method return a Net::LDAP::Entry of Forward
  my $model = $c->model('LDAP::Correo');
  my $forward_entry = $model->forwards($uid);
 
-=cut 
+=cut
 
 sub forwards {
     my ($self, $uid) = @_;
@@ -43,9 +43,9 @@ sub forwards {
     $self->_message($resp);
 
     if ($resp->count){
-        return $resp->shift_entry;    
+        return $resp->shift_entry;
     } else {
-        return undef; 
+        return undef;
     }
 }
 
@@ -123,10 +123,7 @@ This method update forwards mail address
 sub forward_update {
     my ($self, $uid, @forwards) = @_; 
 
-    print Dumper {uid => $uid , forwards => @forwards};
-    
     my $e = $self->forwards($uid);
-    
 
     if ($e){
 
@@ -136,8 +133,6 @@ sub forward_update {
 
         #my $resp = $self->modify($e);
         my $resp = $e->update($self);
-
-        print Dumper $resp->error_text;
 
         $self->_message($resp);
 
