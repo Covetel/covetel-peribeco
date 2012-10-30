@@ -80,7 +80,7 @@ Create forward entry
 
  my $model = $c->model('LDAP::Correo');
 
- if ($model->forward_create('rdeoli01cantv.com.ve','emujic')){
+ if ($model->forward_create(['correo1@cantv.com.ve','correo2@cantv.com.ve'],'emujic')){
      print "Entry created";
  } else {
      print "Message is: " , $model->_message;    
