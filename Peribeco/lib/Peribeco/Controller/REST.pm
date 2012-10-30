@@ -379,8 +379,22 @@ sub forwards_GET {
 
     my $m = $self->{'model'};
 
+    my $uid = $c->user->uid;
+    my $localcopy = 0;
+
     if (my @forwards = $m->forward_list($c->user->uid)){
-        $self->status_ok( $c, entity => { forward => \@forwards } );
+
+        if ($m->forwards_localcopy($uid)){
+            $localcopy = 1;
+            @forwards = grep { !/\\/ } @forwards; 
+        }
+        $self->status_ok(
+            $c,
+            entity => {
+                forward   => \@forwards,
+                localcopy => $localcopy
+            }
+        );
     } else {
         $self->status_not_found(
             $c, 
@@ -400,24 +414,29 @@ sub forwards_POST {
 
     my $m = $self->{'model'};
     
+    my $uid = $c->user->uid;
     my $data = $c->req->data;
-    my @forward = $data->{'forward'}; 
+    my $forward = $data->{'forward'}; 
     my $localcopy = $data->{'localcopy'}; 
 
-    if ($m->forwards($c->user->uid)){
-        # update 
-
-        if ($m->forward_update($c->user->uid, @forward)){
-            $c->log->debug("entro en update");
+    if ($m->forwards($uid)){
+         if ($m->forward_update($uid, $localcopy, $forward)){
             $self->status_ok( $c, entity => { message => "Forwards Updated" } );
-        } else {
+         } else {
             $self->status_bad_request(
                 $c,
                 message => "Error in forward_update"
             );
         }
     } else {
-        # create
+         if ($m->forward_create($uid, $localcopy, $forward)){
+            $self->status_ok( $c, entity => { message => "Forwards Created" } );
+         } else {
+            $self->status_bad_request(
+                $c,
+                message => "Error in forward_create"
+            );
+        }
     }
 }
 
