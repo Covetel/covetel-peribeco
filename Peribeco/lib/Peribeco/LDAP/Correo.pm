@@ -89,9 +89,15 @@ Create forward entry
 =cut
 
 sub forward_create {
-    my ($self, $forward, $uid) = @_;
+    my ($self, $uid, $localcopy, $forward) = @_;
+    
+    if ($localcopy){
+        my $localcopy_str = chr(92) . $uid;
+        push @{$forward}, $localcopy_str 
+            unless grep {/$localcopy_str/} @{$forward};  
+    }
 
-    my $e = $self->forward_new_entry($forward,$uid);
+    my $e = $self->forward_new_entry($forward, $uid);
 
     my $resp = $self->add($e);
 
@@ -175,8 +181,8 @@ sub forward_new_entry {
 
     # Atributos Valuados
     my $values = {
-        sendmailMTAKey => $uid, 
-        sendmailMTAAliasValue => $forward,
+        $self->forwards_dn_attr => $uid, 
+        $self->forwards_mail_dst => @{$forward},
     };
 
     foreach (keys %{$attrs}){
