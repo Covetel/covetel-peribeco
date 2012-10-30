@@ -142,7 +142,7 @@ sub forward_update {
     if ($e){
 
         $e->replace(
-            $self->forwards_mail_dst => @{$forwards},
+            $self->forwards_mail_dst => $forwards,
         );
 
         my $resp = $e->update($self);
