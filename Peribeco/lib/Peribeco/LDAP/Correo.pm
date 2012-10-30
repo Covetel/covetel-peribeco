@@ -202,6 +202,35 @@ sub forward_new_entry {
     return $e;
 }
 
+=head2 forwards_localcopy
+
+Return true if localcopy is set, undef is not set.
+
+=cut 
+
+sub forwards_localcopy {
+    my ($self, $uid) = @_;
+
+    my @forwards = $self->forward_list($uid); 
+    if (grep {/\\/} @forwards){
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+=head2 forwards_localcopy_str
+
+Return localcopy string
+
+=cut 
+
+sub forwards_localcopy_str {
+    my ($self, $uid) = @_;
+    return chr(92) . $uid; 
+}
+
+
 =head2 forwards_base 
 
 Return Forwards search base.
