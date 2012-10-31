@@ -1,7 +1,7 @@
 Source: covetel-peribeco
 Section: perl
 Priority: extra
-Maintainer: Luis Alfredo da Silva <luisdasilva@covetel.com.ve>
+Maintainer: Walter Vargas <walter@covetel.com.ve>
 Build-Depends: debhelper (>= 7.0.50~)
 Standards-Version: 3.8.4
 Homepage: http://www.covetel.com.ve
