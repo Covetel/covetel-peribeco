@@ -31,7 +31,6 @@
 
         });
 
-
         tabla_listas = $("#lista_listas").dataTable({
             "sAjaxSource": '/ajax/listas/',
             "oLanguage": {
@@ -40,9 +39,27 @@
             "bJQueryUI": true,
             "fnDrawCallback": function () {
                 my_hover();
+                 $.ajax({
+                     url: "/ajax/listas/", 
+                     type: "GET",
+                     dataType: "json",
+                     complete: function (data) {
+                         var usage = $.parseJSON(data.responseText);
+                         for(i=0;i<=usage.aaData.length;i++) {
+                            var info = usage.aaData[i][3].toString();
+                            var lista = usage.aaData[i][0].toString().replace(/<input type="checkbox" name="del" value="/,'').replace(/">/,'');
+                            $('#'+lista).text('');
+                            var member = info.replace(/<div class="members_div" id=".*">/,'').replace(/<\/div>/,'').split(",");
+                            var members = '';
+                            for (j=0;j<member.length;j++) {
+                                members=members+member[j]+'\n';
+                                $('#'+lista).append('<li>'+member[j]+'</li>');
+                            }
+                         }
+                    },
+                });
             }
         });
-        
 
     }); // end of document.ready  
 </script>
