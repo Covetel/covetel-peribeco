@@ -8,7 +8,7 @@ It was downloaded from:
 
 Upstream Author(s):
 
-	Walter Vargas <wvargas@covetel.com.ve>
+	Walter Vargas <walter@covetel.com.ve>
 	Carlos Paredes <cparedes@covetel.com.ve>
 	Luis Alfredo Silva <luisdasilva@covetel.com.ve>
 
@@ -18,7 +18,7 @@ Copyright:
 
 License:
 
-    <Put the license of the package here indented by 4 spaces>
+    GPLv2
 
 The Debian packaging is:
 
