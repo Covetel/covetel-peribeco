@@ -1,3 +1,15 @@
+covetel-peribeco (0.2-16) unstable; urgency=low
+
+  * Non-maintainer upload.
+
+ --  <elsanto@igraine.covetel.com.ve>  Wed, 31 Oct 2012 16:14:32 -0430
+
+covetel-peribeco (0.2-15.1+1) unstable; urgency=low
+
+  * Non-maintainer upload.
+
+ --  <walter@covetel.com.ve>  Wed, 31 Oct 2012 16:10:30 -0430
+
 covetel-peribeco (0.2-15.1) unstable; urgency=low
 
   * Removing dependency of covetel-peribeco-perl  
