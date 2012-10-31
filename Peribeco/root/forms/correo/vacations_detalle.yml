@@ -34,8 +34,6 @@ elements:
               title: 'Por favor ingrese el mensaje de Autorespuesta'
               class: input_text
               id: autorespuesta
-          constraints:
-            - Required
 
     # The Submit button
     - type: Multi
@@ -44,7 +42,7 @@ elements:
         - type: Submit
           name: submit
           # The text to be displayed
-          value: Asignar
+          value: Guardar
           attributes:
               title: Presione este botón para guardar los cambios 
               class: input_submit

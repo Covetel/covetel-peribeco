@@ -39,6 +39,8 @@ sub auto : Private {
 
     $self->{user_ldap_entry} = $c->user->ldap_entry;
 
+    $self->{model} = $c->model('LDAP::Correo');
+
 }
 
 
@@ -92,7 +94,8 @@ sub update_vacation_info : Private {
         $e->$action( $self->{vacation}->{$_} => $vacation->{$_} );
     }
 
-    my $server = $self->{ldap}->server;
+
+    my $server = $self->{ldap};
 
     my $r = $e->update($server);
 
@@ -133,7 +136,16 @@ sub vacation : Local : ActionClass('REST') {}
 REST API for maillist.
 
 =cut
+
 sub maillist : Local : ActionClass('REST') {}
+
+=head2 Forwards
+
+REST API for Forwards
+
+=cut
+
+sub forwards : Local : ActionClass('REST') {}
 
 =head2 vacation_POST
 
@@ -147,8 +159,8 @@ sub vacation_POST {
     my $data = $c->req->data;
 
     my $vacation = { 
-        active  => $data->{active}, 
-        info    => $data->{info} 
+        active  => $data->{vacation}, 
+        info    => $data->{message} 
     };  
 
     if ($self->update_vacation_info($c, $vacation)){
@@ -164,7 +176,7 @@ sub vacation_POST {
 
 sub vacation_GET {
     my ($self, $c, $param) = @_;
-        
+
     $self->status_ok(
         $c,
         entity => {
@@ -355,6 +367,79 @@ sub maillist_update_members {
 
 }
 
+
+=head2 forwards_GET 
+
+Return Forwards list
+
+=cut
+
+sub forwards_GET {
+    my ($self, $c) = @_;
+
+    my $m = $self->{'model'};
+
+    my $uid = $c->user->uid;
+    my $localcopy = 0;
+
+    if (my @forwards = $m->forward_list($c->user->uid)){
+
+        if ($m->forwards_localcopy($uid)){
+            $localcopy = 1;
+            @forwards = grep { !/\\/ } @forwards; 
+        }
+        $self->status_ok(
+            $c,
+            entity => {
+                forward   => \@forwards,
+                localcopy => $localcopy
+            }
+        );
+    } else {
+        $self->status_not_found(
+            $c, 
+            message => "Forwards not found"
+        ); 
+    }
+}
+
+=head2 forwards_POST
+
+Update / Create Forwards
+
+=cut
+
+sub forwards_POST {
+    my ($self, $c) = @_;
+
+    my $m = $self->{'model'};
+    
+    my $uid = $c->user->uid;
+    my $data = $c->req->data;
+    my $forward = $data->{'forward'}; 
+    my $localcopy = $data->{'localcopy'}; 
+
+    if ($m->forwards($uid)){
+         if ($m->forward_update($uid, $localcopy, $forward)){
+            $self->status_ok( $c, entity => { message => "Forwards Updated" } );
+         } else {
+            $self->status_bad_request(
+                $c,
+                message => "Error in forward_update"
+            );
+        }
+    } else {
+         if ($m->forward_create($uid, $localcopy, $forward)){
+            $self->status_ok( $c, entity => { message => "Forwards Created" } );
+         } else {
+            $self->status_bad_request(
+                $c,
+                message => "Error in forward_create"
+            );
+        }
+    }
+}
+
 =head2 index
 
 =cut
@@ -368,7 +453,7 @@ sub index :Path :Args(0) {
 
 =head1 AUTHOR
 
-,,,
+Walter Vargas,<water@covetel.com.ve>
 
 =head1 LICENSE
 
