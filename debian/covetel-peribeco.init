@@ -65,10 +65,11 @@ case "$1" in
 	;;
   restart|force-reload)
 	echo -n "Starting $DESC: "
-    start-stop-daemon --start --quiet --pidfile $PIDFILE \
+	start-stop-daemon --start --quiet --pidfile $PIDFILE \
 		--exec $DAEMON -- $DAEMON_OPTS || true
-    echo "$DAEMON $DAEMON_OPTS"
+	echo "$DAEMON $DAEMON_OPTS"
 	echo "$NAME."
+
 	sleep 5
 	echo -n "Stopping $DESC: "
 	start-stop-daemon --stop --quiet --pidfile /var/run/$NAME.pid \

@@ -5,8 +5,11 @@ use 5.010;
 
 given($ARGV[0]){
     when('configure'){
-		my $dir = '/opt/Peribeco/logs';
-		mkdir $dir unless -d $dir;
+	my $dir = '/opt/Peribeco/logs';
+	mkdir $dir unless -d $dir;
+	
+	`chmod 755 /etc/init.d/covetel-peribeco`
+	`update-rc.d covetel-peribeco defaults`
     }
 
     when(/(abort-upgrade)|(abort-remove)|(abort-deconfigure)/){ }

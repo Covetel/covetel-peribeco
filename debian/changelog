@@ -1,3 +1,9 @@
+covetel-peribeco (0.2-16.1) unstable; urgency=low
+
+  * Making covetel-peribeco run at boot time
+
+ -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Wed, 31 Oct 2012 16:38:16 -0430
+
 covetel-peribeco (0.2-16) unstable; urgency=low
 
   * Non-maintainer upload.
