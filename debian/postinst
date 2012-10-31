@@ -8,8 +8,8 @@ given($ARGV[0]){
 	my $dir = '/opt/Peribeco/logs';
 	mkdir $dir unless -d $dir;
 	
-	`chmod 755 /etc/init.d/covetel-peribeco`
-	`update-rc.d covetel-peribeco defaults`
+	`chmod 755 /etc/init.d/covetel-peribeco`;
+	`update-rc.d covetel-peribeco defaults`;
     }
 
     when(/(abort-upgrade)|(abort-remove)|(abort-deconfigure)/){ }
