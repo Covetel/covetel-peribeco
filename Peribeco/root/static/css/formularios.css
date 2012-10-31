@@ -206,3 +206,19 @@ span.requerido {
  color: #f00;
  font-weight: bold;
 }
+
+div.form_left {
+    float: left;
+    margin-right: 50px;
+}
+
+div.right_form {
+    float: right;
+    margin-right: 15%;
+    margin-top: 4%;
+}
+
+div#table {
+    float: right;
+    width: 100%;
+}    
