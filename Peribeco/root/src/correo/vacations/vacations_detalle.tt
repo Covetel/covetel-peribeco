@@ -5,8 +5,10 @@
         $("#vacations").click(function() {  
             if($("#vacations").is(':checked')) {  
                 $("#vacations").val("1");
+                $("#autorespuesta").attr("disabled","");
             } else {  
                 $("#vacations").val("0");
+                $("#autorespuesta").attr("disabled","disabled");
             }  
         });  
 
@@ -24,6 +26,7 @@
                     $("#vacations").val("1");
                 } else {
                     $("#vacations").val("0");
+                    $("#autorespuesta").attr("disabled","disabled");
                 }
 
                 $("#autorespuesta").val(info[1]);
@@ -32,6 +35,7 @@
 
         $("input.input_reset").click(function(){
             $("#vacations").val("0");
+            $("#autorespuesta").attr("disabled","disabled");
         });
 
     });
