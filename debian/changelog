@@ -1,3 +1,23 @@
+covetel-peribeco (0.2-15) unstable; urgency=low
+
+  * Implementation of REST API for Thunderbird Extension
+      * Vacations
+      * Maillist
+      * Forwards
+  * Implementation of model LDAP for mail entries
+    (Peribeco::Model::LDAP::Correo)
+  * Closes Ticket 40
+  * Closes Ticket 39
+  * Closes Ticket 38
+  * Closes Ticket 37
+  * Closes Ticket 36 
+  * Closes Ticket 33
+  * Closes Ticket 31
+  * Closes Ticket 24
+  * Closes Ticket 22
+
+ -- Walter Vargas <walter@covetel.com.ve>  Tue, 30 Oct 2012 21:28:55 -0430
+
 covetel-peribeco (0.2-14) unstable; urgency=low
 
   * Fixed Bugs in /listas/detalle
