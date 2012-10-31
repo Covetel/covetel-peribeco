@@ -1,3 +1,9 @@
+covetel-peribeco (0.2-15.1) unstable; urgency=low
+
+  * Removing dependency of covetel-peribeco-perl  
+
+ --  Walter Vargas <walter@covetel.com.ve>  Wed, 31 Oct 2012 15:58:20 -0430
+
 covetel-peribeco (0.2-15) unstable; urgency=low
 
   * Implementation of REST API for Thunderbird Extension
