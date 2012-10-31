@@ -1,0 +1,216 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+Covetel::Email	CovetelLDAP/Covetel/Email.pm	/^package Covetel::Email;$/;"	p
+Covetel::Email	Peribeco/lib/Covetel/Email.pm	/^package Covetel::Email;$/;"	p
+Covetel::LDAP	CovetelLDAP/Covetel/LDAP.pm	/^package Covetel::LDAP;$/;"	p
+Covetel::LDAP	Peribeco/lib/Covetel/LDAP.pm	/^package Covetel::LDAP;$/;"	p
+Covetel::LDAP::Group	CovetelLDAP/Covetel/LDAP/Group.pm	/^package Covetel::LDAP::Group;$/;"	p
+Covetel::LDAP::Group	Peribeco/lib/Covetel/LDAP/Group.pm	/^package Covetel::LDAP::Group;$/;"	p
+Covetel::LDAP::Person	CovetelLDAP/Covetel/LDAP/Person.pm	/^package Covetel::LDAP::Person;$/;"	p
+Covetel::LDAP::Person	Peribeco/lib/Covetel/LDAP/Person.pm	/^package Covetel::LDAP::Person;$/;"	p
+Covetel::Person	CovetelLDAP/Covetel/Person.pm	/^package Covetel::Person;$/;"	p
+Covetel::Person	Peribeco/lib/Covetel/Person.pm	/^package Covetel::Person;$/;"	p
+HTML::FormFu::Validator::Cedula	Peribeco/lib/HTML/FormFu/Validator/Cedula.pm	/^package HTML::FormFu::Validator::Cedula;$/;"	p
+HTML::FormFu::Validator::Uid	Peribeco/lib/HTML/FormFu/Validator/Uid.pm	/^package HTML::FormFu::Validator::Uid;$/;"	p
+Peribeco	Peribeco/lib/Peribeco.pm	/^package Peribeco;$/;"	p
+Peribeco::Controller::AJAX	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^package Peribeco::Controller::AJAX;$/;"	p
+Peribeco::Controller::Correo	Peribeco/lib/Peribeco/Controller/Correo.pm	/^package Peribeco::Controller::Correo;$/;"	p
+Peribeco::Controller::Grupos	Peribeco/lib/Peribeco/Controller/Grupos.pm	/^package Peribeco::Controller::Grupos;$/;"	p
+Peribeco::Controller::Login	Peribeco/lib/Peribeco/Controller/Login.pm	/^package Peribeco::Controller::Login;$/;"	p
+Peribeco::Controller::Logout	Peribeco/lib/Peribeco/Controller/Logout.pm	/^package Peribeco::Controller::Logout;$/;"	p
+Peribeco::Controller::Personas	Peribeco/lib/Peribeco/Controller/Personas.pm	/^package Peribeco::Controller::Personas;$/;"	p
+Peribeco::Controller::REST	Peribeco/lib/Peribeco/Controller/REST.pm	/^package Peribeco::Controller::REST;$/;"	p
+Peribeco::Controller::Root	Peribeco/lib/Peribeco/Controller/Root.pm	/^package Peribeco::Controller::Root;$/;"	p
+Peribeco::Controller::bpersona	Peribeco/lib/Peribeco/Controller/bpersona.pm	/^package Peribeco::Controller::bpersona;$/;"	p
+Peribeco::LDAP	Peribeco/lib/Peribeco/LDAP.pm	/^package Peribeco::LDAP;$/;"	p
+Peribeco::LDAP::Correo	Peribeco/lib/Peribeco/LDAP/Correo.pm	/^package Peribeco::LDAP::Correo;$/;"	p
+Peribeco::Model::LDAP::Correo	Peribeco/lib/Peribeco/Model/LDAP/Correo.pm	/^package Peribeco::Model::LDAP::Correo;$/;"	p
+Peribeco::View::HTML	Peribeco/lib/Peribeco/View/HTML.pm	/^package Peribeco::View::HTML;$/;"	p
+_base_groups	CovetelLDAP/Covetel/LDAP/Group.pm	/^sub _base_groups {$/;"	s
+_base_groups	Peribeco/lib/Covetel/LDAP/Group.pm	/^sub _base_groups {$/;"	s
+_build_base	CovetelLDAP/Covetel/LDAP.pm	/^sub _build_base {$/;"	s
+_build_base	Peribeco/lib/Covetel/LDAP.pm	/^sub _build_base {$/;"	s
+_build_config	CovetelLDAP/Covetel/LDAP.pm	/^sub _build_config {$/;"	s
+_build_config	Peribeco/lib/Covetel/LDAP.pm	/^sub _build_config {$/;"	s
+_build_dn	CovetelLDAP/Covetel/LDAP/Group.pm	/^sub _build_dn {$/;"	s
+_build_dn	Peribeco/lib/Covetel/LDAP/Group.pm	/^sub _build_dn {$/;"	s
+_build_entry	CovetelLDAP/Covetel/LDAP/Group.pm	/^sub _build_entry {$/;"	s
+_build_entry	CovetelLDAP/Covetel/LDAP/Person.pm	/^sub _build_entry {$/;"	s
+_build_entry	Peribeco/lib/Covetel/LDAP/Group.pm	/^sub _build_entry {$/;"	s
+_build_entry	Peribeco/lib/Covetel/LDAP/Person.pm	/^sub _build_entry {$/;"	s
+_build_gidNumber	CovetelLDAP/Covetel/LDAP/Group.pm	/^sub _build_gidNumber {$/;"	s
+_build_gidNumber	Peribeco/lib/Covetel/LDAP/Group.pm	/^sub _build_gidNumber {$/;"	s
+_build_ldap	CovetelLDAP/Covetel/LDAP/Group.pm	/^sub _build_ldap {$/;"	s
+_build_ldap	CovetelLDAP/Covetel/LDAP/Person.pm	/^sub _build_ldap { $/;"	s
+_build_ldap	Peribeco/lib/Covetel/LDAP/Group.pm	/^sub _build_ldap {$/;"	s
+_build_ldap	Peribeco/lib/Covetel/LDAP/Person.pm	/^sub _build_ldap { $/;"	s
+_build_server	CovetelLDAP/Covetel/LDAP.pm	/^sub _build_server {$/;"	s
+_build_server	Peribeco/lib/Covetel/LDAP.pm	/^sub _build_server {$/;"	s
+_build_uidNumber	CovetelLDAP/Covetel/LDAP/Person.pm	/^sub _build_uidNumber {$/;"	s
+_build_uidNumber	Peribeco/lib/Covetel/LDAP/Person.pm	/^sub _build_uidNumber {$/;"	s
+_message	Peribeco/lib/Peribeco/LDAP.pm	/^sub _message {$/;"	s
+_mta_default	CovetelLDAP/Covetel/Email.pm	/^sub _mta_default {$/;"	s
+_mta_default	Peribeco/lib/Covetel/Email.pm	/^sub _mta_default {$/;"	s
+add	CovetelLDAP/Covetel/LDAP/Group.pm	/^sub add {$/;"	s
+add	CovetelLDAP/Covetel/LDAP/Person.pm	/^sub add {$/;"	s
+add	Peribeco/lib/Covetel/LDAP/Group.pm	/^sub add {$/;"	s
+add	Peribeco/lib/Covetel/LDAP/Person.pm	/^sub add {$/;"	s
+addListaMembers	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub addListaMembers : Path('listas\/add') Args ActionClass('REST') {}$/;"	s
+addListaMembers_PUT	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub addListaMembers_PUT {$/;"	s
+addMember	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub addMember : Path('grupos\/add') Args ActionClass('REST') {}$/;"	s
+addMember_PUT	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub addMember_PUT {$/;"	s
+add_member	CovetelLDAP/Covetel/LDAP/Group.pm	/^sub add_member {$/;"	s
+add_member	Peribeco/lib/Covetel/LDAP/Group.pm	/^sub add_member {$/;"	s
+addforward	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub addforward : Path('reenvios\/add') Args ActionClass('REST') {}$/;"	s
+addforward_PUT	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub addforward_PUT {$/;"	s
+auto	Peribeco/lib/Peribeco/Controller/Correo.pm	/^sub auto :Private {$/;"	s
+auto	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub auto : Private {$/;"	s
+auto	Peribeco/lib/Peribeco/Controller/Root.pm	/^sub auto : Private {$/;"	s
+autocomplete_mail	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub autocomplete_mail : Path('autocomplete\/mail') Args ActionClass('REST') {}$/;"	s
+autocomplete_mail_GET	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub autocomplete_mail_GET {$/;"	s
+autocomplete_usuarios	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub autocomplete_usuarios : Path('autocomplete\/usuarios') Args ActionClass('REST') {}$/;"	s
+autocomplete_usuarios_GET	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub autocomplete_usuarios_GET {$/;"	s
+body_process	CovetelLDAP/Covetel/Email.pm	/^sub body_process {$/;"	s
+body_process	Peribeco/lib/Covetel/Email.pm	/^sub body_process {$/;"	s
+change_pass	CovetelLDAP/Covetel/LDAP/Person.pm	/^sub change_pass {$/;"	s
+change_pass	Peribeco/lib/Covetel/LDAP/Person.pm	/^sub change_pass {$/;"	s
+change_pass	Peribeco/lib/Peribeco/Controller/Personas.pm	/^sub change_pass : Local : FormConfig {$/;"	s
+crear	Peribeco/lib/Peribeco/Controller/Correo.pm	/^sub crear :Path('listas\/crear') :FormConfig('correo\/listas_crear.yml') {$/;"	s
+crear	Peribeco/lib/Peribeco/Controller/Grupos.pm	/^sub crear : Local  : FormConfig {$/;"	s
+crear	Peribeco/lib/Peribeco/Controller/Personas.pm	/^sub crear : Local : FormConfig {$/;"	s
+create_ou	CovetelLDAP/Covetel/LDAP.pm	/^sub create_ou {$/;"	s
+create_ou	Peribeco/lib/Covetel/LDAP.pm	/^sub create_ou {$/;"	s
+default	Peribeco/lib/Peribeco/Controller/Root.pm	/^sub default :Path {$/;"	s
+del	CovetelLDAP/Covetel/LDAP/Group.pm	/^sub del {$/;"	s
+del	CovetelLDAP/Covetel/LDAP/Person.pm	/^sub del {$/;"	s
+del	Peribeco/lib/Covetel/LDAP/Group.pm	/^sub del {$/;"	s
+del	Peribeco/lib/Covetel/LDAP/Person.pm	/^sub del {$/;"	s
+delListaMembers	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub delListaMembers : Path('listas\/del') Args ActionClass('REST') {}$/;"	s
+delListaMembers_DELETE	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub delListaMembers_DELETE {$/;"	s
+delMember	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub delMember : Path('grupos\/del') Args ActionClass('REST') {}$/;"	s
+delMember_DELETE	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub delMember_DELETE {$/;"	s
+delete_groups	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub delete_groups : Path('delete\/groups') Args ActionClass('REST') {}$/;"	s
+delete_groups_DELETE	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub delete_groups_DELETE {$/;"	s
+delete_lista	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub delete_lista : Path('delete\/lista') Args ActionClass('REST') {}$/;"	s
+delete_lista_DELETE	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub delete_lista_DELETE {$/;"	s
+delete_ou	CovetelLDAP/Covetel/LDAP.pm	/^sub delete_ou {$/;"	s
+delete_ou	Peribeco/lib/Covetel/LDAP.pm	/^sub delete_ou {$/;"	s
+delete_persons	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub delete_persons : Path('delete\/persons') Args ActionClass('REST') {}$/;"	s
+delete_persons_DELETE	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub delete_persons_DELETE {$/;"	s
+delforward	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub delforward : Path('reenvios\/del') Args ActionClass('REST') {}$/;"	s
+delforward_DELETE	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub delforward_DELETE {$/;"	s
+detalle	Peribeco/lib/Peribeco/Controller/Correo.pm	/^sub detalle : Path('listas\/detalle'){$/;"	s
+detalle	Peribeco/lib/Peribeco/Controller/Grupos.pm	/^sub detalle : Local {$/;"	s
+detalle	Peribeco/lib/Peribeco/Controller/Personas.pm	/^sub detalle : Local {$/;"	s
+eliminar	Peribeco/lib/Peribeco/Controller/Grupos.pm	/^sub eliminar : Local {$/;"	s
+eliminar	Peribeco/lib/Peribeco/Controller/Personas.pm	/^sub eliminar : Local {$/;"	s
+end	Peribeco/lib/Peribeco/Controller/Root.pm	/^sub end : ActionClass('RenderView') {}$/;"	s
+error_str	CovetelLDAP/Covetel/LDAP.pm	/^sub error_str {$/;"	s
+error_str	Peribeco/lib/Covetel/LDAP.pm	/^sub error_str {$/;"	s
+filter_append	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub filter_append : Private {$/;"	s
+filter_append	Peribeco/lib/Peribeco/LDAP.pm	/^sub filter_append {$/;"	s
+forward_create	Peribeco/lib/Peribeco/LDAP/Correo.pm	/^sub forward_create {$/;"	s
+forward_list	Peribeco/lib/Peribeco/LDAP/Correo.pm	/^sub forward_list {$/;"	s
+forward_localcopy	Peribeco/lib/Peribeco/LDAP/Correo.pm	/^sub forward_localcopy {$/;"	s
+forward_new_entry	Peribeco/lib/Peribeco/LDAP/Correo.pm	/^sub forward_new_entry {$/;"	s
+forward_update	Peribeco/lib/Peribeco/LDAP/Correo.pm	/^sub forward_update {$/;"	s
+forwards	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub forwards : Local : ActionClass('REST') {}$/;"	s
+forwards	Peribeco/lib/Peribeco/LDAP/Correo.pm	/^sub forwards {$/;"	s
+forwards_GET	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub forwards_GET {$/;"	s
+forwards_POST	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub forwards_POST {$/;"	s
+forwards_base	Peribeco/lib/Peribeco/LDAP/Correo.pm	/^sub forwards_base {$/;"	s
+forwards_default_attrs	Peribeco/lib/Peribeco/LDAP/Correo.pm	/^sub forwards_default_attrs {$/;"	s
+forwards_dn_attr	Peribeco/lib/Peribeco/LDAP/Correo.pm	/^sub forwards_dn_attr {$/;"	s
+forwards_filter	Peribeco/lib/Peribeco/LDAP/Correo.pm	/^sub forwards_filter {$/;"	s
+forwards_mail_dst	Peribeco/lib/Peribeco/LDAP/Correo.pm	/^sub forwards_mail_dst {$/;"	s
+forwards_objectclass	Peribeco/lib/Peribeco/LDAP/Correo.pm	/^sub forwards_objectclass {$/;"	s
+get_vacation_info	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub get_vacation_info : Private {$/;"	s
+getquota	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub getquota : Path('quota\/use') Args(1) ActionClass('REST') {}$/;"	s
+getquota_GET	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub getquota_GET {$/;"	s
+global_quota	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub global_quota : Path('quota\/global_quota') Args ActionClass('REST') {}$/;"	s
+global_quota_PUT	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub global_quota_PUT {$/;"	s
+group	CovetelLDAP/Covetel/LDAP.pm	/^sub group {$/;"	s
+group	Peribeco/lib/Covetel/LDAP.pm	/^sub group {$/;"	s
+groupmembers	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub groupmembers : Local : ActionClass('REST') {}$/;"	s
+groupmembers_GET	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub groupmembers_GET {$/;"	s
+grupos	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub grupos : Local : ActionClass('REST') {}$/;"	s
+grupos_GET	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub grupos_GET {$/;"	s
+in_vacation	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub in_vacation : Private {$/;"	s
+index	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub index :Path :Args(0) {$/;"	s
+index	Peribeco/lib/Peribeco/Controller/Correo.pm	/^sub index : Path : Args(0) {$/;"	s
+index	Peribeco/lib/Peribeco/Controller/Grupos.pm	/^sub index :Path :Args(0) {$/;"	s
+index	Peribeco/lib/Peribeco/Controller/Login.pm	/^sub index :Path :Args(0) :FormConfig {$/;"	s
+index	Peribeco/lib/Peribeco/Controller/Logout.pm	/^sub index :Path :Args(0) {$/;"	s
+index	Peribeco/lib/Peribeco/Controller/Personas.pm	/^sub index : Path : Args(0) {$/;"	s
+index	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub index :Path :Args(0) {$/;"	s
+index	Peribeco/lib/Peribeco/Controller/Root.pm	/^sub index :Path :Args(0) {$/;"	s
+index	Peribeco/lib/Peribeco/Controller/bpersona.pm	/^sub index :Path :Args(0) {$/;"	s
+info_persona	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub info_persona : Path('info\/persona') Args(1) ActionClass('REST') {}$/;"	s
+info_persona_GET	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub info_persona_GET {$/;"	s
+ldap_server	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub ldap_server : Private {$/;"	s
+lista	Peribeco/lib/Peribeco/Controller/Grupos.pm	/^sub lista : Local {$/;"	s
+lista	Peribeco/lib/Peribeco/Controller/Personas.pm	/^sub lista : Local {$/;"	s
+listadirecciones	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub listadirecciones : Local : ActionClass('REST') {}$/;"	s
+listadirecciones_GET	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub listadirecciones_GET {$/;"	s
+listamembers	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub listamembers : Local : ActionClass('REST') {}$/;"	s
+listamembers_GET	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub listamembers_GET {$/;"	s
+listas	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub listas : Local : ActionClass('REST') {}$/;"	s
+listas	Peribeco/lib/Peribeco/Controller/Correo.pm	/^sub listas : Path('listas') {$/;"	s
+listas_GET	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub listas_GET {$/;"	s
+mail	CovetelLDAP/Covetel/LDAP/Person.pm	/^sub mail {$/;"	s
+mail	Peribeco/lib/Covetel/LDAP/Person.pm	/^sub mail {$/;"	s
+mail_exists	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub mail_exists : Path('mail\/exists') Args(1) ActionClass('REST') {}$/;"	s
+mail_exists_GET	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub mail_exists_GET {$/;"	s
+maillist	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub maillist : Local : ActionClass('REST') {}$/;"	s
+maillist_GET	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub maillist_GET {$/;"	s
+maillist_POST	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub maillist_POST {$/;"	s
+maillist_fetch	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub maillist_fetch : Private {$/;"	s
+maillist_fetch_by_mail	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub maillist_fetch_by_mail : Private {$/;"	s
+maillist_update_members	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub maillist_update_members {$/;"	s
+modify_data	Peribeco/lib/Peribeco/Controller/Personas.pm	/^sub modify_data : Local : FormConfig {$/;"	s
+modify_rol	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub modify_rol : Path('listas\/modify_rol') Args ActionClass('REST') {}$/;"	s
+modify_rol_PUT	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub modify_rol_PUT{$/;"	s
+notify	CovetelLDAP/Covetel/LDAP/Person.pm	/^sub notify {$/;"	s
+notify	Peribeco/lib/Covetel/LDAP/Person.pm	/^sub notify {$/;"	s
+password	CovetelLDAP/Covetel/LDAP/Person.pm	/^sub password {$/;"	s
+password	Peribeco/lib/Covetel/LDAP/Person.pm	/^sub password {$/;"	s
+person	CovetelLDAP/Covetel/LDAP.pm	/^sub person {$/;"	s
+person	Peribeco/lib/Covetel/LDAP.pm	/^sub person {$/;"	s
+personas	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub personas : Local : ActionClass('REST') {}$/;"	s
+personas_GET	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub personas_GET {$/;"	s
+print_error	CovetelLDAP/Covetel/LDAP.pm	/^sub print_error {$/;"	s
+print_error	Peribeco/lib/Covetel/LDAP.pm	/^sub print_error {$/;"	s
+quota	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub quota : Local : ActionClass('REST') {}$/;"	s
+quota	Peribeco/lib/Peribeco/Controller/Correo.pm	/^sub quota : Path('quota') :FormConfig('correo\/quota.yml') {$/;"	s
+quota_GET	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub quota_GET {$/;"	s
+quotaget	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub quotaget {$/;"	s
+quotaglobal	Peribeco/lib/Peribeco/Controller/Correo.pm	/^sub quotaglobal : Path('quota\/global_quota') :FormConfig('correo\/quota_global.yml') {$/;"	s
+quotaset	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub quotaset : Path('quota\/set') Args ActionClass('REST') {}$/;"	s
+quotaset_PUT	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub quotaset_PUT {$/;"	s
+reenvios	Peribeco/lib/Peribeco/Controller/Correo.pm	/^sub reenvios : Path('reenvios') {$/;"	s
+remove_domain	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub remove_domain {$/;"	s
+reset_pass	Peribeco/lib/Peribeco/Controller/Personas.pm	/^sub reset_pass : Local : FormConfig {$/;"	s
+search	CovetelLDAP/Covetel/LDAP.pm	/^sub search {$/;"	s
+search	Peribeco/lib/Covetel/LDAP.pm	/^sub search {$/;"	s
+send	CovetelLDAP/Covetel/Email.pm	/^sub send {$/;"	s
+send	Peribeco/lib/Covetel/Email.pm	/^sub send {$/;"	s
+timecreate	CovetelLDAP/Covetel/LDAP/Person.pm	/^sub timecreate {$/;"	s
+timecreate	Peribeco/lib/Covetel/LDAP/Person.pm	/^sub timecreate {$/;"	s
+update	CovetelLDAP/Covetel/LDAP/Group.pm	/^sub update {$/;"	s
+update	Peribeco/lib/Covetel/LDAP/Group.pm	/^sub update {$/;"	s
+update_vacation_info	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub update_vacation_info : Private {$/;"	s
+usuario_exists	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub usuario_exists : Path('usuario\/exists') Args(1) ActionClass('REST') {}$/;"	s
+usuario_exists_GET	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub usuario_exists_GET {$/;"	s
+utf8_decode	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub utf8_decode {$/;"	s
+vacation	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub vacation : Local : ActionClass('REST') {}$/;"	s
+vacation_GET	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub vacation_GET {$/;"	s
+vacation_POST	Peribeco/lib/Peribeco/Controller/REST.pm	/^sub vacation_POST {$/;"	s
+vacations	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub vacations : Path('info\/vacations') Args(1) ActionClass('REST') {}$/;"	s
+vacations	Peribeco/lib/Peribeco/Controller/Correo.pm	/^sub vacations : Path('vacations') :FormConfig('correo\/vacations_detalle.yml') {$/;"	s
+vacations_GET	Peribeco/lib/Peribeco/Controller/AJAX.pm	/^sub vacations_GET {$/;"	s
+validate_value	Peribeco/lib/HTML/FormFu/Validator/Cedula.pm	/^sub validate_value {$/;"	s
+validate_value	Peribeco/lib/HTML/FormFu/Validator/Uid.pm	/^sub validate_value {$/;"	s
