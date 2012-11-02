@@ -1,3 +1,9 @@
+covetel-peribeco (0.2-16.2) unstable; urgency=low
+
+  * Closes Ticket #44 (Bug in Maillist REST) 
+
+ -- Walter Vargas <walter@covetel.com.ve>  Fri, 02 Nov 2012 00:36:31 -0430
+
 covetel-peribeco (0.2-16.1) unstable; urgency=low
 
   * Making covetel-peribeco run at boot time
