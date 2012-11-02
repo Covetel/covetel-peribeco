@@ -1,3 +1,9 @@
+covetel-peribeco (0.2-16.3) unstable; urgency=low
+
+  * Closes Ticket #49 (Package Start Service)
+
+ -- Walter Vargas <walter@covetel.com.ve>  Fri, 02 Nov 2012 02:56:44 -0430
+
 covetel-peribeco (0.2-16.2) unstable; urgency=low
 
   * Closes Ticket #44 (Bug in Maillist REST) 
