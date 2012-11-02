@@ -3,13 +3,24 @@ use strict;
 use warnings;
 use 5.010;
 
+my $default_vars_file = '/etc/default/covetel-peribeco';
+
+open F, '<', $default_vars_file; 
+my @f = <F>; 
+close F; 
+
+my $c; 
+
+for (@f) { chomp; my ($k, $v) = split '=',$_; $c->{$k} = $v }
+
 given($ARGV[0]){
     when('configure'){
-	my $dir = '/opt/Peribeco/logs';
-	mkdir $dir unless -d $dir;
+    	my $dir = $c->{'PERIBECO_LOG'};
+    	mkdir $dir unless -d $dir;
 	
-	`chmod 755 /etc/init.d/covetel-peribeco`;
-	`update-rc.d covetel-peribeco defaults`;
+    	`chmod 755 /etc/init.d/covetel-peribeco`;
+    	`update-rc.d covetel-peribeco defaults`;
+        `/etc/init.d/covetel-peribeco start`;
     }
 
     when(/(abort-upgrade)|(abort-remove)|(abort-deconfigure)/){ }
