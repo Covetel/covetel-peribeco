@@ -328,17 +328,50 @@ Modify maillist members
 sub maillist_POST {
     my ($self, $c) = @_;
 
+    my $m = $self->{'model'};
     my $data = $c->req->data;
 
-    my $maillist = $data->{maillist};
-
-    $self->status_ok( $c, entity => { mensaje => "Members modifed" } );
+    # fetch maillist by uid.
     
-    if ($self->maillist_update_members($c, $maillist)){
-        $self->status_ok( $c, entity => { mensaje => "Members modifed" } );
+    my @maillist = $m->maillist_fetch($c->user->uid); 
+     
+    # Compare maillist members with @data
+
+    my @entries_for_update;
+    
+    foreach (@{$data}) {
+        my $mail = $_->{'mail'}; 
+
+        my $attr_members = $m->maillist_attr_members;
+        my $attr_mail = $m->maillist_attr_mail;
+
+        # Obtengo la entrada correspondiente a la lista a evaluar
+        my ($entry) = grep { $mail eq $_->get_value('mail') } @maillist; 
+
+        # Comparar la lista de miembros. 
+        my $members = $_->{'members'}; 
+        my @entry_members = $entry->get_value($attr_members);
+
+        # si las listas son diferentes, hay que actualizar la entrada. 
+        unless (@{$members} ~~ @entry_members){
+           $entry->replace(
+                $attr_members => $members,
+           ); 
+           push @entries_for_update, $entry;
+        }
+        
+    }
+
+    if (scalar @entries_for_update > 0) {
+        if ($m->maillist_update(@entries_for_update)){
+            $self->status_ok( $c, entity => { mensaje => "Members modifed" } );
+        } else {
+            # error
+            $self->status_bad_request($c, message => "Error in maillist_update"); 
+        }
     } else {
-        $self->status_bad_request($c, message => "Error in
-            maillist_update_members"); 
+        # nothing to do
+        $self->status_ok( $c, entity => { mensaje => "Nothing to do" } );
     }
 }
 
