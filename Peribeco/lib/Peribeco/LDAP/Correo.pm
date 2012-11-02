@@ -306,4 +306,78 @@ sub forwards_mail_dst {
     return $self->config->{'Correo::Reenvios'}->{'attrs'}->{'miembro_correo'}; 
 }
 
+=head2 maillist_fetch
+
+Return list of maillist by uid
+
+=cut 
+
+sub maillist_fetch {
+   my ($self, $uid) = @_; 
+    
+   my $filter = $self->config->{'Correo::Listas'}->{'filter'};
+   my $moderator_f = $self->config->{'Correo::Listas'}->{'attrs'}->{'moderador'};
+
+   if ($moderator_f){
+       $filter = $self->filter_append($filter,"$moderator_f=$uid");
+   }
+
+   $self->base($self->config->{'Correo::Listas'}->{'basedn'});
+
+   my $mesg = $self->search($filter);
+    
+   $self->_message($mesg);
+   
+   if ($mesg->count){
+       return $mesg->entries;
+   } else { 
+       return undef;
+   }
+
+}
+
+=head2 maillist_update
+ 
+Update maillist members
+
+=cut
+
+sub maillist_update {
+    my ($self, @entries) = @_;
+    foreach (@entries) {
+        my $resp = $_->update($self); 
+        $self->_message($resp); 
+        if ($resp->is_error){
+            return undef; 
+        } else {
+            return 1;
+        }
+    }
+}
+
+=head2 maillist_attr_members
+
+Return atributo for store mail members
+
+=cut
+
+sub maillist_attr_members {
+    my $self = shift; 
+
+    return $self->config->{'Correo::Listas'}->{'attrs'}->{'miembro_correo'};
+}
+
+=head2 maillist_attr_mail
+
+Return atributo for store mail
+
+=cut
+
+sub maillist_attr_mail {
+    my $self = shift; 
+
+    return $self->config->{'Correo::Listas'}->{'attrs'}->{'correo'};
+}
+
+
 1;
