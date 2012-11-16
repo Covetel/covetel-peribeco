@@ -4,30 +4,16 @@
 
 [% INCLUDE "menu_usuario.tt" %]
 <div id="contenido">
-       <h2>[% persona.firstname %] [% persona.lastname %]</h2>
+       <h2>[% persona.givenName %] [% persona.sn %]</h2>
             <div class="informacion">Los siguientes son datos de la persona:</div>
-                <div id="datos">
-                    <table class="datos"> 
-                        <tr> 
-                            <td class="left">Identificador: </td>
-                            <td class="left">[% persona.uid %]</td>
-                        </tr>
-                        <tr> 
-                            <td class="left">Nombre: </td>
-                            <td class="left">[% persona.firstname %]</td>
-                        </tr>
-                        <tr> 
-                            <td class="left">Apellido: </td>
-                            <td class="left">[% persona.lastname %]</td>
-                        </tr>
-                        <tr> 
-                            <td class="left">Cédula: </td>
-                            <td class="left">[% persona.ced %]</td>
-                        </tr>
-                        <tr> 
-                            <td class="left">Correo: </td>
-                            <td class="left">[% persona.email %] </td>
-                        </tr>
-                    </table>
-                </div>
+            <div id="datos">
+                <table class="datos"> 
+                        [% FOREACH key IN persona.keys %]
+                    <tr> 
+                            <td class="left">[% c.config.Personas.Detalle.attrs.$key %]: </td> 
+                            <td class="left">[% persona.$key %]</td> 
+                    </tr>
+                        [% END %]
+                </table>
+            </div>
 </div>
