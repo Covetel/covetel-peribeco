@@ -402,14 +402,14 @@ sub mailhost {
 
     if ($result->count > 0) {
         foreach my $entry ($result->entries) {
-            if ($entry->get_value("mailhost") ne $self->config->{'Personas::Correo'}->{'attrs'}->{'mailhost'}) {
+            if ($entry->get_value("mailhost") ne $self->config->{'Personas'}->{'Correo'}->{'attrs'}->{'mailhost'}) {
                 $entry->replace(
-                                mailhost => $self->config->{'Personas::Correo'}->{'attrs'}->{'mailhost'} 
+                                mailhost => $self->config->{'Personas'}->{'Correo'}->{'attrs'}->{'mailhost'} 
                                );
 
                 $entry->update($self);
 
-                $mailhost = $self->config->{'Personas::Correo'}->{'attrs'}->{'mailhost'};
+                $mailhost = $self->config->{'Personas'}->{'Correo'}->{'attrs'}->{'mailhost'};
             }else{
                 $mailhost = $entry->get_value("mailhost");
             }
