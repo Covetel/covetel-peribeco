@@ -379,5 +379,45 @@ sub maillist_attr_mail {
     return $self->config->{'Correo::Listas'}->{'attrs'}->{'correo'};
 }
 
+=head mailhost
+
+Return mailhost by user, when mailhost in not equal in the conf file change
+mailhost in LDAP
+
+=cut
+
+sub mailhost {
+    my ($self, $uid) = @_;
+    my $mailhost;
+
+    my $user_field = $self->config->{'authentication'}->{'realms'}->{'ldap'}->{'store'}->{'user_field'}; 
+    #my $self->base($self->config->{'authentication'}->{'realms'}->{'ldap'}->{'store'}->{'user_basedn'});
+
+    my $filter = $self->filter_append(
+        '(ObjectClass=person)',
+        $user_field.'='.$uid
+    );
+
+    my $result = $self->search ($filter);
+
+    if ($result->count > 0) {
+        foreach my $entry ($result->entries) {
+            if ($entry->get_value("mailhost") ne $self->config->{'Personas::Correo'}->{'attrs'}->{'mailhost'}) {
+                $entry->replace(
+                                mailhost => $self->config->{'Personas::Correo'}->{'attrs'}->{'mailhost'} 
+                               );
+
+                $entry->update($self);
+
+                $mailhost = $self->config->{'Personas::Correo'}->{'attrs'}->{'mailhost'};
+            }else{
+                $mailhost = $entry->get_value("mailhost");
+            }
+        }
+    }
+
+    return $mailhost;
+}
+
 
 1;
