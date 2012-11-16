@@ -143,7 +143,30 @@ sub detalle : Local {
     if ($uid eq $c->user->uid || $c->assert_user_roles(qw/Administradores/) ) {
         if ($c->config->{'Modulos'}->{'Personas'}->{'Active'} == 1 && $c->config->{'Modulos'}->{'Personas'}->{'Detalle'} == 1) {
             my $ldap = Covetel::LDAP->new;
-            my $person = $ldap->person( { uid => $uid } );
+            my %person = ();
+
+            my $filter =  '(&(objectClass=person)(uid='.$uid.'))';
+            my $base = $c->config->{authentication}->{realms}->{ldap}->{store}->{user_basedn};
+
+            my $result = $ldap->search({
+                filter => $filter,
+                base => $base,
+                attrs => ['*'],
+            });
+
+            if ($result->count > 0) {
+                foreach my $entry ($result->entries) {
+                    foreach my $attr (keys %{$c->config->{Personas}->{Detalle}->{attrs}}) {
+                        if ($attr eq 'dn') {
+                            $person{$attr} = $entry->dn;
+                        }else{
+                            $person{$attr} = $entry->get_value($attr);
+                        }
+                    }
+                }
+            }
+
+            my $person = \%person;
             $c->stash->{persona} = $person;
             $c->stash->{modules} = $c->config->{'Modulos'}; 
         }else{
