@@ -402,6 +402,29 @@ sub mailhost {
 
     if ($result->count > 0) {
         foreach my $entry ($result->entries) {
+            $mailhost = $entry->get_value("mailhost");
+        }
+    }
+
+    return $mailhost;
+}
+
+sub mailhost_set {
+    my ($self, $uid) = @_;
+    my $mailhost;
+
+    my $user_field = $self->config->{'authentication'}->{'realms'}->{'ldap'}->{'store'}->{'user_field'}; 
+    #my $self->base($self->config->{'authentication'}->{'realms'}->{'ldap'}->{'store'}->{'user_basedn'});
+
+    my $filter = $self->filter_append(
+        '(ObjectClass=person)',
+        $user_field.'='.$uid
+    );
+
+    my $result = $self->search ($filter);
+
+    if ($result->count > 0) {
+        foreach my $entry ($result->entries) {
             if ($entry->get_value("mailhost") ne $self->config->{'Personas'}->{'Correo'}->{'attrs'}->{'mailhost'}) {
                 $entry->replace(
                                 mailhost => $self->config->{'Personas'}->{'Correo'}->{'attrs'}->{'mailhost'} 

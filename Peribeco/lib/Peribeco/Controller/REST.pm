@@ -513,7 +513,7 @@ sub mailhost_POST {
 
     my $uid = $c->user->uid;
 
-    my $mailhost = $m->mailhost($uid);
+    my $mailhost = $m->mailhost_set($uid);
 
     if ($mailhost){
         $self->status_ok(
