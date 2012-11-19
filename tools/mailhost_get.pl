@@ -11,7 +11,7 @@ my $url = "http://localhost:3000/rest/mailhost/";
 
 my $req = HTTP::Request->new(GET => $url);
 $req->header("Cookie" =>
-"peribeco_session=64fdc46fb9bf6bd5a77253623cb2b26f612e23e5");
+"peribeco_session=b50a174735e4e1966ccd3b48c0bc2e2e1dc23b15");
 $req->content_type('application/json');
 #$req->content($data);
 
