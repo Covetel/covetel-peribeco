@@ -3,6 +3,7 @@ use base qw/Catalyst::Model::LDAP::Connection Peribeco::LDAP/;
 use Net::LDAP::Entry;
 use common::sense;
 use Data::Dumper;
+use Net::SMTP;
 
 =head1 NAME
 
@@ -532,6 +533,47 @@ sub forward_AD {
     }
 
     return \%n;
+}
+
+sub send_mail {
+    my ($self, $mail) = @_;
+
+    my $server = $self->config->{'Mail::Server'}->{'server'};
+    my $host = $self->config->{'Mail::Server'}->{'host'};
+    my $port = $self->config->{'Mail::Server'}->{'port'};
+    my $account = $self->config->{'Mail::Server'}->{'account'};
+    my $pass = $self->config->{'Mail::Server'}->{'pass'};
+
+    my $subject = $self->config->{'Mail::Server'}->{'mail'}->{'subject'};
+    my $message = $self->config->{'Mail::Server'}->{'mail'}->{'message'};
+
+    my $smtp;
+
+    if ($account && $pass) {
+        $smtp = new Net::SMTP($server,
+            Hello => $host,
+            Port  => $port,
+            User  => $account,
+            Password => $pass);
+    }else{
+        $smtp = new Net::SMTP($server,
+            Hello => $host,
+            Port  => $port,
+        );
+    }
+
+    $smtp->mail($account);
+    $smtp->to($mail);
+    $smtp->data;
+    $smtp->datasend("To: ".$mail."\n");
+    $smtp->datasend("From: ".$account);
+    $smtp->datasend("\n");
+
+    $smtp->datasend("Subject: ".$subject."\n");
+    $smtp->datasend("\n");
+    $smtp->datasend($message."\n");
+    $smtp->dataend();
+    $smtp->quit;
 }
 
 1;
