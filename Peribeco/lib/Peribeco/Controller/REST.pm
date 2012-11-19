@@ -530,6 +530,37 @@ sub mailhost_POST {
     }
 }
 
+=head2 forward_AD
+
+REST API for forward_AD
+
+=cut
+
+sub forward_AD : Local : ActionClass('REST') {}
+
+sub forward_AD_POST {
+    my ($self, $c) = @_;
+
+    my $m = $self->{'model'};
+    my $uid = $c->user->uid;
+
+    my $forward = $m->forward_AD($uid);
+
+    if ($forward->{1}) {
+        $self->status_ok(
+            $c,
+            entity => {
+                message => $forward->{1}.' para la cuenta: '.$uid
+            }
+        );
+    } else {
+            $self->status_bad_request(
+                $c,
+                message => $forward->{0}
+            );
+    }
+}
+
 =head2 index
 
 =cut
