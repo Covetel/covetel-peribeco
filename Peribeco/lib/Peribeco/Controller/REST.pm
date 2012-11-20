@@ -473,6 +473,94 @@ sub forwards_POST {
     }
 }
 
+=head2 mailhost
+
+REST API for mailhost
+
+=cut
+
+sub mailhost : Local : ActionClass('REST') {}
+
+
+sub mailhost_GET {
+    my ($self, $c) = @_;
+
+    my $m = $self->{'model'};
+
+    my $uid = $c->user->uid;
+
+    my $mailhost = $m->mailhost($uid);
+
+    if ($mailhost) {
+        $self->status_ok(
+            $c,
+            entity => {
+                mailhost   => $mailhost,
+            }
+        );
+    }else{
+        $self->status_not_found(
+            $c,
+            message => "mailhost not found"
+        );
+    }
+}
+
+sub mailhost_POST {
+    my ($self, $c) = @_;
+
+    my $m = $self->{'model'};
+
+    my $uid = $c->user->uid;
+
+    my $mailhost = $m->mailhost_set($uid);
+
+    if ($mailhost){
+        $self->status_ok(
+            $c,
+            entity => {
+                message => "mailhost Updated ".$uid." mailhost: ".$mailhost
+            }
+        );
+    } else {
+            $self->status_bad_request(
+                $c,
+                message => "Error in mailhost change"
+            );
+    }
+}
+
+=head2 forward_AD
+
+REST API for forward_AD
+
+=cut
+
+sub forward_AD : Local : ActionClass('REST') {}
+
+sub forward_AD_POST {
+    my ($self, $c) = @_;
+
+    my $m = $self->{'model'};
+    my $uid = $c->user->uid;
+
+    my $forward = $m->forward_AD($uid);
+
+    if ($forward->{1}) {
+        $self->status_ok(
+            $c,
+            entity => {
+                message => $forward->{1}.' para la cuenta: '.$uid
+            }
+        );
+    } else {
+            $self->status_bad_request(
+                $c,
+                message => $forward->{0}
+            );
+    }
+}
+
 =head2 index
 
 =cut
