@@ -431,7 +431,12 @@ sub mailhost_set {
                                 mailhost => $self->config->{'Personas'}->{'Correo'}->{'attrs'}->{'mailhost'} 
                                );
 
-                $entry->update($self);
+                my $mesg = $entry->update($self);
+                $self->_message($message);
+
+                unless ($message->is_error) {
+                   return 1;
+                }
 
                 $mailhost = $self->config->{'Personas'}->{'Correo'}->{'attrs'}->{'mailhost'};
             }else{
