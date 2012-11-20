@@ -155,13 +155,12 @@ sub detalle : Local {
             });
 
             if ($result->count > 0) {
-                foreach my $entry ($result->entries) {
-                    foreach my $attr (keys %{$c->config->{Personas}->{Detalle}->{attrs}}) {
-                        if ($attr eq 'dn') {
-                            $person{$attr} = $entry->dn;
-                        }else{
-                            $person{$attr} = $entry->get_value($attr);
-                        }
+                my $entry = $result->shift_entry;
+                foreach my $attr (keys %{$c->config->{Personas}->{Detalle}->{attrs}}) {
+                    if ($attr eq 'dn') {
+                        $person{$attr} = $entry->dn;
+                    }else{
+                        $person{$attr} = $entry->get_value($attr);
                     }
                 }
             }
