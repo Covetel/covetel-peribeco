@@ -432,9 +432,9 @@ sub mailhost_set {
                                );
 
                 my $mesg = $entry->update($self);
-                $self->_message($message);
+                $self->_message($mesg);
 
-                unless ($message->is_error) {
+                unless ($mesg->is_error) {
                    return 1;
                 }
 
