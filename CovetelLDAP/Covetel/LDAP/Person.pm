@@ -5,6 +5,7 @@ use Net::LDAP::Entry;
 use Digest::MD5 qw(md5 md5_hex md5_base64);
 use Covetel::Email;
 use utf8;
+use Data::Dumper;
 
 extends 'Covetel::Person';
 
@@ -99,9 +100,10 @@ sub _build_entry {
 	$entry->add(homeDirectory => '/home/'.$self->uid);
 # Esto se debe poner en un metodo, acondiciona los atributos para el correo. 
 	$entry->add(
-		mailHost => '192.168.22.4',
-		mailQuotaSize =>  '2048',
+		mailHost => $self->mailhost,
+		mailQuotaSize => $self->quota,
 	);
+    print Dumper($entry);
 	return $entry;
 } 
 
