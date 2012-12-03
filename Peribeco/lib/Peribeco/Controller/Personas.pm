@@ -96,6 +96,8 @@ sub crear : Local : FormConfig {
                         lastname     => $lastname,
                         ced          => $ced,
                         email        => $email,
+                        mailhost     => $c->config->{Personas}->{Values}->{mailhost},
+                        quota        => $c->config->{Personas}->{Values}->{quota},
                     }
                 );
     
