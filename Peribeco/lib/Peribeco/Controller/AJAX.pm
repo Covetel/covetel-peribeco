@@ -359,9 +359,9 @@ sub getquota_GET {
 
     map {chomp} @resp;
 
-    for (@resp){
+    foreach (@resp){
         my ($uid,$quota) = split ",",$_;
-        print "UID: $uid QUOTA: $quota\n";
+        $quo{$uid} = $quota;
     }
 
     $self->status_ok($c, entity => \@resp);
