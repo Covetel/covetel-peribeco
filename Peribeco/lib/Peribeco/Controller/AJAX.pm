@@ -12,7 +12,7 @@ use v5.10;
 
 BEGIN {extends 'Catalyst::Controller::REST'; }
 use utf8;
-my %quo = {};
+my %quo = ();
 
 __PACKAGE__->config(
   'default'   => 'application/json',
