@@ -217,8 +217,33 @@ sub listas_GET {
     $self->status_ok($c, entity => \%datos);
 }
 
+sub hash_quota {
+    my ( $self, $c ) = @_;
+
+    my $ldap = Covetel::LDAP->new;
+
+    my $list;
+    my @list;
+
+    my $mesg = $ldap->search({
+            filter => $c->config->{'Correo::Quota'}->{'filter'},
+            base => $c->config->{'Correo::Quota'}->{'basedn'},
+            attrs => ['*']
+    });
+
+    foreach my $entry ($mesg->entries) {
+        push (@list, $entry->get_value("uid"))
+    }
+
+    $list = join(" ", @list);
+
+    &getquota_GET($self, $c, $list);
+}
+
 sub quota_GET {
     my ( $self, $c ) = @_;
+
+    &hash_quota($self, $c);
     
     my $ldap = Covetel::LDAP->new;
     
