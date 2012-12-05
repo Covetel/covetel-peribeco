@@ -351,6 +351,10 @@ sub getquota_GET {
 
     $socket->send( $uids . "\n");
 
+    while (!$socket) {
+        $socket->send( $uids . "\n");
+    }
+
     my @resp = <$socket>;
 
     map {chomp} @resp;
