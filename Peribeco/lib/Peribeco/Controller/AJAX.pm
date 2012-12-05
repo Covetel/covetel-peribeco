@@ -263,7 +263,6 @@ sub quota_GET {
     if ($mesg->count){
         $datos{aaData} = [
             map {
-            &quotaget($_->get_value($account), $c);
             my $usage = $quo{$_->get_value($account)} ? $quo{$_->get_value($account)} : "0";
             my $usage_mb = int($usage/1024);
                 [ 
@@ -279,32 +278,6 @@ sub quota_GET {
     }
 
     $self->status_ok($c, entity => \%datos);
-}
-
-sub quotaget {
-    $|=1;
-
-    my $socket = IO::Socket::INET->new( 
-        PeerAddr => $_[1]->config->{'Correo::Quota'}->{'quota_info'}->{'server'}, 
-        PeerPort => $_[1]->config->{'Correo::Quota'}->{'quota_info'}->{'port'}, 
-        Proto    => $_[1]->config->{'Correo::Quota'}->{'attrs'}->{'proto'}, 
-    ) || die "Error open socket";
-
-    $socket->autoflush(1);
-
-    $socket->send( $_[0] . "\n");
-
-    my @resp = <$socket>;
-
-    map {chomp} @resp;
-
-    for (@resp){
-           my ($uid, $quota) = split ",", $_;
-           print "$uid = $quota\n";
-           %quo = ( $uid => $quota );
-       }
-
-    $socket->close;
 }
 
 sub quotaset_PUT {
