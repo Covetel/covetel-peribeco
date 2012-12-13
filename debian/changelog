@@ -1,3 +1,14 @@
+covetel-peribeco (0.2-18) unstable; urgency=low
+
+  * Closes Ticket #78
+  * Closes Ticket #86
+  * Closes Ticket #87
+  * Closes Ticket #90
+  * Closes Ticket #93
+  * Closes Ticket #97
+
+ -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Tue, 20 Nov 2012 16:55:08 -0430
+
 covetel-peribeco (0.2-16.3) unstable; urgency=low
 
   * Closes Ticket #49 (Package Start Service)
