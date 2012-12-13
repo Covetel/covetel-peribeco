@@ -1,9 +1,11 @@
 <div class="menu" id="menu"> 
     [% IF c.check_user_roles('Administradores') %]
-        [% IF modules.Personas %]
-            <span>
-                <a href="/personas/lista"> [% c.config.Menu.Personas.caption %] </a>
-            </span>
+        [% IF modules.Personas.Active %]
+            [% IF modules.Personas.Administrar %]
+                <span>
+                    <a href="/personas/lista"> [% c.config.Menu.Personas.caption %] </a>
+                </span>
+            [% END %]
         [% END %]
         [% IF modules.Grupos %]
             <span>
@@ -39,9 +41,11 @@
     <span>
         <a href="/logout">Salir</a>
     </span>
-    [% IF modules.Personas %]
-        <span class ="pass">
-            <a href="/personas/detalle/[% c.user.uid %]">Usuario Conectado: [% c.user.uid %]</a>
-        </span>
+    [% IF modules.Personas.Active %]
+        [% IF modules.Personas.Detalle %]
+            <span class ="pass">
+                <a href="/personas/detalle/[% c.user.uid %]">Usuario Conectado: [% c.user.uid %]</a>
+            </span>
+        [% END %]
     [% END %]
 </div>

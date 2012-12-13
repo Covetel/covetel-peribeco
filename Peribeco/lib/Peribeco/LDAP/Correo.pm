@@ -3,6 +3,7 @@ use base qw/Catalyst::Model::LDAP::Connection Peribeco::LDAP/;
 use Net::LDAP::Entry;
 use common::sense;
 use Data::Dumper;
+use Net::SMTP;
 
 =head1 NAME
 
@@ -379,5 +380,164 @@ sub maillist_attr_mail {
     return $self->config->{'Correo::Listas'}->{'attrs'}->{'correo'};
 }
 
+=head mailhost
+
+Return mailhost by user, when mailhost in not equal in the conf file change
+mailhost in LDAP
+
+=cut
+
+sub mailhost {
+    my ($self, $uid) = @_;
+    my $mailhost;
+
+    my $user_field = $self->config->{'authentication'}->{'realms'}->{'ldap'}->{'store'}->{'user_field'}; 
+    #my $self->base($self->config->{'authentication'}->{'realms'}->{'ldap'}->{'store'}->{'user_basedn'});
+
+    my $filter = $self->filter_append(
+        '(ObjectClass=person)',
+        $user_field.'='.$uid
+    );
+
+    my $result = $self->search ($filter);
+
+    if ($result->count > 0) {
+        foreach my $entry ($result->entries) {
+            $mailhost = $entry->get_value("mailhost");
+        }
+    }
+
+    return $mailhost;
+}
+
+sub mailhost_set {
+    my ($self, $uid) = @_;
+    my $mailhost;
+
+    my $user_field = $self->config->{'authentication'}->{'realms'}->{'ldap'}->{'store'}->{'user_field'}; 
+    #my $self->base($self->config->{'authentication'}->{'realms'}->{'ldap'}->{'store'}->{'user_basedn'});
+
+    my $filter = $self->filter_append(
+        '(ObjectClass=person)',
+        $user_field.'='.$uid
+    );
+
+    my $result = $self->search ($filter);
+
+    if ($result->count > 0) {
+        foreach my $entry ($result->entries) {
+            if ($entry->get_value("mailhost") ne $self->config->{'Personas'}->{'Correo'}->{'attrs'}->{'mailhost'}) {
+                $entry->replace(
+                                mailhost => $self->config->{'Personas'}->{'Correo'}->{'attrs'}->{'mailhost'} 
+                               );
+
+                my $mesg = $entry->update($self);
+                $self->_message($mesg);
+
+                unless ($mesg->is_error) {
+                   return 1;
+                }
+
+                $mailhost = $self->config->{'Personas'}->{'Correo'}->{'attrs'}->{'mailhost'};
+            }else{
+                $mailhost = $entry->get_value("mailhost");
+            }
+        }
+    }
+
+    return $mailhost;
+}
+
+sub forward_AD {
+    my ($self, $uid) = @_;
+    my %n;
+    my $entry;
+    my $entry_user;
+    my $base = $self->config->{'authentication'}->{'realms'}->{'ad'}->{'store'}->{'user_basedn'};
+
+    #Conexion AD
+    my $ad = Net::LDAP->new($self->config->{'authentication'}->{'realms'}->{'ad'}->{'store'}->{'ad_server'});
+     $ad->bind(
+        $self->config->{'authentication'}->{'realms'}->{'ad'}->{'store'}->{'binddn'},
+        password=>$self->config->{'authentication'}->{'realms'}->{'ad'}->{'store'}->{'bindpw'},
+    );
+
+    #Busco entrada
+    my $result = $ad->search(
+                base => $base,
+                scope => 'sub',
+                filter => '(&(ObjectClass=person)(sAMAccountName='.$uid.'))',
+    );
+
+    my %contact=();
+
+    if ($result->count > 0) {
+        foreach $_ ($result->entries) {
+            $contact{objectClass} = [ 'contact', 'organizationalPerson', 'person', 'top' ], ;
+            $contact{cn} = $_->get_value("cn").' Mailstore';
+            $contact{displayName} = $_->get_value("givenName");
+            $contact{givenName} = $_->get_value("givenName");
+            $contact{sn} = $_->get_value("sn");
+            $contact{mail} = $_->get_value("mail");
+            $contact{targetAddress} = 'SMTP:'.$_->get_value("sAMAccountName").'@'.$self->config->{'AD::Forwards'}->{'attrs'}->{'maildomain'};
+            $contact{internetEncoding} = '1310720';
+            $contact{mailNickname} = $contact{givenName}.$contact{sn};
+            $contact{name} = $contact{cn};
+            $entry_user = $_;
+        }
+
+        my $resp = $ad->search(
+            base => 'CN=Users,DC=cantv,DC=com,DC=ve',
+            scope => 'sub',
+            filter => '(&(ObjectClass=contact)(mail='.$contact{mail}.'))',
+            attrs => ['mail'],
+        );
+
+        unless ($resp->count > 0) {
+            $entry = Net::LDAP::Entry->new;
+
+            my $dn = 'CN='.$contact{cn}.','.$base;
+            $entry->dn($dn);
+
+            $entry->add(
+                %contact,
+            );
+
+            my $mesg = $ad->add($entry);
+            if ($mesg->is_error) {
+                $n{0}="Error al crear atributo el contacto en el AD";
+            }else{
+               $entry_user->replace(
+                   altRecipient => $entry->dn,
+               );
+
+               my $mesg = $entry_user->update($ad);
+               if ($mesg->is_error) {
+                    $n{0}="Error al crear atributo altRecipient en la cuenta AD";
+               }
+               $n{1}="Se ha creado el forward";
+            }
+        }else{
+            foreach ($resp->entries) {
+                $entry = $_;
+            }
+            $entry_user->replace(
+                altRecipient => $entry->dn,
+            );
+
+            my $mesg = $entry_user->update($ad);
+            if ($mesg->is_error) {
+                 $n{0}="Error al crear atributo altRecipient en la cuenta AD";
+            }else{
+                $n{1}="Se ha creado el forward";
+            }
+
+        }
+    }else{
+        $n{0}="No se encuentra el usuario en el AD";
+    }
+
+    return \%n;
+}
 
 1;
