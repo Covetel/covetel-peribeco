@@ -1,3 +1,10 @@
+covetel-peribeco (0.2-19) unstable; urgency=low
+
+  * Closes Ticket #128 
+  * Closes Ticket #130 
+
+ -- Walter Vargas <walter@covetel.com.ve>  Thu, 13 Dec 2012 17:54:45 -0430
+
 covetel-peribeco (0.2-18) unstable; urgency=low
 
   * Closes Ticket #78
