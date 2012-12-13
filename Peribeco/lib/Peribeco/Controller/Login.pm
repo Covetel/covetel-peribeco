@@ -53,7 +53,7 @@ sub index :Path :Args(0) :FormConfig {
                 $c->response->redirect($c->uri_for($c->config->{'HomePage'}->{'admin'}));
             }else{
                 $c->session->{HomePage} = $c->config->{'HomePage'}->{'user'};
-                $c->response->redirect($c->uri_for($c->config->{'HomePage'}->{'user'}));
+                $c->response->redirect($c->uri_for($c->config->{'HomePage'}->{'user'}.'/'.$c->user->uid));
             }
         } else {
             $c->stash->{error} = 1;

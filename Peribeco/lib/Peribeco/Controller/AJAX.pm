@@ -12,7 +12,7 @@ use v5.10;
 
 BEGIN {extends 'Catalyst::Controller::REST'; }
 use utf8;
-my %quo = {};
+my %quo = ();
 
 __PACKAGE__->config(
   'default'   => 'application/json',
@@ -217,8 +217,33 @@ sub listas_GET {
     $self->status_ok($c, entity => \%datos);
 }
 
+sub hash_quota {
+    my ( $self, $c ) = @_;
+
+    my $ldap = Covetel::LDAP->new;
+
+    my $list;
+    my @list;
+
+    my $mesg = $ldap->search({
+            filter => $c->config->{'Correo::Quota'}->{'filter'},
+            base => $c->config->{'Correo::Quota'}->{'basedn'},
+            attrs => ['*']
+    });
+
+    foreach my $entry ($mesg->entries) {
+        push (@list, $entry->get_value("uid"))
+    }
+
+    $list = join(" ", @list);
+
+    &getquota_GET($self, $c, $list);
+}
+
 sub quota_GET {
     my ( $self, $c ) = @_;
+
+    &hash_quota($self, $c);
     
     my $ldap = Covetel::LDAP->new;
     
@@ -238,7 +263,6 @@ sub quota_GET {
     if ($mesg->count){
         $datos{aaData} = [
             map {
-            &quotaget($_->get_value($account), $c);
             my $usage = $quo{$_->get_value($account)} ? $quo{$_->get_value($account)} : "0";
             my $usage_mb = int($usage/1024);
                 [ 
@@ -246,40 +270,14 @@ sub quota_GET {
                 &utf8_decode($_->get_value($cname)), 
                 $_->get_value($account), 
                 $_->get_value($quota_size) ? $_->get_value($quota_size)." ".$size : "0 $size",
-                '<div class="progressbar" id="progressbar-'.$_->get_value($account).'-'.$_->get_value($quota_size).'"></div>', 
-                '<div class="usage" id="usage-'.$_->get_value($account).'"></div>'
+                '<div class="progressbar" id="progressbar-'.$_->get_value($account).'-'.$_->get_value($quota_size).'-'.$usage.'"></div>', 
+                '<div class="usage" id="usage-'.$_->get_value($account).'">'.$usage_mb." MB".'</div>'
                 ]
             } grep { !($_->get_value($account) eq 'root') } $mesg->entries,
         ];
     }
 
     $self->status_ok($c, entity => \%datos);
-}
-
-sub quotaget {
-    $|=1;
-
-    my $socket = IO::Socket::INET->new( 
-        PeerAddr => $_[1]->config->{'Correo::Quota'}->{'quota_info'}->{'server'}, 
-        PeerPort => $_[1]->config->{'Correo::Quota'}->{'quota_info'}->{'port'}, 
-        Proto    => $_[1]->config->{'Correo::Quota'}->{'attrs'}->{'proto'}, 
-    ) || die "Error open socket";
-
-    $socket->autoflush(1);
-
-    $socket->send( $_[0] . "\n");
-
-    my @resp = <$socket>;
-
-    map {chomp} @resp;
-
-    for (@resp){
-           my ($uid, $quota) = split ",", $_;
-           print "$uid = $quota\n";
-           %quo = ( $uid => $quota );
-       }
-
-    $socket->close;
 }
 
 sub quotaset_PUT {
@@ -353,13 +351,17 @@ sub getquota_GET {
 
     $socket->send( $uids . "\n");
 
+    while (!$socket) {
+        $socket->send( $uids . "\n");
+    }
+
     my @resp = <$socket>;
 
     map {chomp} @resp;
 
-    for (@resp){
+    foreach (@resp){
         my ($uid,$quota) = split ",",$_;
-        print "UID: $uid QUOTA: $quota\n";
+        $quo{$uid} = $quota;
     }
 
     $self->status_ok($c, entity => \@resp);
