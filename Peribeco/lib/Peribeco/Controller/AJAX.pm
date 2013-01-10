@@ -199,17 +199,31 @@ sub listas_GET {
     my $member_mail = $c->config->{'Correo::Listas'}->{'attrs'}->{'miembro_correo'};
 
     if ($mesg->count){
-        $datos{aaData} = [
-            map {
-                [ 
-                    '<input type="checkbox" name="del" value="'.$_->get_value($id).'">', 
-                    $_->get_value($mail), 
-                    &utf8_decode($_->get_value($desc)), 
-                    '<div class="members_div" id="'.$_->get_value($id).'">' . $self->remove_domain($_->get_value($member_mail)) . '</div>',
-                    '<a href="/correo/listas/detalle/' . $_->get_value($id) . '"> Ver detalle </a>',
-                ]
-                } $mesg->entries,
-        ];
+        if ( ($c->config->{domain} eq "cantv.com.ve") && !($c->check_user_roles(qw/Administradores/)) ) {
+            $datos{aaData} = [
+                map {
+                    [
+                        '<input type="checkbox" name="del" style="visibility: hidden;" value="'.$_->get_value($id).'">',
+                        $_->get_value($mail),
+                        &utf8_decode($_->get_value($desc)),
+                        '<div class="members_div" id="'.$_->get_value($id).'">' . $self->remove_domain($_->get_value($member_mail)) . '</div>',
+                        '<a href="/correo/listas/detalle/' . $_->get_value($id) . '"> Ver detalle </a>',
+                    ]
+                    } $mesg->entries,
+            ];
+        }else{
+            $datos{aaData} = [
+                map {
+                    [
+                        '<input type="checkbox" name="del" value="'.$_->get_value($id).'">',
+                        $_->get_value($mail),
+                        &utf8_decode($_->get_value($desc)),
+                        '<div class="members_div" id="'.$_->get_value($id).'">' . $self->remove_domain($_->get_value($member_mail)) . '</div>',
+                        '<a href="/correo/listas/detalle/' . $_->get_value($id) . '"> Ver detalle </a>',
+                    ]
+                    } $mesg->entries,
+            ];
+        }
         
     }
 
