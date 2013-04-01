@@ -1312,8 +1312,8 @@ sub addforward_PUT {
                      # DN 
                      my $dn
                          =
-                         $c->config->{'Correo::Reenvios'}->{'attrs'}->{'correo'} . '='
-                         . $mail . ","
+                         $c->config->{'Correo::Reenvios'}->{'entry'}->{'dn_attr'} . '='
+                         . $lid . ","
                          . $base;
             
                      $lista->dn($dn);
@@ -1322,19 +1322,17 @@ sub addforward_PUT {
             
                      # Datos del moderador
                      $lista->add( 
-                         homeDirectory => '/dev/null',
-                         $c->config->{'Correo::Reenvios'}->{'attrs'}->{'correo'} => $mail,
                          $c->config->{'Correo::Reenvios'}->{'attrs'}->{'nombre'} => $lid,
                      );
     
                      # Datos de los miembros
                      $lista->add(
-                         $c->config->{'Correo::Reenvios'}->{'attrs'}->{'miembro_correo'} => $mail,
-                         $c->config->{'Correo::Reenvios'}->{'attrs'}->{'mailhost'} => $c->config->{'Correo::Reenvios'}->{'values'}->{'mailhost'},
+                         $c->config->{'Correo::Reenvios'}->{'attrs'}->{'miembro_correo'} => "\\".$lid,
                          sendmailMTAAliasGrouping => $c->config->{'Correo::Reenvios'}->{'values'}->{'sendmailMTAAliasGrouping'},
                      );
 
                     # Agrego la lista al ldap. 
+
                     my $resp = $ldap->server->add($lista);
 
                     if ( $resp->is_error ) {
@@ -1418,16 +1416,16 @@ sub delforward_DELETE {
             }
             when ('sendmailMTA') {
                 my $filter = '(&' .
-                             $c->config->{'Correo:Reenvios'}->{'filter'} .
+                             $c->config->{'Correo::Reenvios'}->{'filter'} .
                              "(sendmailMTAKey=$lid)" .
                              ')';
-              
+
                 my $mesg_reenvio = $ldap->search({
                     filter => $filter,
-                    base => $c->config->{'Correo:Reenvios'}->{'basedn'},
+                    base => $c->config->{'Correo::Reenvios'}->{'basedn'},
                     attrs => [ $attr_miembro_correo ]
                 });
-                
+
                 if(!$mesg_reenvio->is_error) {
                    my $lista = $mesg_reenvio->shift_entry;
                    # TODO: no se permiten suicidios. 
@@ -1435,7 +1433,6 @@ sub delforward_DELETE {
                    # si esto ocurre devuelva un mensaje de error. 
               
                      foreach (@{$del}) {
-                         print $_;
                         my $mesg_member = $ldap->search({
                             filter => "($attr_correo=$_)",
                             attrs => [$attr_correo]
@@ -1474,7 +1471,7 @@ sub delforward_DELETE {
 
                 my $mesg_delete = $ldap->search({
                     filter => $filter,
-                    base => $c->config->{'Correo:Reenvios'}->{'basedn'},
+                    base => $c->config->{'Correo::Reenvios'}->{'basedn'},
                     attrs => [ 'dn', $attr_miembro_correo ]
                 });
 
