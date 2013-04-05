@@ -47,7 +47,7 @@
                          var usage = $.parseJSON(data.responseText);
                          for(i=0;i<=usage.aaData.length;i++) {
                             var info = usage.aaData[i][3].toString();
-                            var lista = usage.aaData[i][0].toString().replace(/<input type="checkbox" name="del" value="/,'').replace(/">/,'');
+                            var lista = usage.aaData[i][0].toString().replace(/<input type="checkbox".*value="/,'').replace(/">/,'');
                             $('#'+lista).text('');
                             var member = info.replace(/<div class="members_div" id=".*">/,'').replace(/<\/div>/,'').split(",");
                             var members = '';
