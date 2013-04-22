@@ -1,3 +1,10 @@
+covetel-peribeco (0.2-20) unstable; urgency=low
+
+	* Arreglando bug en la interfaz web al crear entradas de Reenvíos (Forwards).
+	* Cambios cosméticos en la template de listas, Ocultando checkbox en la tabla de listas cuando el usuario no sea administrador ni el dominio sea cantv.com.ve y cambiando redacción del menú.
+
+ -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Fri, 05 Apr 2013 12:54:33 -0430
+
 covetel-peribeco (0.2-19) unstable; urgency=low
 
   * Closes Ticket #128 
