@@ -24,6 +24,11 @@
 
         tabla6 = $("#quota_lists").dataTable({
             "sAjaxSource": '/ajax/quota/',
+            "aoColumnDefs": [
+                { "sType": "numeric", "aTargets": [ 6,5] },
+                { "sType": "html", "aTargets": [ 5,4] },
+                { "sType": "string", "aTargets": [3] },
+             ],
              "oLanguage": {
                 "sUrl": "/static/js/dataTables.spanish.txt"
             },
@@ -41,12 +46,13 @@
                         // Calculo el porcentaje de uso
                         //uso = ( diccionario[datos[1]] / limit) * 100;
                         uso = ( datos[3] / limit) * 100;
-                        $("#progressbar-"+datos[1]+"-"+datos[2]+"-"+datos[3]).progressbar({value: uso});
+                        var uid = "#progressbar-"+datos[1]+"-"+datos[2]+"-"+datos[3];
+                        $("#"+id).progressbar({value: uso});
                         if (uso < 70) {
-                            $("#progressbar-"+datos[1]+"-"+datos[2]+"-"+datos[3]).children().addClass("progressbarQuota-low");
+                        $("#"+id).children().addClass("progressbarQuota-low");
                         }
                         if ((uso >=70) && (uso <90))  {
-                            $("#progressbar-"+datos[1]+"-"+datos[2]+"-"+datos[3]).children().addClass("progressbarQuota-med");
+                        $("#"+id).children().addClass("progressbarQuota-med");
                         }
                     });
             }
@@ -72,12 +78,12 @@
                     processData: false,
                     complete: function (data) {
                         tabla6.fnReloadAjax();
-                        if (data.status != 200){
+                        if (data.status == 200){
                             $("div#all").append('<div id="mensaje"> </div>');
                             $("div#mensaje").html("La quota fue asignada satisfactoriamente a las cuentas seleccionadas");
                             $( "#mensaje" ).dialog({ 
-                                title: 'Error', 
-                                buttons: { "Ok": function() { $(this).dialog("close"); } }, 
+                                title: 'Quota Asignada', 
+                                buttons: { "Ok": function() { $(this).dialog("close"); $("#loading").dialog("close"); } },
                                 modal: true,
                             });
                         } else {
@@ -106,8 +112,9 @@
             <th> Nombre </th> 
             <th> UID </th> 
             <th> Quota </th>
-            <th> % </th>
+            <th> Uso </th>
             <th> Usado </th>
+            <th> % </th>
            </tr>
         </thead>
         <tfoot>
