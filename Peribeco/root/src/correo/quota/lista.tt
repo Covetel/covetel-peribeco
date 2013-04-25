@@ -24,6 +24,8 @@
 
         tabla6 = $("#quota_lists").dataTable({
             "sAjaxSource": '/ajax/quota/',
+            "fnInitComplete": function(){$("#loading").dialog("close");},
+            "aaSorting": [[ 6, "desc" ]],
             "aoColumnDefs": [
                 { "sType": "numeric", "aTargets": [ 6,5] },
                 { "sType": "html", "aTargets": [ 5,4] },
@@ -34,6 +36,7 @@
             },
             "bJQueryUI": true,
             "fnDrawCallback": function () {
+                // loading
                 var uidss;
                 var i = 1;
                 my_hover();
@@ -55,6 +58,8 @@
                         $("#"+id).children().addClass("progressbarQuota-med");
                         }
                     });
+                    
+                //$("#loading").hide();
             }
         });
     
