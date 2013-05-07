@@ -1,3 +1,13 @@
+covetel-peribeco (0.2-21) unstable; urgency=low
+
+  * Cambios cosmeticos vista detalle de grupos.
+  * Modificando la controladora Quota para añadir una nueva columna del uso de quota y que pueda ser ordenable por la quota.
+  * Modificando las vistas de Quota para añadir una nueva columna del uso de quota y que pueda ser ordenable por la quota.
+  * Agregado dialogo cargando cuando ajaxStart.
+
+
+ -- Carlos Paredes <cparedes@covetel.com.ve>  Tue, 07 May 2013 16:41:10 -0430
+
 covetel-peribeco (0.2-20) unstable; urgency=low
   
   * Arreglando bug en la interfaz web al crear entradas de Reenvíos (Forwards).
