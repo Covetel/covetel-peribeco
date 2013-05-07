@@ -36,6 +36,7 @@ $(document).ready(function(){
     
    tabla = $("#lista_grupos").dataTable({
         "sAjaxSource": '/ajax/grupos',
+        "fnInitComplete": function(){$("#loading").dialog("close");},
         "bJQueryUI": true,
          "oLanguage": {
             "sUrl": "/static/js/dataTables.spanish.txt"
@@ -47,6 +48,7 @@ $(document).ready(function(){
 
     tabla2 = $("#lista_personas").dataTable({
         "sAjaxSource": '/ajax/personas',
+        "fnInitComplete": function(){$("#loading").dialog("close");},
         "bJQueryUI": true,
          "oLanguage": {
             "sUrl": "/static/js/dataTables.spanish.txt"
@@ -58,6 +60,7 @@ $(document).ready(function(){
 
     tabla3 = $("#lista_detalle_persona").dataTable({
         "sAjaxSource": '/ajax/miembros_grupo',
+        "fnInitComplete": function(){$("#loading").dialog("close");},
          "oLanguage": {
             "sUrl": "/static/js/dataTables.spanish.txt"
         },
@@ -71,12 +74,14 @@ $(document).ready(function(){
     
     tabla4 = $("#lista_miembros_grupo").dataTable({
         "sAjaxSource": '/ajax/groupmembers/'+gidNumber,
+        "fnInitComplete": function(){$("#loading").dialog("close");},
          "oLanguage": {
             "sUrl": "/static/js/dataTables.spanish.txt"
         },
         "bJQueryUI": true,
         "fnDrawCallback": function () {
             my_hover();
+            $("#loading").dialog("close");
         }
     });
 

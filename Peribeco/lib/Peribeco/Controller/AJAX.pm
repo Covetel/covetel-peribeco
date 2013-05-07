@@ -278,14 +278,19 @@ sub quota_GET {
         $datos{aaData} = [
             map {
             my $usage = $quo{$_->get_value($account)} ? $quo{$_->get_value($account)} : "0";
-            my $usage_mb = int($usage/1024);
+            $usage =~ s/error/0/;
+            my $uid = $_->get_value($account);
+            $uid =~ s/\.//g;
+            my $porcentaje = int ((( $usage / $_->get_value($quota_size) ) * 100) / 1024);
+            my $usage_mb = $usage > 0 ? int($usage/1024) : 0;
                 [ 
                 '<input type="checkbox" name="del" value="'.$_->get_value($account).'">', 
                 &utf8_decode($_->get_value($cname)), 
                 $_->get_value($account), 
                 $_->get_value($quota_size) ? $_->get_value($quota_size)." ".$size : "0 $size",
-                '<div class="progressbar" id="progressbar-'.$_->get_value($account).'-'.$_->get_value($quota_size).'-'.$usage.'"></div>', 
-                '<div class="usage" id="usage-'.$_->get_value($account).'">'.$usage_mb." MB".'</div>'
+                '<div class="progressbar" id="progressbar-'.$uid.'-'.$_->get_value($quota_size).'-'.$usage.'"></div>',
+                '<div class="usage" id="usage-'.$_->get_value($account).'">'.$usage_mb.' MB </div>',
+                $porcentaje,
                 ]
             } grep { !($_->get_value($account) eq 'root') } $mesg->entries,
         ];
@@ -315,6 +320,7 @@ sub quotaset_PUT {
                }
          );
     }
+    $self->status_ok($c, entity => {msg => 'ok'});
 }
 
 sub global_quota_PUT {
@@ -348,6 +354,7 @@ sub global_quota_PUT {
             );
         }
     }
+    $self->status_ok($c, entity => {msg => 'ok'});
 }
 
 sub getquota_GET {

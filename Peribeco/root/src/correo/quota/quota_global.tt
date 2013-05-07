@@ -32,12 +32,12 @@
                     contentType: 'application/json',
                     processData: false,
                     complete: function (data) {
-                        if (data.status != 200){
+                        if (data.status == 200){
                             $("div#all").append('<div id="mensaje"> </div>');
                             $("div#mensaje").html("La quota Global fue asignada satisfactoriamente");
                             $( "#mensaje" ).dialog({ 
-                                title: 'Error', 
-                                buttons: { "Ok": function() { $(this).dialog("close"); } }, 
+                                title: 'Quota Asignada',
+                                buttons: { "Ok": function() { $(this).dialog("close"); $("#loading").dialog("close");} },
                                 modal: true,
                             });
                         } else {

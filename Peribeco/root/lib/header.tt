@@ -40,6 +40,27 @@
             [% INCLUDE "menu.tt" %]
     [% END %]
     <div id="all">
+        <!-- Loading ajax -->
+        <script type="text/javascript" charset="utf-8">
+                $(document).bind("ajaxSend",function(){
+                        $("#loading").dialog({
+                                title: 'Cargando ...',
+                                modal : true,
+                                resizable: false,
+                                closeOnEscape: false,
+                                draggable: false,
+                        });
+                });
+                //$(document).ajaxSuccess(function(){
+                //      $("#loading").dialog("close");
+                //});
+        </script>
+
+        <div id="loading">
+               <img src=/static/images/ajax-loader.gif alt="Cargando" />
+        </div>
+        <!-- end loading ajax -->
+
         [% content %]
     </div>    
 </body>

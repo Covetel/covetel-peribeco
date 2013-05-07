@@ -21,8 +21,6 @@ a.enlace {
  text-decoration:underline;
 }
 
-
-
 div#all{
     margin: 0px;
     padding: 0px;
@@ -264,4 +262,14 @@ div.members_div {
 
 div.members_div li {
     margin-left: 50px;
+}
+
+div#loading {
+ padding: 10px;
+ display: none;
+ text-align: center;
+}
+
+div#loading img {
+ margin: 50px;
 }
