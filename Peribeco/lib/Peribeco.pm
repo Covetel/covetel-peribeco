@@ -3,6 +3,7 @@ use Moose;
 use namespace::autoclean;
 
 use Catalyst::Runtime 5.80;
+with 'CatalystX::DebugFilter';
 
 # Set flags and add plugins for the application
 #
@@ -51,6 +52,13 @@ __PACKAGE__->config(
 
 __PACKAGE__->config(
     'Plugin::ConfigLoader' => { file => 'configuracion.yml' },
+);
+
+# Filtrar Parametros
+__PACKAGE__->config(
+    'CatalystX::DebugFilter' => {
+        Request => { params => [ 'passw', 'passwd2', 'pass_actual', 'new_pass', 'con_new' ] },
+    },
 );
 
 # Start the application
