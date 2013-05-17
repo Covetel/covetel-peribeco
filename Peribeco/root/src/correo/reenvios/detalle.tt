@@ -5,6 +5,7 @@
         var listacn = $("span.AccountID").html();
         tabla_listas = $("#lista_direcciones").dataTable({
             "sAjaxSource": '/ajax/listadirecciones/' + listacn,
+            "fnInitComplete": function(){$("#loading").dialog("close");},
             "oLanguage": {
                 "sUrl": "/static/js/dataTables.spanish.txt"
             },
@@ -40,7 +41,7 @@
                             $("div#mensaje").html("Las direcciones fueron agregadas para reenvío");
                             $( "#mensaje" ).dialog({ 
                                 title: 'Aviso', 
-                                buttons: { "Ok": function() { $(this).dialog("close"); } }, 
+                                buttons: { "Ok": function() { $(this).dialog("close"); $("#loading").dialog("close");} },
                                 modal: true,
                             });
                    } 
@@ -68,7 +69,7 @@
                             $("div#mensaje").html("Fue removida satisfactoriamente la dirección seleccionada");
                             $( "#mensaje" ).dialog({ 
                                 title: 'Aviso', 
-                                buttons: { "Ok": function() { 
+                                buttons: { "Ok": function() {
                                     $(this).dialog("close"); 
                                     var no = $("#lista_direcciones tbody tr").size()
                                     if (no == 0) {
@@ -77,6 +78,7 @@
                                     } }, 
                                 modal: true,
                             });
+                            $("#loading").dialog("close");
                    } 
                    $("#mensaje").remove();
                    var reload = $("#lista_direcciones tbody tr").size()
@@ -155,6 +157,7 @@
                     contentType: 'application/json',
                     processData: false,
                     complete: function (data) {
+                        if (data.status == 200){
                             tabla_listas.fnReloadAjax();
                             $("#add_forward_cc").text('Desactivar');
                             $("div#all").append('<div id="mensaje"> </div>');
@@ -164,6 +167,8 @@
                                 modal: true,
                             });
                             location.reload();
+                            $("#loading").dialog("close");
+                        }
                     }
                 }); // Fin de ajax
         });
@@ -176,11 +181,14 @@
             type: "GET",
             dataType: "json",
             complete: function (data) {
-                var info = $.parseJSON(data.responseText); 
-                if (info == '1') {
-                    $("#add_forward_cc").text('Desactivar');
-                }else{
-                    $("#add_forward_cc").text('Activar');
+                if (data.status == 200){
+                    var info = $.parseJSON(data.responseText);
+                    if (info == '1') {
+                        $("#add_forward_cc").text('Desactivar');
+                    }else{
+                        $("#add_forward_cc").text('Activar');
+                    }
+                    $("#loading").dialog("close");
                 }
             }
         });
