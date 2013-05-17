@@ -20,16 +20,19 @@
             type: "GET",
             dataType: "json",
             complete: function (data) {
-                var info = $.parseJSON(data.responseText).toString().split(","); 
-                if (info[0] == "TRUE") {
-                    $("#vacations").attr("checked","checked")
-                    $("#vacations").val("1");
-                } else {
-                    $("#vacations").val("0");
-                    $("#autorespuesta").attr("disabled","disabled");
-                }
+                if (data.status == 200){
+                    var info = $.parseJSON(data.responseText).toString().split(",");
+                    if (info[0] == "TRUE") {
+                        $("#vacations").attr("checked","checked")
+                        $("#vacations").val("1");
+                    } else {
+                        $("#vacations").val("0");
+                        $("#autorespuesta").attr("disabled","disabled");
+                    }
 
-                $("#autorespuesta").val(info[1]);
+                    $("#autorespuesta").val(info[1]);
+                    $("#loading").dialog("close");
+                }
             }
         });
 

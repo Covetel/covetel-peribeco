@@ -33,6 +33,7 @@
 
         tabla_listas = $("#lista_listas").dataTable({
             "sAjaxSource": '/ajax/listas/',
+            "fnInitComplete": function(){$("#loading").dialog("close");},
             "oLanguage": {
                 "sUrl": "/static/js/dataTables.spanish.txt"
             },
