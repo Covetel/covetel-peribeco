@@ -1,3 +1,22 @@
+covetel-peribeco (0.2-23) unstable; urgency=low
+
+    * Cerrando dialogo de carga al autocompletar miembros para las listas.
+    * Cerrando dialogo de carga al autocompletar miembros para los reenvíos.
+    * Imagen de carga mientras se espera respuesta de AJAX.
+    * Filtrando password en el debug.
+    * Ocultando dialogos de carga cuando termina de cargar datos javscript.
+    * Corrigiendo bug a listar miembros de un Reenvío.
+    * Agregando cambios corregidos de javascript removidos en la versión 0.2-22.
+
+ -- Carlos Paredes <cparedes@covetel.com.ve>  Mon, 20 May 2013 10:34:37 -0430
+
+covetel-peribeco (0.2-22) unstable; urgency=low
+
+    * Versión de emergencia para CANTV que saca cambios del JavaScript, en una nueva versión se incluiran los cambios que fueron removidos en esta versión.
+    * Rollback para CANTV por cambios sin probar en javascript.
+
+ -- Carlos Paredes <cparedes@covetel.com.ve>  Wed, 15 May 2013 17:03:35 -0430
+
 covetel-peribeco (0.2-21) unstable; urgency=low
 
   * Cambios cosmeticos vista detalle de grupos.
