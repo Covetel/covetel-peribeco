@@ -5,6 +5,7 @@
         var listacn = $("span.listaId").html();
         tabla_listas = $("#lista_miembros_lista").dataTable({
             "sAjaxSource": '/ajax/listamembers/' + listacn,
+            "fnInitComplete": function(){$("#loading").dialog("close");},
             "oLanguage": {
                 "sUrl": "/static/js/dataTables.spanish.txt"
             },
@@ -116,6 +117,9 @@
                 terms.push( "" );
                 this.value = terms.join( ", " );
                 return false;
+            },
+            open: function(event,  ui){
+                $("#loading").dialog("close");
             }
         });
 

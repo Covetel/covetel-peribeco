@@ -1235,7 +1235,7 @@ sub listadirecciones_GET {
                      my @rfcmembers = $resp->get_value($attr_miembro_correo);
                  
                      foreach (@rfcmembers) {
-                         unless ( $_ eq '\\root') {
+                         unless ( $_ =~ m/^\\/ ) {
                              $mesg = $ldap->search({
                                  filter => "($attr_correo=" . $_ . ')',
                                  attrs => ['mail', 'uid']
@@ -1262,7 +1262,7 @@ sub listadirecciones_GET {
                          [
                              '<input type="checkbox" name="del" value="'.$_->get_value($attr_correo).'">',
                              $_->get_value($attr_correo),
-                             $_->get_value('uid'),
+                             $_->get_value('uid') ?  $_->get_value('uid') : "-" ,
                          ]
                      } grep { !($_->{uid} eq 'root') } @entries,
                  ];
