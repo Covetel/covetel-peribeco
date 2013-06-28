@@ -5,12 +5,12 @@ use JSON;
 use Data::Dumper;
 
 my $hash = { maillist => {
-        mail => 'aba@cantv.com.ve',
+        mail => 'list@domain.com',
         members => [
-         'gmujic@cantv.com.ve',
-         'ovaler@cantv.com.ve',
-         'lmarqu@cantv.com.ve',
-         'walter@cantv.com.ve',
+         'account1@domain.com',
+         'account2@domain.com',
+         'account3@domain.com',
+         'account4@domain.com',
         ]
     }};
 

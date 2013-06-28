@@ -5,10 +5,10 @@ use JSON;
 use Data::Dumper;
 
 my $hash = { forward => [
-      'rdeoli01@cantv.com.ve',
-      'aba@cantv.com.ve',
-      'mariposa@cantv.com.ve',
-      'mensjes@cantv.com.ve'
+      'account1@domain.com',
+      'account2@doamin.com',
+      'account3@domain.com',
+      'account4@domain.com'
     ], localcopy => 0};
 
 my $json = JSON->new; 
