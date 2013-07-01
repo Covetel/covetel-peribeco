@@ -6,4 +6,7 @@ Peribeco/inc/
 !Peribeco/Makefile.PL
 Peribeco/MYMETA.*
 Peribeco/META.*
+Peribeco/config/
+Peribeco/config.yml
+Peribeco/configuracion.yml
 README
