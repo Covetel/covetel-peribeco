@@ -1,4 +1,6 @@
 *.swp
-Peribeco/MakeFile*
-Peribeco/MYMETA*
-Peribeco/META*
+Peribeco/Makefile
+Peribeco/Makefile.*
+Peribeco/MYMETA.*
+Peribeco/META.*
+README
