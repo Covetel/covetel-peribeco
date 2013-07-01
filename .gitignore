@@ -1,6 +1,7 @@
 *.swp
 Peribeco/Makefile
 Peribeco/Makefile.*
+!Peribeco/Makefile.PL
 Peribeco/MYMETA.*
 Peribeco/META.*
 README
