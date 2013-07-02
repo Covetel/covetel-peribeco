@@ -1,9 +1,0 @@
-#ldapmodify -h 192.168.113.200 -D "cn=admin,dc=cantv,dc=com,dc=ve" -x -w 123321... -f ldap_operations.ldif 
-
-dn: mail=abacopy@cantv.com.ve,ou=Listas,dc=cantv,dc=com,dc=ve
-add: uid
-uid: emujic
-
-#dn: mail=aba@cantv.com.ve,ou=Listas,dc=cantv,dc=com,dc=ve
-#add: uid
-#uid: emujic

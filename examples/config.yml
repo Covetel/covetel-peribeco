@@ -1,0 +1,14 @@
+# Configuration LDAP
+Covetel::LDAP: 
+   host: [FQDN LDAP SERVER] 
+   base: dc=example,dc=com
+   base_personas: ou=people,dc=example,dc=com
+   base_grupos: ou=groups,dc=example,dc=com
+   base_mantenimiento: ou=mantenimiento,dc=example,dc=com
+   usuario_mantenimiento: uid=usuario
+   grupo_mantenimiento: cn=grupo
+   dn: [LDAP USER] 
+   password: [PASSWORD LDAP USER] 
+   start_tls: 0
+   entry_class: Covetel::LDAP::Person
+   connection_class: Covetel::LDAP

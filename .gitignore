@@ -1,1 +1,13 @@
 *.swp
+Peribeco/Makefile
+Peribeco/Makefile.*
+Peribeco/blib/
+Peribeco/inc/
+!Peribeco/Makefile.PL
+Peribeco/MYMETA.*
+Peribeco/META.*
+Peribeco/config/
+Peribeco/config.yml
+Peribeco/configuracion.yml
+Peribeco/Changes
+README
