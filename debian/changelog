@@ -1,3 +1,10 @@
+covetel-peribeco (0.3) stable; urgency=low
+
+  * Añadir rama para contactos en archivo de configuración
+  * Añadiendo atributo contact_basedn en el archivo de configuración configuracion.yml, el cual se usara para indicar la rama donde se almacenan los contactos en AD, close 
+
+ -- Luis Alfredo da Silva <luisdasilva@covetel.com.ve>  Wed, 28 Aug 2013 11:30:38 -0430
+
 covetel-peribeco (0.2-23) unstable; urgency=low
 
     * Cerrando dialogo de carga al autocompletar miembros para las listas.
