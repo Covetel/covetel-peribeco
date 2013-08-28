@@ -213,3 +213,4 @@ authentication:
                 binddn: [USER AD]
                 bindpw: [PASSWORD AD]
                 user_basedn: cn=Users,dc=example,dc=com
+                contact_basedn: cn=Contacts,dc=example,dc=com
