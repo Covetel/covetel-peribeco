@@ -454,6 +454,7 @@ sub forward_AD {
     my $entry;
     my $entry_user;
     my $base = $self->config->{'authentication'}->{'realms'}->{'ad'}->{'store'}->{'user_basedn'};
+    my $base_contacts = $self->config->{'authentication'}->{'realms'}->{'ad'}->{'store'}->{'contact_basedn'};
 
     #Conexion AD
     my $ad = Net::LDAP->new($self->config->{'authentication'}->{'realms'}->{'ad'}->{'store'}->{'ad_server'});
@@ -487,7 +488,7 @@ sub forward_AD {
         }
 
         my $resp = $ad->search(
-            base => 'CN=Users,DC=cantv,DC=com,DC=ve',
+            base => $base_contacts,
             scope => 'sub',
             filter => '(&(ObjectClass=contact)(mail='.$contact{mail}.'))',
             attrs => ['mail'],
@@ -496,7 +497,7 @@ sub forward_AD {
         unless ($resp->count > 0) {
             $entry = Net::LDAP::Entry->new;
 
-            my $dn = 'CN='.$contact{cn}.','.$base;
+            my $dn = 'CN='.$contact{cn}.','.$base_contacts;
             $entry->dn($dn);
 
             $entry->add(
